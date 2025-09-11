@@ -21,7 +21,7 @@ import java.util.Map;
  * @since 2024-01-01
  */
 @RestController
-@RequestMapping("/api/v1/health")
+@RequestMapping("/v1/health")
 public class HealthController {
     
     @Autowired(required = false)

@@ -1,0 +1,12 @@
+This is a placeholder Excel template file for the product import functionality.
+In a real implementation, this would be a valid Excel template with predefined structure
+for importing product data into the system.
+
+The template would typically include:
+- Product name
+- Product type
+- Product category
+- Required fields for validation
+- Data format specifications
+
+For MVP purposes, this placeholder file demonstrates the download functionality.

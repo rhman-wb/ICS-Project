@@ -55,7 +55,7 @@ public class OperationLogServiceImpl implements OperationLogService {
                 .ipAddress(clientIp)
                 .requestMethod("POST")
                 .method("POST")
-                .requestUrl("/api/v1/auth/login")
+                .requestUrl("/v1/auth/login")
                 .userAgent(userAgent)
                 .errorMessage(errorMessage)
                 .module("认证模块")

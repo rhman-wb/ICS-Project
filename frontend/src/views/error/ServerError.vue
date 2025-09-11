@@ -2,7 +2,7 @@
   <div class="server-error-page">
     <div class="server-error-content">
       <div class="server-error-icon">
-        <ExclamationTriangleOutlined />
+        <ExclamationCircleOutlined />
       </div>
       
       <h1 class="server-error-title">500</h1>
@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { 
-  ExclamationTriangleOutlined, 
+  ExclamationCircleOutlined, 
   ReloadOutlined, 
   HomeOutlined 
 } from '@ant-design/icons-vue'
@@ -42,7 +42,7 @@ const refresh = () => {
 }
 
 const goHome = () => {
-  router.push('/dashboard')
+  router.push('/dashboard/home')
 }
 </script>
 

@@ -13,7 +13,7 @@ import type { Component } from 'vue'
  */
 export function createTestRouter(routes: any[] = []): Router {
   const defaultRoutes = [
-    { path: '/', redirect: '/dashboard' },
+    { path: '/', redirect: '/dashboard/home' },
     { path: '/login', name: 'Login', component: { template: '<div>Login</div>' } },
     { path: '/dashboard', name: 'Dashboard', component: { template: '<div>Dashboard</div>' } },
     { path: '/forbidden', name: 'Forbidden', component: { template: '<div>Forbidden</div>' } },

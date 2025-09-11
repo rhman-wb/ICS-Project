@@ -1,0 +1,276 @@
+// Dashboard Design Tokens
+// 基于原型的精确样式变量，确保像素级一致性
+
+// === 颜色系统 Colors ===
+// 主色调
+$primary-nav-bg: #001529;           // 顶部导航背景色
+$primary-brand: #ffffff;            // 品牌文字颜色
+$primary-link: #0079FE;             // 链接蓝色
+$primary-link-hover: #1890ff;        // 链接悬停色
+
+// 趋势指示色
+$trend-up: #F95E5A;                  // 上升趋势红色
+$trend-down: #4BD863;                // 下降趋势绿色
+
+// 文字颜色
+$text-primary: #333333;              // 主要文字
+$text-secondary: #666666;            // 次要文字
+$text-tertiary: #999999;              // 第三级文字
+$text-placeholder: #cccccc;          // 占位符文字
+
+// 背景色
+$bg-page: #f5f5f5;                  // 页面背景
+$bg-card: #ffffff;                  // 卡片背景
+$bg-hover: #fafafa;                  // 悬停背景
+
+// 边框色
+$border-light: #f0f0f0;              // 浅边框
+$border-default: #d9d9d9;            // 默认边框
+
+// 阴影
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+$shadow-md: 0 2px 8px rgba(0, 0, 0, 0.15);
+$shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
+
+// === 字体系统 Typography ===
+$font-family: 'Microsoft YaHei', '微软雅黑', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+// 字号
+$font-size-xs: 12px;                // 12px - 徽章、小标签
+$font-size-sm: 13px;                // 13px - 响应式小号
+$font-size-base: 14px;              // 14px - 基础字号、标签
+$font-size-lg: 16px;                // 16px - 标题
+$font-size-xl: 20px;                // 20px - 重要数字
+$font-size-xxl: 28px;               // 28px - 大号数字
+
+// 行高
+$line-height-tight: 1.2;            // 紧凑行高
+$line-height-base: 1.5;             // 基础行高
+$line-height-loose: 1.8;            // 宽松行高
+
+// 字重
+$font-weight-normal: 400;           // 正常
+$font-weight-medium: 500;           // 中等
+$font-weight-semibold: 600;          // 半粗
+$font-weight-bold: 700;             // 粗体
+
+// === 间距系统 Spacing ===
+// 基础间距单位 (4px网格)
+$spacing-xs: 4px;                   // 4px
+$spacing-sm: 8px;                   // 8px
+$spacing-md: 12px;                  // 12px
+$spacing-lg: 16px;                  // 16px
+$spacing-xl: 24px;                  // 24px
+$spacing-xxl: 32px;                 // 32px
+
+// 特殊间距
+$nav-height: 64px;                  // 导航栏高度
+$card-padding: 20px;                // 卡片内边距
+$section-gap: 24px;                 // 区块间距
+
+// === 圆角系统 Border Radius ===
+$radius-sm: 4px;                    // 小圆角
+$radius-md: 6px;                    // 中圆角
+$radius-lg: 8px;                    // 大圆角
+
+// === 布局系统 Layout ===
+// 页面宽度
+$page-width: 1440px;                // 固定页面宽度
+
+// Dashboard 网格布局
+$dashboard-grid-cols: 12;           // 网格列数
+$dashboard-gap: 24px;               // 网格间距
+
+// 左右两栏布局
+$left-column-width: 1100px;         // 左栏宽度
+$right-column-width: 552px;         // 右栏宽度
+$content-gap: 24px;                 // 内容间距
+
+// === 组件特定变量 Component Specific ===
+// TopNav
+$top-nav-height: 64px;
+$top-nav-brand-width: 200px;
+$top-nav-menu-gap: 32px;
+$top-nav-user-width: 120px;
+
+// AppOverview Cards
+$app-overview-grid: repeat(4, 1fr);
+$app-overview-card-height: 120px;
+$app-overview-value-size: 20px;
+$app-overview-label-size: 14px;
+
+// MyFavorites
+$favorites-header-height: 56px;
+$favorites-item-height: 48px;
+$favorites-icon-size: 14px;
+$favorites-scroll-height: 300px;
+
+// RatioChart
+$chart-container-height: 280px;
+$chart-tabs-height: 48px;
+$type-list-width: 200px;
+$type-item-height: 36px;
+
+// QuickStart
+$quick-start-grid: repeat(3, 1fr);
+$quick-start-item-height: 48px;
+$badge-size: 20px;
+$badge-offset: -6px;
+
+// RecentActivities
+$activities-header-height: 56px;
+$activity-item-gap: 16px;
+$activity-icon-size: 8px;
+$activities-scroll-height: 240px;
+
+// SummaryTotals
+$summary-totals-grid: repeat(4, 1fr);
+$summary-card-height: 100px;
+$summary-value-size: 28px;
+$summary-label-size: 14px;
+
+// === 响应式断点 Responsive Breakpoints ===
+$breakpoint-md: 768px;               // 平板
+$breakpoint-sm: 480px;               // 手机
+
+// === 混合器 Mixins ===
+// 文本截断
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// 多行文本截断
+@mixin text-truncate-lines($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// 滚动条样式
+@mixin custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f5f5f5;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #d9d9d9;
+    border-radius: 2px;
+    
+    &:hover {
+      background: #bfbfbf;
+    }
+  }
+}
+
+// 卡片基础样式
+@mixin card-base {
+  background: $bg-card;
+  border-radius: $radius-md;
+  box-shadow: $shadow-sm;
+  border: 1px solid $border-light;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+}
+
+// 区域标题样式
+@mixin section-title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $text-primary;
+  margin-bottom: $spacing-lg;
+  font-family: $font-family;
+}
+
+// 按钮基础样式
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-md $spacing-xl;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  font-family: $font-family;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  
+  &:hover {
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// 输入框基础样式
+@mixin input-base {
+  width: 100%;
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid $border-default;
+  border-radius: $radius-sm;
+  font-size: $font-size-base;
+  font-family: $font-family;
+  color: $text-primary;
+  background: $bg-card;
+  transition: all 0.2s ease;
+  
+  &::placeholder {
+    color: $text-placeholder;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: $primary-link;
+    box-shadow: 0 0 0 2px rgba(0, 121, 254, 0.2);
+  }
+}
+
+// === 工具类 Utilities ===
+// 文本对齐
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+// 字重
+.font-normal { font-weight: $font-weight-normal; }
+.font-medium { font-weight: $font-weight-medium; }
+.font-semibold { font-weight: $font-weight-semibold; }
+.font-bold { font-weight: $font-weight-bold; }
+
+// 颜色
+.text-primary { color: $text-primary; }
+.text-secondary { color: $text-secondary; }
+.text-tertiary { color: $text-tertiary; }
+.text-link { color: $primary-link; }
+
+// 间距
+.mt-xs { margin-top: $spacing-xs; }
+.mt-sm { margin-top: $spacing-sm; }
+.mt-md { margin-top: $spacing-md; }
+.mt-lg { margin-top: $spacing-lg; }
+.mt-xl { margin-top: $spacing-xl; }
+
+.mb-xs { margin-bottom: $spacing-xs; }
+.mb-sm { margin-bottom: $spacing-sm; }
+.mb-md { margin-bottom: $spacing-md; }
+.mb-lg { margin-bottom: $spacing-lg; }
+.mb-xl { margin-bottom: $spacing-xl; }
+
+.p-xs { padding: $spacing-xs; }
+.p-sm { padding: $spacing-sm; }
+.p-md { padding: $spacing-md; }
+.p-lg { padding: $spacing-lg; }
+.p-xl { padding: $spacing-xl; }

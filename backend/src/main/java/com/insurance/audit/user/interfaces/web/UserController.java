@@ -47,7 +47,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/v1/users")
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "用户管理", description = "用户管理相关API")

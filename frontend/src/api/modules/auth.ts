@@ -220,7 +220,7 @@ export const authApi = {
   async changePassword(data: ChangePasswordRequest): Promise<ApiResponse<void>> {
     return withLoading('changePassword', async () => {
       try {
-        const response = await request.post('/api/v1/auth/change-password', data)
+        const response = await request.post('/v1/auth/change-password', data)
         
         console.log('Password change successful')
         

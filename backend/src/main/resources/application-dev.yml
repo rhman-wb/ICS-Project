@@ -4,7 +4,7 @@
 # 这里显式覆盖为根路径 `/`，避免出现 `/api/api/...` 的双前缀问题。
 server:
   servlet:
-    context-path: /
+    context-path: /api
 
 spring:
   # 数据源配置

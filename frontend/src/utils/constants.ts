@@ -11,7 +11,7 @@ export const STORAGE_KEYS = {
 // 路由路径
 export const ROUTE_PATHS = {
   LOGIN: '/login',
-  DASHBOARD: '/dashboard',
+  DASHBOARD: '/dashboard/home',
   NOT_FOUND: '/404'
 } as const
 

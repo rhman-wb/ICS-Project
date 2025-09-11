@@ -92,6 +92,9 @@ public class SecurityConfig {
             // 请求授权配置
             .authorizeHttpRequests(auth -> auth
                 // 公开接口 - 使用AntPathRequestMatcher避免MVC依赖
+                .requestMatchers(new AntPathRequestMatcher("/v1/auth/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/v1/health/**")).permitAll()
+                // 兼容在有 context-path=/api 时的完整路径匹配
                 .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/v1/health/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
@@ -108,9 +111,11 @@ public class SecurityConfig {
                 .requestMatchers(new AntPathRequestMatcher("/public/**")).permitAll()
                 
                 // 管理员接口
+                .requestMatchers(new AntPathRequestMatcher("/v1/admin/**")).hasRole("ADMIN")
                 .requestMatchers(new AntPathRequestMatcher("/api/v1/admin/**")).hasRole("ADMIN")
                 
                 // 用户接口
+                .requestMatchers(new AntPathRequestMatcher("/v1/user/**")).hasAnyRole("USER", "ADMIN")
                 .requestMatchers(new AntPathRequestMatcher("/api/v1/user/**")).hasAnyRole("USER", "ADMIN")
                 
                 // 其他接口需要认证

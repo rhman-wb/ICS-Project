@@ -120,7 +120,7 @@ export function getDefaultRoute(authStore: ReturnType<typeof useAuthStore>): str
     return '/admin/users'
   }
   
-  return '/dashboard'
+  return '/dashboard/home'
 }
 
 /**

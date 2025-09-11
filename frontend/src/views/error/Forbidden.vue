@@ -62,7 +62,7 @@ interface Props {
   showDetails?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   showDetails: true
 })
 
@@ -89,7 +89,7 @@ const goBack = () => {
 }
 
 const goHome = () => {
-  router.push('/dashboard')
+  router.push('/dashboard/home')
 }
 
 const logout = async () => {

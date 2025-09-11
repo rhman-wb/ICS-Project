@@ -102,7 +102,6 @@ import MyFocusSection from '@/components/dashboard/MyFocusSection.vue'
 import QuickStartSection from '@/components/dashboard/QuickStartSection.vue'
 import StatisticsChartSection from '@/components/dashboard/StatisticsChartSection.vue'
 import RecentActivitiesSection from '@/components/dashboard/RecentActivitiesSection.vue'
-import type { MenuProps } from 'ant-design-vue'
 
 // 组件名称定义
 defineOptions({
@@ -179,22 +178,6 @@ const menuItems = computed(() => {
 // 计算属性
 const currentUser = computed(() => authStore.userInfo)
 
-const currentPageTitle = computed(() => {
-  if (!menuItems.value) return '工作台'
-  
-  const menuItem = menuItems.value.find(item => {
-    if (item && typeof item === 'object' && 'key' in item) {
-      return item.key === selectedMenuKeys.value[0]
-    }
-    return false
-  })
-  
-  if (menuItem && typeof menuItem === 'object' && 'label' in menuItem) {
-    return menuItem.label as string || '工作台'
-  }
-  
-  return '工作台'
-})
 
 // 方法定义
 const handleMenuClick = ({ key }: { key: string }) => {
@@ -203,7 +186,7 @@ const handleMenuClick = ({ key }: { key: string }) => {
   // 根据菜单项跳转到对应路由
   switch (key) {
     case 'dashboard':
-      router.push('/dashboard')
+      router.push('/dashboard/home')
       break
     case 'product':
       // 暂时显示提示，后续实现产品管理页面
@@ -245,7 +228,7 @@ const handleUserMenuClick = async ({ key }: { key: string }) => {
 // 根据当前路由设置选中的菜单项
 const updateSelectedKeys = () => {
   const path = route.path
-  if (path === '/dashboard') {
+  if (path === '/dashboard' || path === '/dashboard/home') {
     selectedMenuKeys.value = ['dashboard']
   } else if (path.startsWith('/product')) {
     selectedMenuKeys.value = ['product']

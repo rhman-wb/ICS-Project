@@ -104,7 +104,7 @@ public class OperationLog extends BaseEntity {
      */
     @TableField("request_url")
     @Size(max = 500, message = "请求URL长度不能超过500字符")
-    @Schema(description = "请求URL", example = "/api/v1/auth/login")
+    @Schema(description = "请求URL", example = "/v1/auth/login")
     private String requestUrl;
     
     /**

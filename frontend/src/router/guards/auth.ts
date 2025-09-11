@@ -78,7 +78,7 @@ export function setupAuthGuard(router: Router) {
       // 不需要认证的页面处理
       if (to.name === 'Login' && authStore.isLoggedIn) {
         // 已登录用户访问登录页，处理redirect参数
-        const redirectPath = (to.query.redirect as string) || '/dashboard'
+        const redirectPath = (to.query.redirect as string) || '/dashboard/home'
         next(redirectPath)
         return
       }
@@ -94,12 +94,12 @@ export function setupAuthGuard(router: Router) {
  * @param redirectPath 重定向路径
  */
 export function handleLoginRedirect(router: Router, redirectPath?: string) {
-  const targetPath = redirectPath || '/dashboard'
+  const targetPath = redirectPath || '/dashboard/home'
   
   // 验证重定向路径是否安全
   if (redirectPath && !isValidRedirectPath(redirectPath)) {
     console.warn('Invalid redirect path:', redirectPath)
-    router.push('/dashboard')
+    router.push('/dashboard/home')
     return
   }
   

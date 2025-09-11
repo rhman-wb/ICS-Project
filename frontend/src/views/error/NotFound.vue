@@ -38,7 +38,7 @@ import {
 const router = useRouter()
 
 const goHome = () => {
-  router.push('/dashboard')
+  router.push('/dashboard/home')
 }
 
 const goBack = () => {

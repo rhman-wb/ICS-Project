@@ -235,7 +235,7 @@ describe('LoginForm', () => {
         password: 'password123'
       })
       
-      expect(mockPush).toHaveBeenCalledWith('/dashboard')
+      expect(mockPush).toHaveBeenCalledWith('/dashboard/home')
     })
 
     it('登录失败时应该显示错误信息', async () => {

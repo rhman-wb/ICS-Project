@@ -26,7 +26,7 @@ declare module 'vue-router' {
 const baseRoutes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/dashboard'
+    redirect: '/dashboard/home'
   }
 ]
 
