@@ -69,6 +69,10 @@ app:
   # 开发环境特殊配置
   security:
     disabled: false  # 启用完整安全配置，提供 AuthenticationManager 等 Bean
+    admin:
+      bootstrap:
+        enabled: true
+      initial-password: ${ADMIN_INIT_PASSWORD:admin123}
   mybatis:
     enabled: true    # 启用 MyBatis 配置与 Mapper 扫描
   redis:
@@ -77,12 +81,6 @@ app:
   # 开发工具开关
   tools:
     reset-admin-password: true
-
-  security:
-    admin:
-      bootstrap:
-        enabled: true
-      initial-password: ${ADMIN_INIT_PASSWORD:admin123}
 
 # CORS配置
 cors:

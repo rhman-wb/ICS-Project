@@ -1,18 +1,15 @@
 package com.insurance.audit.common.tools;
 
+import com.insurance.audit.common.mapper.SystemConfigMapper;
 import com.insurance.audit.user.domain.model.User;
 import com.insurance.audit.user.infrastructure.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -74,17 +71,6 @@ public class AdminPasswordBootstrapRunner implements CommandLineRunner {
 
     private static String uuid() {
         return UUID.randomUUID().toString().replace("-", "");
-    }
-
-    @Mapper
-    public interface SystemConfigMapper {
-        @Select("SELECT config_value FROM system_configs WHERE config_key = #{key} AND is_deleted = 0 LIMIT 1")
-        String getValue(@Param("key") String key);
-
-        @Insert("INSERT INTO system_configs (id, config_key, config_value, config_type, description, is_system, created_by, created_at) " +
-                "VALUES (#{id}, #{key}, #{value}, 'STRING', 'security bootstrap flag', 1, 'system', NOW()) " +
-                "ON DUPLICATE KEY UPDATE config_value = VALUES(config_value), updated_by='system', updated_at=NOW()")
-        int upsertValue(@Param("key") String key, @Param("value") String value, @Param("id") String id);
     }
 }
 
