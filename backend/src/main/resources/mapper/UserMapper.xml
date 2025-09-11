@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.insurance.audit.user.infrastructure.mapper.UserMapper">
+
+    <!-- 用户结果映射 -->
+    <resultMap id="UserResultMap" type="com.insurance.audit.user.domain.model.User">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="real_name" property="realName"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="status" property="status"/>
+        <result column="last_login_time" property="lastLoginTime"/>
+        <result column="last_login_ip" property="lastLoginIp"/>
+        <result column="login_attempts" property="loginAttempts"/>
+        <result column="locked_until" property="lockedUntil"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="is_deleted" property="deleted"/>
+        <result column="version" property="version"/>
+    </resultMap>
+
+    <!-- 分页查询用户列表 -->
+    <select id="selectUserPage" resultMap="UserResultMap">
+        SELECT DISTINCT u.*
+        FROM users u
+        <if test="request.roleId != null and request.roleId != ''">
+            LEFT JOIN user_roles ur ON u.id = ur.user_id
+        </if>
+        <where>
+            u.is_deleted = 0
+            <if test="request.username != null and request.username != ''">
+                AND u.username LIKE CONCAT('%', #{request.username}, '%')
+            </if>
+            <if test="request.realName != null and request.realName != ''">
+                AND u.real_name LIKE CONCAT('%', #{request.realName}, '%')
+            </if>
+            <if test="request.email != null and request.email != ''">
+                AND u.email LIKE CONCAT('%', #{request.email}, '%')
+            </if>
+            <if test="request.phone != null and request.phone != ''">
+                AND u.phone LIKE CONCAT('%', #{request.phone}, '%')
+            </if>
+            <if test="request.status != null">
+                AND u.status = #{request.status}
+            </if>
+            <if test="request.roleId != null and request.roleId != ''">
+                AND ur.role_id = #{request.roleId}
+            </if>
+            <if test="request.createdAtStart != null">
+                AND u.created_at >= #{request.createdAtStart}
+            </if>
+            <if test="request.createdAtEnd != null">
+                AND u.created_at &lt;= #{request.createdAtEnd}
+            </if>
+        </where>
+        <choose>
+            <when test="request.sortField != null and request.sortField != ''">
+                ORDER BY 
+                <choose>
+                    <when test="request.sortField == 'username'">u.username</when>
+                    <when test="request.sortField == 'realName'">u.real_name</when>
+                    <when test="request.sortField == 'email'">u.email</when>
+                    <when test="request.sortField == 'status'">u.status</when>
+                    <when test="request.sortField == 'lastLoginTime'">u.last_login_time</when>
+                    <when test="request.sortField == 'createdAt'">u.created_at</when>
+                    <otherwise>u.created_at</otherwise>
+                </choose>
+                <choose>
+                    <when test="request.sortOrder != null and request.sortOrder.toLowerCase() == 'asc'">ASC</when>
+                    <otherwise>DESC</otherwise>
+                </choose>
+            </when>
+            <otherwise>
+                ORDER BY u.created_at DESC
+            </otherwise>
+        </choose>
+    </select>
+
+</mapper>

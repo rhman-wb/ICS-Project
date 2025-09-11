@@ -1,0 +1,39 @@
+# 调试环境配置 - 最小化依赖
+spring:
+  # 禁用数据库自动配置
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      - com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration
+      - org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration
+      - org.mybatis.spring.boot.autoconfigure.MybatisLanguageDriverAutoConfiguration
+
+# 禁用自定义配置
+app:
+  security:
+    disabled: false  # 使用MinimalSecurityConfig而不是EmptySecurityConfig
+  mybatis:
+    enabled: false   # 禁用MyBatis，使用MockAuthService
+  redis:
+    enabled: false   # 禁用Redis配置
+
+# 日志配置
+logging:
+  level:
+    com.insurance.audit: DEBUG
+    org.springframework.boot: INFO
+    org.springframework.context: INFO
+    org.springframework.beans: INFO
+
+# 监控配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

@@ -1,0 +1,43 @@
+# 裸机配置 - 只保留最基础功能
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/insurance_audit?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:insurance_user}
+    password: ${DB_PASSWORD:20150826}
+    hikari:
+      maximum-pool-size: 1
+      minimum-idle: 1
+
+  # 禁用所有自动配置
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+# 禁用所有复杂功能
+app:
+  security:
+    disabled: true
+  mybatis:
+    enabled: false
+    meta-handler:
+      enabled: false
+
+# 最基础的MyBatis Plus配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: assign_uuid
+
+# 最简日志
+logging:
+  level:
+    root: WARN
+    com.insurance.audit: INFO
+
+server:
+  port: 8080

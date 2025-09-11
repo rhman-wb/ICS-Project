@@ -1,0 +1,5 @@
+// Global SCSS imports for components
+// Import this file in components that need access to variables and mixins
+
+@forward './variables.scss';
+@forward './mixins.scss';

@@ -1,0 +1,33 @@
+# 最小化配置用于排查问题
+server:
+  port: 8080
+
+spring:
+  application:
+    name: user-auth-system
+  profiles:
+    active: minimal
+  
+  # 完全排除可能有问题的自动配置
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+# 禁用所有自定义配置
+app:
+  mybatis:
+    enabled: false
+  redis:
+    enabled: false
+  security:
+    disabled: true
+
+# 启用debug日志
+logging:
+  level:
+    org.springframework.boot: DEBUG
+    org.springframework.context: DEBUG
+    org.springframework.beans: DEBUG

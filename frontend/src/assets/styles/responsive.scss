@@ -1,0 +1,669 @@
+/**
+ * 响应式设计样式
+ * 确保在不同设备和屏幕尺寸下的良好适配
+ */
+
+@use './globals.scss' as *;
+
+/* ==================== 响应式断点定义 ==================== */
+
+// 使用变量定义断点，便于维护
+$breakpoints: (
+  xs: 480px,   // 手机
+  sm: 576px,   // 大手机
+  md: 768px,   // 平板
+  lg: 992px,   // 桌面
+  xl: 1200px,  // 大桌面
+  xxl: 1600px  // 超大桌面
+);
+
+/* ==================== 容器响应式 ==================== */
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+  
+  @include respond-to(sm) {
+    max-width: 540px;
+    padding: 0 var(--spacing-md);
+  }
+  
+  @include respond-to(md) {
+    max-width: 720px;
+    padding: 0 var(--spacing-lg);
+  }
+  
+  @include respond-to(lg) {
+    max-width: 960px;
+    padding: 0 var(--spacing-lg);
+  }
+  
+  @include respond-to(xl) {
+    max-width: var(--container-max-width);
+    padding: 0 var(--container-padding);
+  }
+  
+  @include respond-to(xxl) {
+    max-width: 1400px;
+    padding: 0 var(--spacing-xl);
+  }
+}
+
+/* ==================== 栅格系统响应式 ==================== */
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 calc(var(--spacing-md) / -2);
+  
+  .col {
+    padding: 0 calc(var(--spacing-md) / 2);
+    flex: 1;
+  }
+  
+  // 手机端单列布局
+  @include mobile-first {
+    margin: 0;
+    
+    .col {
+      padding: 0;
+      width: 100%;
+      margin-bottom: var(--spacing-md);
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+/* ==================== 登录页面响应式 ==================== */
+
+.login-container {
+  padding: var(--spacing-lg);
+  
+  .login-panel {
+    width: 100%;
+    max-width: 400px;
+    
+    @include mobile-first {
+      max-width: 100%;
+      padding: var(--spacing-lg);
+      margin: var(--spacing-md);
+      
+      .system-header {
+        margin-bottom: var(--spacing-lg);
+        
+        .logo {
+          width: 48px;
+          height: 48px;
+        }
+        
+        .system-title {
+          font-size: var(--font-size-xl);
+        }
+      }
+      
+      .login-form {
+        .ant-form-item {
+          margin-bottom: var(--spacing-md);
+        }
+      }
+    }
+    
+    @include respond-to(xs) {
+      margin: var(--spacing-sm);
+      padding: var(--spacing-md);
+      
+      .system-header {
+        .system-title {
+          font-size: var(--font-size-lg);
+        }
+      }
+    }
+  }
+  
+  .footer {
+    position: static;
+    margin-top: var(--spacing-xl);
+    transform: none;
+    
+    @include respond-to(md) {
+      position: fixed;
+      bottom: var(--spacing-lg);
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 0;
+    }
+  }
+}
+
+/* ==================== 工作台页面响应式 ==================== */
+
+.dashboard-layout {
+  .dashboard-header {
+    padding: 0 var(--spacing-md);
+    height: var(--header-height);
+    
+    @include mobile-first {
+      flex-direction: column;
+      height: auto;
+      padding: var(--spacing-sm) var(--spacing-md);
+      
+      .header-left,
+      .header-nav,
+      .header-right {
+        width: 100%;
+        margin: var(--spacing-xs) 0;
+      }
+      
+      .header-nav {
+        margin: var(--spacing-sm) 0;
+        
+        .ant-menu {
+          .ant-menu-item {
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin: 0 var(--spacing-xs);
+          }
+        }
+      }
+    }
+    
+    @include respond-to(md) {
+      flex-direction: row;
+      height: var(--header-height);
+      padding: 0 var(--spacing-lg);
+      
+      .header-left,
+      .header-nav,
+      .header-right {
+        width: auto;
+        margin: 0;
+      }
+      
+      .header-nav {
+        flex: 1;
+        margin: 0 var(--spacing-lg);
+      }
+    }
+  }
+  
+  .dashboard-content {
+    padding: var(--spacing-md);
+    
+    @include respond-to(md) {
+      padding: var(--spacing-lg);
+    }
+    
+    @include respond-to(xl) {
+      padding: var(--spacing-page-padding);
+    }
+  }
+}
+
+/* ==================== 数据展示组件响应式 ==================== */
+
+.summary-data-section {
+  .data-cards {
+    display: grid;
+    gap: var(--spacing-md);
+    grid-template-columns: 1fr;
+    
+    @include respond-to(sm) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    @include respond-to(lg) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
+  .data-card {
+    padding: var(--spacing-md);
+    
+    .data-value {
+      font-size: var(--font-size-xl);
+      
+      @include respond-to(md) {
+        font-size: var(--font-size-xxxl);
+      }
+    }
+    
+    .data-label {
+      font-size: var(--font-size-sm);
+      
+      @include respond-to(md) {
+        font-size: var(--font-size-base);
+      }
+    }
+  }
+}
+
+.application-overview-section {
+  .overview-grid {
+    display: grid;
+    gap: var(--spacing-md);
+    grid-template-columns: 1fr;
+    
+    @include respond-to(md) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    @include respond-to(xl) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+}
+
+.my-focus-section {
+  .search-filters {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    
+    @include respond-to(md) {
+      flex-direction: row;
+      align-items: center;
+      
+      .ant-input {
+        width: 200px;
+      }
+      
+      .ant-select {
+        width: 120px;
+      }
+    }
+  }
+  
+  .task-list {
+    .task-item {
+      padding: var(--spacing-sm);
+      
+      @include respond-to(md) {
+        padding: var(--spacing-md);
+      }
+      
+      .task-info {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+        
+        @include respond-to(md) {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+      }
+    }
+  }
+}
+
+.quick-start-section {
+  .quick-actions {
+    display: grid;
+    gap: var(--spacing-md);
+    grid-template-columns: 1fr;
+    
+    @include respond-to(sm) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    @include respond-to(lg) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
+  .action-button {
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    
+    @include mobile-first {
+      height: 60px;
+      flex-direction: row;
+      justify-content: flex-start;
+      padding: 0 var(--spacing-md);
+    }
+    
+    .action-icon {
+      font-size: 24px;
+      
+      @include mobile-first {
+        font-size: 20px;
+      }
+    }
+    
+    .action-text {
+      font-size: var(--font-size-base);
+      
+      @include mobile-first {
+        font-size: var(--font-size-sm);
+      }
+    }
+  }
+}
+
+.statistics-chart-section {
+  .chart-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    
+    @include respond-to(lg) {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  }
+  
+  .chart-wrapper {
+    flex: 1;
+    min-height: 300px;
+    
+    @include mobile-first {
+      min-height: 200px;
+    }
+  }
+  
+  .chart-legend {
+    flex: 0 0 200px;
+    
+    @include mobile-first {
+      flex: none;
+    }
+    
+    .legend-item {
+      padding: var(--spacing-xs) 0;
+      
+      @include respond-to(lg) {
+        padding: var(--spacing-sm) 0;
+      }
+    }
+  }
+}
+
+/* ==================== 表格响应式 ==================== */
+
+.responsive-table {
+  .ant-table {
+    @include mobile-first {
+      .ant-table-thead {
+        display: none;
+      }
+      
+      .ant-table-tbody {
+        .ant-table-row {
+          display: block;
+          border: 1px solid var(--color-border-secondary);
+          border-radius: var(--border-radius-base);
+          margin-bottom: var(--spacing-sm);
+          padding: var(--spacing-md);
+          
+          .ant-table-cell {
+            display: block;
+            border: none;
+            padding: var(--spacing-xs) 0;
+            
+            &::before {
+              content: attr(data-label) ": ";
+              font-weight: var(--font-weight-medium);
+              color: var(--color-text-secondary);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/* ==================== 表单响应式 ==================== */
+
+.responsive-form {
+  .ant-form-item {
+    @include mobile-first {
+      .ant-form-item-label {
+        text-align: left;
+        
+        > label {
+          height: auto;
+        }
+      }
+    }
+  }
+  
+  .form-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: flex-end;
+    
+    @include mobile-first {
+      flex-direction: column;
+      
+      .ant-btn {
+        width: 100%;
+      }
+    }
+    
+    @include respond-to(md) {
+      flex-direction: row;
+      
+      .ant-btn {
+        width: auto;
+      }
+    }
+  }
+}
+
+/* ==================== 模态框响应式 ==================== */
+
+.responsive-modal {
+  .ant-modal {
+    @include mobile-first {
+      max-width: calc(100vw - var(--spacing-lg));
+      margin: var(--spacing-md);
+      top: var(--spacing-md);
+      
+      .ant-modal-content {
+        .ant-modal-header {
+          padding: var(--spacing-md);
+        }
+        
+        .ant-modal-body {
+          padding: var(--spacing-md);
+        }
+        
+        .ant-modal-footer {
+          padding: var(--spacing-md);
+          
+          .ant-btn {
+            width: 100%;
+            margin: var(--spacing-xs) 0;
+            
+            &:first-child {
+              margin-top: 0;
+            }
+            
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+        }
+      }
+    }
+    
+    @include respond-to(md) {
+      max-width: var(--modal-max-width);
+      margin: 0 auto;
+      top: 100px;
+      
+      .ant-modal-content {
+        .ant-modal-header,
+        .ant-modal-body,
+        .ant-modal-footer {
+          padding: var(--modal-padding);
+        }
+        
+        .ant-modal-footer {
+          .ant-btn {
+            width: auto;
+            margin: 0 0 0 var(--spacing-sm);
+            
+            &:first-child {
+              margin-left: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/* ==================== 导航响应式 ==================== */
+
+.responsive-nav {
+  .ant-menu {
+    @include mobile-first {
+      .ant-menu-item {
+        padding: var(--spacing-md) var(--spacing-lg);
+        margin: 0;
+        
+        .ant-menu-title-content {
+          margin-left: var(--spacing-sm);
+        }
+      }
+      
+      .ant-menu-submenu {
+        .ant-menu-submenu-title {
+          padding: var(--spacing-md) var(--spacing-lg);
+        }
+      }
+    }
+  }
+}
+
+/* ==================== 卡片响应式 ==================== */
+
+.responsive-card {
+  .ant-card {
+    margin-bottom: var(--spacing-md);
+    
+    .ant-card-head {
+      @include mobile-first {
+        .ant-card-head-title {
+          font-size: var(--font-size-lg);
+        }
+        
+        .ant-card-extra {
+          margin-top: var(--spacing-sm);
+        }
+      }
+    }
+    
+    .ant-card-body {
+      @include mobile-first {
+        padding: var(--spacing-md);
+      }
+      
+      @include respond-to(md) {
+        padding: var(--card-padding);
+      }
+    }
+  }
+}
+
+/* ==================== 分页响应式 ==================== */
+
+.responsive-pagination {
+  .ant-pagination {
+    @include mobile-first {
+      .ant-pagination-options {
+        display: none;
+      }
+      
+      .ant-pagination-item {
+        display: none;
+        
+        &.ant-pagination-item-active {
+          display: inline-block;
+        }
+      }
+      
+      .ant-pagination-jump-prev,
+      .ant-pagination-jump-next {
+        display: none;
+      }
+    }
+    
+    @include respond-to(md) {
+      .ant-pagination-options {
+        display: block;
+      }
+      
+      .ant-pagination-item {
+        display: inline-block;
+      }
+      
+      .ant-pagination-jump-prev,
+      .ant-pagination-jump-next {
+        display: inline-block;
+      }
+    }
+  }
+}
+
+/* ==================== 工具类响应式 ==================== */
+
+// 显示/隐藏工具类
+@each $breakpoint, $size in $breakpoints {
+  @media (max-width: #{$size - 1px}) {
+    .hide-#{$breakpoint}-down {
+      display: none !important;
+    }
+  }
+  
+  @media (min-width: #{$size}) {
+    .hide-#{$breakpoint}-up {
+      display: none !important;
+    }
+    
+    .show-#{$breakpoint}-up {
+      display: block !important;
+    }
+  }
+}
+
+// 文本对齐响应式
+@each $breakpoint, $size in $breakpoints {
+  @media (min-width: #{$size}) {
+    .text-#{$breakpoint}-left {
+      text-align: left !important;
+    }
+    
+    .text-#{$breakpoint}-center {
+      text-align: center !important;
+    }
+    
+    .text-#{$breakpoint}-right {
+      text-align: right !important;
+    }
+  }
+}
+
+// 间距响应式
+@each $breakpoint, $size in $breakpoints {
+  @media (min-width: #{$size}) {
+    .m-#{$breakpoint}-0 { margin: 0 !important; }
+    .m-#{$breakpoint}-sm { margin: var(--spacing-sm) !important; }
+    .m-#{$breakpoint}-md { margin: var(--spacing-md) !important; }
+    .m-#{$breakpoint}-lg { margin: var(--spacing-lg) !important; }
+    
+    .p-#{$breakpoint}-0 { padding: 0 !important; }
+    .p-#{$breakpoint}-sm { padding: var(--spacing-sm) !important; }
+    .p-#{$breakpoint}-md { padding: var(--spacing-md) !important; }
+    .p-#{$breakpoint}-lg { padding: var(--spacing-lg) !important; }
+  }
+}

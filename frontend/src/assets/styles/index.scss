@@ -1,0 +1,429 @@
+/**
+ * 全局样式入口文件
+ * 统一导入所有样式文件，确保正确的加载顺序
+ */
+
+// 1. 首先导入变量和混入，供其他文件使用
+@use './variables.scss';
+@use './mixins.scss';
+
+// 2. 导入样式重置，建立统一的基础样式
+@use './reset.scss';
+
+// 3. 导入动画定义
+@use './animations.scss';
+
+// 4. 导入通用样式类
+@use './common.scss';
+
+// 5. 导入组件样式
+@use './components.scss';
+
+// 6. 导入工具类样式
+@use './utilities.scss';
+
+// 7. 导入 Ant Design Vue 主题定制
+@use './antd-theme.scss';
+
+// 8. 导入响应式样式
+@use './responsive.scss';
+
+/**
+ * 全局应用样式
+ * 这里定义应用级别的样式规则
+ */
+
+/* ==================== 应用根容器 ==================== */
+
+#app {
+  min-height: 100vh;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-background-secondary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==================== 页面布局 ==================== */
+
+.app-layout {
+  min-height: 100vh;
+  
+  .app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-index-fixed);
+    height: var(--header-height);
+    background-color: var(--color-background-dark);
+    box-shadow: var(--box-shadow-base);
+  }
+  
+  .app-content {
+    margin-top: var(--header-height);
+    min-height: calc(100vh - var(--header-height));
+    padding: var(--spacing-page-padding);
+  }
+  
+  .app-sidebar {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    bottom: 0;
+    width: var(--sidebar-width);
+    background-color: var(--color-background-primary);
+    border-right: 1px solid var(--color-border-secondary);
+    z-index: var(--z-index-sticky);
+    
+    &.collapsed {
+      width: var(--sidebar-collapsed-width);
+    }
+  }
+  
+  .app-main {
+    margin-left: var(--sidebar-width);
+    transition: margin-left var(--animation-duration-base) var(--animation-timing-ease-in-out);
+    
+    &.sidebar-collapsed {
+      margin-left: var(--sidebar-collapsed-width);
+    }
+  }
+}
+
+/* ==================== 页面容器 ==================== */
+
+.page-container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+.page-header {
+  margin-bottom: var(--spacing-section-margin);
+  
+  .page-title {
+    font-size: var(--font-size-xxl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-sm) 0;
+  }
+  
+  .page-description {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+  
+  .page-actions {
+    margin-top: var(--spacing-md);
+    
+    .ant-btn + .ant-btn {
+      margin-left: var(--spacing-sm);
+    }
+  }
+}
+
+.page-content {
+  background-color: var(--color-background-primary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-page-padding);
+  box-shadow: var(--box-shadow-card);
+}
+
+/* ==================== 登录页面样式 ==================== */
+
+.login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  @include flex-center;
+  padding: var(--spacing-lg);
+  
+  .login-panel {
+    width: 100%;
+    max-width: 400px;
+    background: var(--color-background-primary);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow-xl);
+    padding: var(--spacing-xl);
+    
+    .system-header {
+      text-align: center;
+      margin-bottom: var(--spacing-xl);
+      
+      .logo {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto var(--spacing-md);
+        display: block;
+      }
+      
+      .system-title {
+        font-size: var(--font-size-xxl);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-primary);
+        margin: 0;
+      }
+    }
+    
+    .login-form {
+      .error-alert {
+        @include flex-start;
+        padding: var(--spacing-sm) var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+        background-color: var(--color-error-light);
+        border: 1px solid var(--color-error);
+        border-radius: var(--border-radius-base);
+        color: var(--color-error);
+        font-size: var(--font-size-sm);
+        
+        .error-icon {
+          margin-right: var(--spacing-sm);
+          font-size: var(--font-size-base);
+        }
+      }
+      
+      .ant-form-item {
+        margin-bottom: var(--spacing-lg);
+        
+        .ant-input,
+        .ant-input-password {
+          height: var(--button-height-lg);
+          font-size: var(--font-size-base);
+        }
+        
+        .ant-btn {
+          height: var(--button-height-lg);
+          font-size: var(--font-size-base);
+          font-weight: var(--font-weight-medium);
+        }
+      }
+    }
+  }
+  
+  .footer {
+    position: fixed;
+    bottom: var(--spacing-lg);
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: var(--font-size-sm);
+    text-align: center;
+  }
+}
+
+/* ==================== 工作台页面样式 ==================== */
+
+.dashboard-layout {
+  min-height: 100vh;
+  
+  .dashboard-header {
+    background-color: var(--color-background-dark);
+    padding: 0 var(--spacing-lg);
+    @include flex-between;
+    
+    .header-left {
+      .system-brand {
+        color: var(--color-text-inverse);
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-medium);
+      }
+    }
+    
+    .header-nav {
+      flex: 1;
+      margin: 0 var(--spacing-xl);
+      
+      .ant-menu {
+        background: transparent;
+        border-bottom: none;
+        
+        .ant-menu-item {
+          color: rgba(255, 255, 255, 0.8);
+          
+          &:hover {
+            color: var(--color-text-inverse);
+            background-color: rgba(255, 255, 255, 0.1);
+          }
+          
+          &.ant-menu-item-selected {
+            color: var(--color-text-inverse);
+            background-color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+          }
+        }
+      }
+    }
+    
+    .header-right {
+      .user-info {
+        color: var(--color-text-inverse);
+        cursor: pointer;
+        padding: var(--spacing-sm) var(--spacing-md);
+        border-radius: var(--border-radius-base);
+        transition: background-color var(--animation-duration-base) var(--animation-timing-ease-in-out);
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .anticon {
+          margin-right: var(--spacing-sm);
+        }
+      }
+    }
+  }
+  
+  .dashboard-content {
+    padding: var(--spacing-page-padding);
+    background-color: var(--color-background-secondary);
+    
+    .content-wrapper {
+      max-width: var(--container-max-width);
+      margin: 0 auto;
+    }
+  }
+}
+
+/* ==================== 数据展示组件样式 ==================== */
+
+.summary-data-section,
+.application-overview-section,
+.my-focus-section,
+.quick-start-section,
+.recent-activities-section,
+.statistics-chart-section {
+  margin-bottom: var(--spacing-section-margin);
+  
+  .section-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .section-content {
+    background-color: var(--color-background-primary);
+    border-radius: var(--border-radius-lg);
+    padding: var(--card-padding);
+    box-shadow: var(--box-shadow-card);
+  }
+}
+
+.data-card {
+  text-align: center;
+  padding: var(--spacing-lg);
+  
+  .data-value {
+    font-size: var(--font-size-xxxl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .data-label {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+}
+
+/* ==================== 响应式适配 ==================== */
+
+@include mobile-first {
+  .login-container {
+    padding: var(--spacing-md);
+    
+    .login-panel {
+      padding: var(--spacing-lg);
+      
+      .system-header {
+        margin-bottom: var(--spacing-lg);
+        
+        .system-title {
+          font-size: var(--font-size-xl);
+        }
+      }
+    }
+  }
+  
+  .dashboard-header {
+    padding: 0 var(--spacing-md);
+    
+    .header-nav {
+      margin: 0 var(--spacing-md);
+    }
+  }
+  
+  .dashboard-content {
+    padding: var(--spacing-md);
+  }
+  
+  .page-container {
+    padding: 0 var(--spacing-md);
+  }
+  
+  .data-card {
+    padding: var(--spacing-md);
+    
+    .data-value {
+      font-size: var(--font-size-xl);
+    }
+  }
+}
+
+/* ==================== 打印样式 ==================== */
+
+@media print {
+  .dashboard-header,
+  .app-sidebar,
+  .page-actions {
+    display: none !important;
+  }
+  
+  .dashboard-content,
+  .app-main {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .page-content {
+    box-shadow: none !important;
+    border: 1px solid var(--color-border-primary) !important;
+  }
+}
+
+/* ==================== 无障碍支持 ==================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==================== 高对比度模式 ==================== */
+
+@media (prefers-contrast: high) {
+  :root {
+    --color-text-primary: #000000;
+    --color-text-secondary: #333333;
+    --color-border-primary: #000000;
+    --color-primary: #0000ff;
+    --color-success: #008000;
+    --color-warning: #ff8c00;
+    --color-error: #ff0000;
+  }
+}
+
+/* ==================== 深色模式支持（预留） ==================== */
+
+@media (prefers-color-scheme: dark) {
+  // 深色模式样式将在后续版本中实现
+  // 目前专注于浅色主题的完善
+}

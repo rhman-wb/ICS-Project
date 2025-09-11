@@ -1,0 +1,99 @@
+# 开发环境配置
+# 注意：`server.servlet.context-path` 必须在顶层 `server` 下声明，
+# 之前误写在 `spring.server` 下导致未生效，实际仍使用了 application.yml 的 `/api` 前缀。
+# 这里显式覆盖为根路径 `/`，避免出现 `/api/api/...` 的双前缀问题。
+server:
+  servlet:
+    context-path: /
+
+spring:
+  # 数据源配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/insurance_audit?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:insurance_user}
+    password: ${DB_PASSWORD:20150826}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 20000
+      validation-timeout: 3000
+      idle-timeout: 300000
+      max-lifetime: 900000
+      leak-detection-threshold: 60000
+  
+  # Redis配置 - 允许连接失败
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: 0
+      timeout: 3000ms
+      connect-timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 4
+          min-idle: 2
+          max-wait: 3000ms
+
+# 日志配置
+logging:
+  level:
+    com.insurance.audit: DEBUG
+    org.springframework.security: INFO
+    org.springframework.web: INFO
+    com.baomidou.mybatisplus: DEBUG
+    org.springframework.boot.autoconfigure: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# MyBatis Plus配置
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      logic-delete-field: is_deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# JWT配置
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-insurance-audit-system-jwt-secret-key-2024-very-long-secret-must-be-at-least-64-characters}
+    expiration: ${JWT_EXPIRATION:86400}  # 24小时
+    refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800}  # 7天
+  
+  # 开发环境特殊配置
+  security:
+    disabled: false  # 启用完整安全配置，提供 AuthenticationManager 等 Bean
+  mybatis:
+    enabled: true    # 启用 MyBatis 配置与 Mapper 扫描
+  redis:
+    enabled: true    # 启用自定义 RedisTemplate 配置
+
+  # 开发工具开关
+  tools:
+    reset-admin-password: true
+
+  security:
+    admin:
+      bootstrap:
+        enabled: true
+      initial-password: ${ADMIN_INIT_PASSWORD:admin123}
+
+# CORS配置
+cors:
+  allowed-origins: 
+    - http://localhost:3000
+    - http://127.0.0.1:3000
+  allowed-methods: 
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+  allowed-headers: "*"
+  allow-credentials: true

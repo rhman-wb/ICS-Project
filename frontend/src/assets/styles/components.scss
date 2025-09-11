@@ -1,0 +1,48 @@
+@use './globals.scss' as *;
+
+// Component-specific styles
+
+// Login form styles
+.login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  @include flex-center;
+}
+
+.login-panel {
+  background: #fff;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow-lg);
+  padding: var(--spacing-xl);
+  width: 400px;
+  max-width: 90%;
+}
+
+// Dashboard styles
+.dashboard-layout {
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  background: #001529;
+  padding: 0 var(--spacing-lg);
+  @include flex-between;
+}
+
+.dashboard-content {
+  padding: var(--spacing-lg);
+  background: var(--color-background);
+}
+
+// Card styles
+.card {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow-base);
+  padding: var(--spacing-lg);
+  
+  &:hover {
+    box-shadow: var(--box-shadow-lg);
+  }
+}

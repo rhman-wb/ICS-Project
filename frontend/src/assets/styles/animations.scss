@@ -1,0 +1,841 @@
+/**
+ * 动画定义
+ * 提供常用的CSS动画效果
+ */
+
+/* ==================== 基础动画 ==================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+  50% {
+    opacity: 1;
+  }
+  to {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes zoomOut {
+  from {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
+    transform: translate3d(0, -30px, 0);
+  }
+  70% {
+    animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
+    transform: translate3d(0, -15px, 0);
+  }
+  90% {
+    transform: translate3d(0, -4px, 0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale3d(1, 1, 1);
+  }
+  50% {
+    transform: scale3d(1.05, 1.05, 1.05);
+  }
+  100% {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translate3d(-10px, 0, 0);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translate3d(10px, 0, 0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* ==================== 加载动画 ==================== */
+
+@keyframes loading-dots {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+@keyframes loading-spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loading-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ==================== Vue Transition 动画 ==================== */
+
+/* 页面切换动画 */
+.page-transition-enter-active,
+.page-transition-leave-active {
+  transition: all var(--animation-duration-base) var(--animation-timing-ease-in-out);
+}
+
+.page-transition-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-transition-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+/* 错误提示动画 */
+.error-message-enter-active {
+  animation: errorBounceIn var(--animation-duration-base) var(--animation-timing-bounce);
+}
+
+.error-message-leave-active {
+  animation: errorFadeOut var(--animation-duration-fast) var(--animation-timing-ease-in);
+}
+
+@keyframes errorBounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(-10px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes errorFadeOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+/* 列表项动画 */
+.list-item-enter-active {
+  transition: all var(--animation-duration-base) var(--animation-timing-ease-out);
+}
+
+.list-item-enter-from {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.list-item-leave-active {
+  transition: all var(--animation-duration-base) var(--animation-timing-ease-in);
+}
+
+.list-item-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+/* ==================== 交互动画效果 ==================== */
+
+/* 按钮悬停和点击效果 */
+.btn-hover-effect {
+  position: relative;
+  overflow: hidden;
+  transition: all var(--animation-duration-fast) var(--animation-timing-ease-out);
+  transform: translateZ(0);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left var(--animation-duration-base) var(--animation-timing-ease-out);
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow-lg);
+    
+    &::before {
+      left: 100%;
+    }
+  }
+  
+  &:active {
+    transform: translateY(0);
+    transition-duration: var(--animation-duration-fast);
+  }
+}
+
+/* 卡片悬停效果 */
+.card-hover-effect {
+  transition: all var(--animation-duration-base) var(--animation-timing-ease-out);
+  transform: translateZ(0);
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--box-shadow-xl);
+  }
+}
+
+/* 输入框状态动画 */
+.input-focus-effect {
+  position: relative;
+  
+  .ant-input,
+  .ant-input-password,
+  .ant-select-selector {
+    transition: all var(--animation-duration-fast) var(--animation-timing-ease-out);
+    
+    &:focus,
+    &:focus-within,
+    &.ant-select-focused {
+      transform: scale(1.02);
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+  }
+  
+  &.has-error {
+    .ant-input,
+    .ant-input-password {
+      animation: inputShake var(--animation-duration-base) var(--animation-timing-ease-out);
+    }
+  }
+}
+
+@keyframes inputShake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+/* 数据更新指示器 */
+.data-updating {
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+    animation: loadingBar 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes loadingBar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* 骨架屏动画 */
+.skeleton-loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeletonLoading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeletonLoading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ==================== 动画工具类 ==================== */
+
+.animate-fade-in {
+  animation: fadeIn var(--animation-duration-slow) var(--animation-timing-ease-out);
+}
+
+.animate-fade-out {
+  animation: fadeOut var(--animation-duration-slow) var(--animation-timing-ease-in);
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp var(--animation-duration-slow) var(--animation-timing-ease-out);
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown var(--animation-duration-slow) var(--animation-timing-ease-out);
+}
+
+.animate-fade-in-left {
+  animation: fadeInLeft var(--animation-duration-slow) var(--animation-timing-ease-out);
+}
+
+.animate-fade-in-right {
+  animation: fadeInRight var(--animation-duration-slow) var(--animation-timing-ease-out);
+}
+
+.animate-slide-in-up {
+  animation: slideInUp var(--animation-duration-slow) var(--animation-timing-ease-out);
+}
+
+.animate-slide-in-down {
+  animation: slideInDown var(--animation-duration-slow) var(--animation-timing-ease-out);
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft var(--animation-duration-slow) var(--animation-timing-ease-out);
+}
+
+.animate-slide-in-right {
+  animation: slideInRight var(--animation-duration-slow) var(--animation-timing-ease-out);
+}
+
+.animate-scale-in {
+  animation: scaleIn var(--animation-duration-base) var(--animation-timing-ease-out);
+}
+
+.animate-scale-out {
+  animation: scaleOut var(--animation-duration-base) var(--animation-timing-ease-in);
+}
+
+.animate-zoom-in {
+  animation: zoomIn var(--animation-duration-slow) var(--animation-timing-ease-out);
+}
+
+.animate-zoom-out {
+  animation: zoomOut var(--animation-duration-slow) var(--animation-timing-ease-in);
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+.animate-shake {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-ping {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ==================== 过渡效果 ==================== */
+
+.transition-all {
+  transition: all var(--animation-duration-base) var(--animation-timing-ease-in-out);
+}
+
+.transition-colors {
+  transition: color var(--animation-duration-base) var(--animation-timing-ease-in-out),
+              background-color var(--animation-duration-base) var(--animation-timing-ease-in-out),
+              border-color var(--animation-duration-base) var(--animation-timing-ease-in-out);
+}
+
+.transition-opacity {
+  transition: opacity var(--animation-duration-base) var(--animation-timing-ease-in-out);
+}
+
+.transition-transform {
+  transition: transform var(--animation-duration-base) var(--animation-timing-ease-in-out);
+}
+
+.transition-shadow {
+  transition: box-shadow var(--animation-duration-base) var(--animation-timing-ease-in-out);
+}
+
+/* ==================== 悬停效果 ==================== */
+
+.hover-lift {
+  transition: transform var(--animation-duration-base) var(--animation-timing-ease-in-out);
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.hover-scale {
+  transition: transform var(--animation-duration-base) var(--animation-timing-ease-in-out);
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.hover-shadow {
+  transition: box-shadow var(--animation-duration-base) var(--animation-timing-ease-in-out);
+  
+  &:hover {
+    box-shadow: var(--box-shadow-lg);
+  }
+}
+
+.hover-opacity {
+  transition: opacity var(--animation-duration-base) var(--animation-timing-ease-in-out);
+  
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+/* ==================== 加载组件动画 ==================== */
+
+.loading-dots {
+  display: inline-block;
+  
+  &::after {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: currentColor;
+    animation: loading-dots 1.4s infinite ease-in-out both;
+  }
+  
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: currentColor;
+    margin-right: 4px;
+    animation: loading-dots 1.4s infinite ease-in-out both;
+    animation-delay: -0.32s;
+  }
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-border-primary);
+  border-radius: 50%;
+  border-top-color: var(--color-primary);
+  animation: loading-spinner 1s ease-in-out infinite;
+}
+
+.loading-pulse {
+  animation: loading-pulse 1.5s ease-in-out infinite;
+}
+
+/* ==================== 页面切换动画 ==================== */
+
+.page-enter-active,
+.page-leave-active {
+  transition: all var(--animation-duration-slow) var(--animation-timing-ease-in-out);
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+/* ==================== 模态框动画 ==================== */
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: all var(--animation-duration-base) var(--animation-timing-ease-in-out);
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+/* ==================== 抽屉动画 ==================== */
+
+.drawer-enter-active,
+.drawer-leave-active {
+  transition: all var(--animation-duration-slow) var(--animation-timing-ease-in-out);
+}
+
+.drawer-enter-from {
+  transform: translateX(100%);
+}
+
+.drawer-leave-to {
+  transform: translateX(100%);
+}
+
+/* ==================== 下拉动画 ==================== */
+
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all var(--animation-duration-base) var(--animation-timing-ease-in-out);
+  transform-origin: top;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: scaleY(0.8);
+}
+
+/* ==================== 折叠动画 ==================== */
+
+.collapse-enter-active,
+.collapse-leave-active {
+  transition: all var(--animation-duration-base) var(--animation-timing-ease-in-out);
+  overflow: hidden;
+}
+
+.collapse-enter-from,
+.collapse-leave-to {
+  height: 0;
+  opacity: 0;
+}
+
+/* ==================== 列表动画 ==================== */
+
+.list-enter-active,
+.list-leave-active {
+  transition: all var(--animation-duration-base) var(--animation-timing-ease-in-out);
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.list-move {
+  transition: transform var(--animation-duration-base) var(--animation-timing-ease-in-out);
+}
+
+/* ==================== 响应式动画优化 ==================== */
+
+/* 尊重用户的动画偏好设置 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 移动设备动画优化 */
+@media (max-width: 768px) {
+  .card-hover-effect:hover {
+    transform: none;
+    box-shadow: var(--box-shadow-base);
+  }
+  
+  .btn-hover-effect:hover {
+    transform: none;
+  }
+}
+
+/* ==================== Ant Design 组件动画增强 ==================== */
+
+/* Message 组件动画 */
+:global(.ant-message) {
+  .ant-message-notice {
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow-lg);
+    backdrop-filter: blur(8px);
+    
+    &.ant-message-notice-success {
+      background: rgba(246, 255, 237, 0.95);
+      border: 1px solid rgba(183, 235, 143, 0.3);
+    }
+    
+    &.ant-message-notice-error {
+      background: rgba(255, 241, 240, 0.95);
+      border: 1px solid rgba(255, 163, 158, 0.3);
+    }
+    
+    &.ant-message-notice-warning {
+      background: rgba(255, 251, 230, 0.95);
+      border: 1px solid rgba(255, 229, 143, 0.3);
+    }
+    
+    &.ant-message-notice-info {
+      background: rgba(240, 249, 255, 0.95);
+      border: 1px solid rgba(145, 213, 255, 0.3);
+    }
+  }
+}
+
+/* Notification 组件动画 */
+:global(.ant-notification) {
+  .ant-notification-notice {
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--box-shadow-xl);
+    backdrop-filter: blur(12px);
+    
+    &:hover {
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+  }
+}
+
+/* Modal 组件动画增强 */
+:global(.ant-modal) {
+  .ant-modal-content {
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+  }
+  
+  .ant-modal-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+}
+
+/* Drawer 组件动画增强 */
+:global(.ant-drawer) {
+  .ant-drawer-content {
+    border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
+  }
+}
+
+/* Select 组件动画增强 */
+:global(.ant-select-dropdown) {
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--box-shadow-lg);
+  
+  .ant-select-item {
+    transition: all var(--animation-duration-fast) var(--animation-timing-ease-out);
+    
+    &:hover {
+      background-color: rgba(24, 144, 255, 0.06);
+    }
+  }
+}
+
+/* Tooltip 组件动画增强 */
+:global(.ant-tooltip) {
+  .ant-tooltip-inner {
+    border-radius: var(--border-radius-base);
+    box-shadow: var(--box-shadow-base);
+    backdrop-filter: blur(8px);
+  }
+}
+
+/* 移动设备上简化 Ant Design 动画 */
+@media (max-width: 768px) {
+  :global(.ant-message) {
+    .ant-message-notice {
+      box-shadow: var(--box-shadow-base);
+    }
+  }
+  
+  :global(.ant-notification) {
+    .ant-notification-notice {
+      box-shadow: var(--box-shadow-base);
+      
+      &:hover {
+        box-shadow: var(--box-shadow-base);
+      }
+    }
+  }
+}
+
+/* 减少动画模式下的 Ant Design 组件优化 */
+@media (prefers-reduced-motion: reduce) {
+  :global(.ant-message-notice),
+  :global(.ant-notification-notice),
+  :global(.ant-modal-mask),
+  :global(.ant-modal),
+  :global(.ant-drawer-mask),
+  :global(.ant-drawer) {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 
+          http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <!-- 本地仓库路径 -->
+    <localRepository>${user.home}/.m2/repository</localRepository>
+
+    <!-- 阿里云镜像配置 -->
+    <mirrors>
+        <!-- 阿里云中央仓库镜像 -->
+        <mirror>
+            <id>aliyun-central</id>
+            <mirrorOf>central</mirrorOf>
+            <name>Aliyun Central Repository</name>
+            <url>https://maven.aliyun.com/repository/central</url>
+        </mirror>
+        
+        <!-- 阿里云公共仓库镜像 -->
+        <mirror>
+            <id>aliyun-public</id>
+            <mirrorOf>*</mirrorOf>
+            <name>Aliyun Public Repository</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </mirror>
+    </mirrors>
+
+    <!-- 激活的配置文件 -->
+    <activeProfiles>
+        <activeProfile>aliyun</activeProfile>
+    </activeProfiles>
+
+    <!-- 配置文件 -->
+    <profiles>
+        <profile>
+            <id>aliyun</id>
+            <repositories>
+                <!-- 阿里云中央仓库 -->
+                <repository>
+                    <id>aliyun-central</id>
+                    <name>Aliyun Central Repository</name>
+                    <url>https://maven.aliyun.com/repository/central</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                
+                <!-- 阿里云公共仓库 -->
+                <repository>
+                    <id>aliyun-public</id>
+                    <name>Aliyun Public Repository</name>
+                    <url>https://maven.aliyun.com/repository/public</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                
+                <!-- 阿里云Spring仓库 -->
+                <repository>
+                    <id>aliyun-spring</id>
+                    <name>Aliyun Spring Repository</name>
+                    <url>https://maven.aliyun.com/repository/spring</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                
+                <!-- 阿里云Spring插件仓库 -->
+                <repository>
+                    <id>aliyun-spring-plugin</id>
+                    <name>Aliyun Spring Plugin Repository</name>
+                    <url>https://maven.aliyun.com/repository/spring-plugin</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                
+                <!-- 阿里云Apache快照仓库 -->
+                <repository>
+                    <id>aliyun-apache-snapshots</id>
+                    <name>Aliyun Apache Snapshots Repository</name>
+                    <url>https://maven.aliyun.com/repository/apache-snapshots</url>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                    </snapshots>
+                </repository>
+            </repositories>
+            
+            <pluginRepositories>
+                <!-- 阿里云中央插件仓库 -->
+                <pluginRepository>
+                    <id>aliyun-central-plugin</id>
+                    <name>Aliyun Central Plugin Repository</name>
+                    <url>https://maven.aliyun.com/repository/central</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </pluginRepository>
+                
+                <!-- 阿里云Spring插件仓库 -->
+                <pluginRepository>
+                    <id>aliyun-spring-plugin</id>
+                    <name>Aliyun Spring Plugin Repository</name>
+                    <url>https://maven.aliyun.com/repository/spring-plugin</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
+</settings>

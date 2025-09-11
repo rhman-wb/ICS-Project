@@ -1,0 +1,101 @@
+spring:
+  application:
+    name: insurance-audit-system-test
+  
+  # 数据源配置 - 使用H2内存数据库进行测试
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    username: sa
+    password: 
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  
+  # H2数据库配置
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  
+  # JPA配置
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+  
+  # Redis配置 - 使用嵌入式Redis进行测试
+  redis:
+    host: localhost
+    port: 6379
+    database: 1
+    timeout: 5000ms
+    lettuce:
+      pool:
+        max-active: 5
+        max-idle: 5
+        min-idle: 1
+  
+  # 日志配置
+  logging:
+    level:
+      com.insurance.audit: DEBUG
+      org.springframework.web: DEBUG
+      org.springframework.security: DEBUG
+      com.baomidou.mybatisplus: DEBUG
+      org.springframework.transaction: DEBUG
+    pattern:
+      console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# MyBatis Plus配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      id-type: assign_uuid
+  mapper-locations: classpath*:mapper/**/*.xml
+
+# 应用配置
+app:
+  jwt:
+    secret: test-jwt-secret-key-for-insurance-audit-system-2024-test-environment
+    expiration: 3600  # 1小时
+    refresh-expiration: 86400  # 24小时
+  
+  file:
+    upload-path: /tmp/test-uploads
+    max-size: 10MB
+    allowed-types: pdf,doc,docx,xls,xlsx
+
+# 测试配置
+test:
+  mock:
+    enabled: true
+  security:
+    enabled: false  # 在某些测试中可能需要禁用安全配置
+  
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# 服务器配置
+server:
+  port: 0  # 随机端口，避免端口冲突
