@@ -1,2 +1,3 @@
 // 全局类型定义导出
 export * from './global'
+export * from './product'

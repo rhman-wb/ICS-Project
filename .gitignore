@@ -3,3 +3,4 @@
 # Ignore local Maven repository cache inside backend
 backend/.m2/
 
+.claude/settings.local.json

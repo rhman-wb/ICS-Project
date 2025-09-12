@@ -24,6 +24,17 @@ const dashboardRoutes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/product-management',
+    name: 'ProductManagement',
+    component: () => import('@/views/ProductManagementView.vue'),
+    meta: {
+      title: '产品管理',
+      requiresAuth: true,
+      icon: 'project',
+      keepAlive: true
+    }
+  },
+  {
     path: '/product/import',
     name: 'ProductImport',
     component: () => import('@/views/product/Import.vue'),
