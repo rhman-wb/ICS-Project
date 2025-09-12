@@ -239,6 +239,11 @@ onUnmounted(() => {
   
   .section-header {
     margin-bottom: 24px;
+    // 顶部留白，避免被固定导航遮挡
+    margin-top: var(--spacing-md);
+    .section-title {
+      scroll-margin-top: calc(var(--header-height) + var(--spacing-md));
+    }
     
     .section-title {
       font-size: 20px;

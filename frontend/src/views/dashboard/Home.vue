@@ -144,7 +144,9 @@ const handleViewMore = () => {
 .dashboard-home {
   min-height: 100vh;
   background-color: tokens.$bg-page;
+  // 预留顶部空间，避免被固定导航遮挡
   padding: tokens.$spacing-lg;
+  padding-top: calc(tokens.$nav-height + #{tokens.$spacing-lg});
   font-family: tokens.$font-family;
 }
 
@@ -181,6 +183,8 @@ const handleViewMore = () => {
 // 区块标题样式
 .section-title {
   @include tokens.section-title();
+  // 防止通过锚点或路由滚动时被顶部导航遮挡
+  scroll-margin-top: calc(tokens.$nav-height + #{tokens.$spacing-md});
 }
 
 // 特殊区域高度调整

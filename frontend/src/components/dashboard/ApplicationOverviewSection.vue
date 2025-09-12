@@ -270,7 +270,9 @@ onMounted(() => {
     font-weight: 500;
     color: var(--color-text-primary);
     margin-bottom: var(--spacing-lg);
-    margin-top: 0;
+    // 顶部留白，避免被固定导航遮挡
+    margin-top: var(--spacing-md);
+    scroll-margin-top: calc(var(--header-height) + var(--spacing-md));
   }
   
   .overview-cards {
