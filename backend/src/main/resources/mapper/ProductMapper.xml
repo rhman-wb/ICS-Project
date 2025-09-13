@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.insurance.audit.product.infrastructure.mapper.ProductMapper">
+
+    <!-- 产品基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.insurance.audit.product.domain.entity.Product">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="product_name" property="productName" jdbcType="VARCHAR"/>
+        <result column="report_type" property="reportType" jdbcType="VARCHAR"/>
+        <result column="product_nature" property="productNature" jdbcType="VARCHAR"/>
+        <result column="year" property="year" jdbcType="INTEGER"/>
+        <result column="revision_type" property="revisionType" jdbcType="VARCHAR"/>
+        <result column="original_product_name" property="originalProductName" jdbcType="VARCHAR"/>
+        <result column="development_method" property="developmentMethod" jdbcType="VARCHAR"/>
+        <result column="primary_additional" property="primaryAdditional" jdbcType="VARCHAR"/>
+        <result column="primary_situation" property="primarySituation" jdbcType="VARCHAR"/>
+        <result column="product_category" property="productCategory" jdbcType="VARCHAR"/>
+        <result column="operating_region" property="operatingRegion" jdbcType="VARCHAR"/>
+        <result column="operating_scope" property="operatingScope" jdbcType="VARCHAR"/>
+        <result column="demonstration_clause_name" property="demonstrationClauseName" jdbcType="VARCHAR"/>
+        <result column="operating_region1" property="operatingRegion1" jdbcType="VARCHAR"/>
+        <result column="operating_region2" property="operatingRegion2" jdbcType="VARCHAR"/>
+        <result column="sales_promotion_name" property="salesPromotionName" jdbcType="VARCHAR"/>
+        <result column="product_type" property="productType" jdbcType="VARCHAR"
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+        <result column="status" property="status" jdbcType="VARCHAR"
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+        <result column="created_by" property="createdBy" jdbcType="VARCHAR"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+        <result column="updated_by" property="updatedBy" jdbcType="VARCHAR"/>
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 基础字段列表 -->
+    <sql id="Base_Column_List">
+        id, product_name, report_type, product_nature, year, revision_type,
+        original_product_name, development_method, primary_additional, primary_situation,
+        product_category, operating_region, operating_scope, demonstration_clause_name,
+        operating_region1, operating_region2, sales_promotion_name, product_type, status,
+        created_by, created_at, updated_by, updated_at
+    </sql>
+
+    <!-- 分页查询产品列表（带条件筛选） -->
+    <select id="selectPageWithQuery" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM products
+        <where>
+            <if test="query.fileName != null and query.fileName != ''">
+                AND product_name LIKE CONCAT('%', #{query.fileName}, '%')
+            </if>
+            <if test="query.reportType != null and query.reportType != ''">
+                AND report_type = #{query.reportType}
+            </if>
+            <if test="query.developmentType != null and query.developmentType != ''">
+                AND development_method = #{query.developmentType}
+            </if>
+            <if test="query.productCategory != null and query.productCategory != ''">
+                AND product_category = #{query.productCategory}
+            </if>
+            <if test="query.primaryAdditional != null and query.primaryAdditional != ''">
+                AND primary_additional = #{query.primaryAdditional}
+            </if>
+            <if test="query.revisionType != null and query.revisionType != ''">
+                AND revision_type = #{query.revisionType}
+            </if>
+            <if test="query.operatingRegion != null and query.operatingRegion != ''">
+                AND (operating_region LIKE CONCAT('%', #{query.operatingRegion}, '%')
+                OR operating_region1 LIKE CONCAT('%', #{query.operatingRegion}, '%')
+                OR operating_region2 LIKE CONCAT('%', #{query.operatingRegion}, '%'))
+            </if>
+            <if test="query.year != null and query.year != ''">
+                AND year = #{query.year}
+            </if>
+            <if test="query.productType != null and query.productType != ''">
+                AND product_type = #{query.productType}
+            </if>
+            <if test="query.status != null and query.status != ''">
+                AND status = #{query.status}
+            </if>
+        </where>
+        ORDER BY created_at DESC
+    </select>
+
+</mapper>

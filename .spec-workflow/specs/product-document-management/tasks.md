@@ -43,7 +43,7 @@
 
 #### 任务 2: 产品列表和筛选功能实现
 
-- [ ] 2.1 产品列表后端 API 实现
+- [x] 2.1 产品列表后端 API 实现
   - File: backend/src/main/java/com/insurance/audit/product/controller/ProductController.java
   - 实现 GET /api/products 接口，支持分页和筛选
   - 支持按文件名、报送类型、开发类型、产品类别等筛选
@@ -51,7 +51,7 @@
   - _Leverage: 现有的分页工具类和查询构建器_
   - _Requirements: 2, 4_
 
-- [ ] 2.2 产品列表前端组件实现
+- [x] 2.2 产品列表前端组件实现
   - File: frontend/src/components/ProductListComponent.vue
   - 实现产品列表表格展示和筛选查询模块
   - 支持分页、排序、搜索功能
@@ -59,7 +59,7 @@
   - _Leverage: 现有的表格组件和筛选组件模式_
   - _Requirements: 2, 4_
 
-- [ ] 2.3 产品操作功能实现
+- [x] 2.3 产品操作功能实现
   - File: frontend/src/components/ProductOperationsComponent.vue
   - 实现导入产品、查看检核报告等操作按钮
   - MVP阶段：导入产品完整实现，其他功能使用 mock 数据

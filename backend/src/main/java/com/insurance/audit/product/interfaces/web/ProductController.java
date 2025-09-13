@@ -1,5 +1,13 @@
 package com.insurance.audit.product.interfaces.web;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.insurance.audit.common.dto.ApiResponse;
+import com.insurance.audit.common.dto.PageResponse;
+import com.insurance.audit.product.application.converter.ProductConverter;
+import com.insurance.audit.product.application.service.ProductService;
+import com.insurance.audit.product.domain.entity.Product;
+import com.insurance.audit.product.interfaces.dto.request.ProductQueryRequest;
+import com.insurance.audit.product.interfaces.dto.response.ProductResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,11 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * 产品管理控制器
- * 
+ *
  * @author System
  * @version 1.0.0
  * @since 2024-09-12
@@ -30,11 +39,14 @@ import java.util.Map;
 @Tag(name = "产品管理", description = "产品管理相关API")
 public class ProductController {
 
+    private final ProductService productService;
+    private final ProductConverter productConverter;
+
     // ==================== 产品列表和查询功能 ====================
-    
+
     @GetMapping
     @Operation(summary = "获取产品列表", description = "根据条件分页查询产品列表")
-    public Map<String, Object> getProductList(
+    public ApiResponse<PageResponse<ProductResponse>> getProductList(
             @Parameter(description = "页码", example = "1")
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @Parameter(description = "每页大小", example = "10")
@@ -54,21 +66,52 @@ public class ProductController {
             @Parameter(description = "经营区域")
             @RequestParam(value = "operatingRegion", required = false) String operatingRegion,
             @Parameter(description = "年度")
-            @RequestParam(value = "year", required = false) String year) {
-        
+            @RequestParam(value = "year", required = false) String year,
+            @Parameter(description = "产品类型")
+            @RequestParam(value = "productType", required = false) String productType,
+            @Parameter(description = "产品状态")
+            @RequestParam(value = "status", required = false) String status) {
+
         log.info("Getting product list with filters - page: {}, size: {}, fileName: {}", page, size, fileName);
-        
-        // TODO: 实现实际的产品列表查询逻辑
-        // 目前返回空数据结构以供前端对接
-        Map<String, Object> response = new HashMap<>();
-        response.put("data", java.util.Collections.emptyList());
-        response.put("total", 0);
-        response.put("page", page);
-        response.put("size", size);
-        response.put("timestamp", LocalDateTime.now());
-        response.put("message", "产品管理模块基础结构已创建，等待业务逻辑实现");
-        
-        return response;
+
+        try {
+            // 构建查询请求
+            ProductQueryRequest queryRequest = ProductQueryRequest.builder()
+                    .page(page)
+                    .size(size)
+                    .fileName(fileName)
+                    .reportType(reportType)
+                    .developmentType(developmentType)
+                    .productCategory(productCategory)
+                    .primaryAdditional(primaryAdditional)
+                    .revisionType(revisionType)
+                    .operatingRegion(operatingRegion)
+                    .year(year)
+                    .productType(productType)
+                    .status(status)
+                    .build();
+
+            // 执行查询
+            IPage<Product> productPage = productService.getProductPage(queryRequest);
+
+            // 转换为响应DTO
+            List<ProductResponse> productResponseList = productConverter.toResponseList(productPage.getRecords());
+
+            // 构建分页响应
+            PageResponse<ProductResponse> pageResponse = PageResponse.<ProductResponse>builder()
+                    .records(productResponseList)
+                    .total(productPage.getTotal())
+                    .current((int) productPage.getCurrent())
+                    .size((int) productPage.getSize())
+                    .pages((int) productPage.getPages())
+                    .build();
+
+            return ApiResponse.success(pageResponse, "查询产品列表成功");
+
+        } catch (Exception e) {
+            log.error("查询产品列表失败", e);
+            return ApiResponse.error("查询产品列表失败: " + e.getMessage());
+        }
     }
     
     // ==================== 健康检查功能 ====================
