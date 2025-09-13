@@ -77,8 +77,8 @@ public class ProductQueryRequest {
     /**
      * 年度
      */
-    @Schema(description = "年度")
-    private String year;
+    @Schema(description = "年度", example = "2024")
+    private Integer year;
 
     /**
      * 产品类型
@@ -91,4 +91,16 @@ public class ProductQueryRequest {
      */
     @Schema(description = "产品状态", allowableValues = {"DRAFT", "SUBMITTED", "APPROVED", "REJECTED"})
     private String status;
+
+    /**
+     * 排序字段
+     */
+    @Schema(description = "排序字段", allowableValues = {"fileName", "reportType", "updateTime", "developmentType", "productCategory", "year"})
+    private String sortField;
+
+    /**
+     * 排序方向
+     */
+    @Schema(description = "排序方向", allowableValues = {"ASC", "DESC"})
+    private String sortOrder;
 }

@@ -17,7 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -46,6 +46,7 @@ public class ProductController {
 
     @GetMapping
     @Operation(summary = "获取产品列表", description = "根据条件分页查询产品列表")
+    @PreAuthorize("hasAuthority('product:view')")
     public ApiResponse<PageResponse<ProductResponse>> getProductList(
             @Parameter(description = "页码", example = "1")
             @RequestParam(value = "page", defaultValue = "1") Integer page,
@@ -66,11 +67,15 @@ public class ProductController {
             @Parameter(description = "经营区域")
             @RequestParam(value = "operatingRegion", required = false) String operatingRegion,
             @Parameter(description = "年度")
-            @RequestParam(value = "year", required = false) String year,
+            @RequestParam(value = "year", required = false) Integer year,
             @Parameter(description = "产品类型")
             @RequestParam(value = "productType", required = false) String productType,
             @Parameter(description = "产品状态")
-            @RequestParam(value = "status", required = false) String status) {
+            @RequestParam(value = "status", required = false) String status,
+            @Parameter(description = "排序字段")
+            @RequestParam(value = "sortField", required = false) String sortField,
+            @Parameter(description = "排序方向", allowableValues = {"ASC", "DESC"})
+            @RequestParam(value = "sortOrder", required = false) String sortOrder) {
 
         log.info("Getting product list with filters - page: {}, size: {}, fileName: {}", page, size, fileName);
 
@@ -89,6 +94,8 @@ public class ProductController {
                     .year(year)
                     .productType(productType)
                     .status(status)
+                    .sortField(sortField)
+                    .sortOrder(sortOrder)
                     .build();
 
             // 执行查询
@@ -112,19 +119,5 @@ public class ProductController {
             log.error("查询产品列表失败", e);
             return ApiResponse.error("查询产品列表失败: " + e.getMessage());
         }
-    }
-    
-    // ==================== 健康检查功能 ====================
-    
-    @GetMapping("/health")
-    @Operation(summary = "产品模块健康检查", description = "检查产品管理模块的健康状态")
-    public Map<String, Object> health() {
-        Map<String, Object> health = new HashMap<>();
-        health.put("status", "UP");
-        health.put("module", "product-management");
-        health.put("timestamp", LocalDateTime.now());
-        health.put("message", "产品管理模块已初始化完成");
-        
-        return health;
     }
 }

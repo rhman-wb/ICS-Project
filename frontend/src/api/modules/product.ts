@@ -15,6 +15,8 @@ export interface ProductQueryParams {
   year?: string
   productType?: string
   status?: string
+  sortField?: string
+  sortOrder?: string
 }
 
 export interface ProductInfo {

@@ -12,7 +12,7 @@ Web应用（前后端分离）：前端基于 Vue 3 + Vite + TS，后端提供RE
 
 ### Key Dependencies/Libraries
 - 前端：Vue 3、Pinia、Vue Router、Ant Design Vue、Axios、Vitest/Playwright、Sentry（可选）
-- 后端：Spring Boot、Spring Security、Spring Data JPA、MySQL、Redis、XXL-Job/Quartz（任务调度）、OpenFeign（可选）、MinIO（对象存储，可选）
+- 后端：Spring Boot、Spring Security、MyBatis Plus、MySQL、Redis、XXL-Job/Quartz（任务调度）、OpenFeign（可选）、MinIO（对象存储，可选）
 - AI与检核：
   - 语义检索：向量数据库 Milvus（或 PGVector/Faiss 作为备选）
   - 向量化模型：句向量（bge/ernie/simcse等）本地或云端

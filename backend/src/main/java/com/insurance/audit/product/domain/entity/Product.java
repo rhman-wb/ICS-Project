@@ -162,6 +162,13 @@ public class Product extends BaseEntity {
     private List<Document> documents;
 
     /**
+     * 文档数量
+     */
+    @TableField("document_count")
+    @Schema(description = "文档数量", example = "4")
+    private Integer documentCount;
+
+    /**
      * 产品类型枚举
      */
     public enum ProductType {

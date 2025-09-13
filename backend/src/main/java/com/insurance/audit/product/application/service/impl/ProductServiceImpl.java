@@ -2,6 +2,8 @@ package com.insurance.audit.product.application.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.insurance.audit.common.exception.BusinessException;
+import com.insurance.audit.common.exception.ErrorCode;
 import com.insurance.audit.product.application.service.ProductService;
 import com.insurance.audit.product.domain.entity.Product;
 import com.insurance.audit.product.infrastructure.mapper.ProductMapper;
@@ -71,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
             log.info("创建产品成功, ID: {}", product.getId());
         } else {
             log.error("创建产品失败: {}", product.getProductName());
-            throw new RuntimeException("创建产品失败");
+            throw new BusinessException(ErrorCode.PRODUCT_CREATE_FAILED, "创建产品失败: " + product.getProductName());
         }
 
         return product;
@@ -89,7 +91,7 @@ public class ProductServiceImpl implements ProductService {
             log.info("更新产品成功: {}", product.getId());
         } else {
             log.error("更新产品失败: {}", product.getId());
-            throw new RuntimeException("更新产品失败");
+            throw new BusinessException(ErrorCode.PRODUCT_UPDATE_FAILED, "更新产品失败: " + product.getId());
         }
 
         return product;

@@ -40,7 +40,21 @@ public enum ErrorCode {
     // 权限相关错误码 (1200-1299)
     PERMISSION_DENIED(1201, "权限不足"),
     ROLE_NOT_FOUND(1202, "角色不存在"),
-    PERMISSION_NOT_FOUND(1203, "权限不存在");
+    PERMISSION_NOT_FOUND(1203, "权限不存在"),
+    
+    // 产品管理相关错误码 (2000-2999)
+    PRODUCT_NOT_FOUND(2001, "产品不存在"),
+    PRODUCT_ALREADY_EXISTS(2002, "产品已存在"),
+    PRODUCT_CREATE_FAILED(2003, "创建产品失败"),
+    PRODUCT_UPDATE_FAILED(2004, "更新产品失败"),
+    PRODUCT_DELETE_FAILED(2005, "删除产品失败"),
+    PRODUCT_QUERY_FAILED(2006, "查询产品失败"),
+    
+    // 文档管理相关错误码 (2100-2199)  
+    DOCUMENT_NOT_FOUND(2101, "文档不存在"),
+    DOCUMENT_UPLOAD_FAILED(2102, "文档上传失败"),
+    DOCUMENT_PARSE_FAILED(2103, "文档解析失败"),
+    DOCUMENT_VALIDATION_FAILED(2104, "文档校验失败");
     
     private final Integer code;
     private final String message;

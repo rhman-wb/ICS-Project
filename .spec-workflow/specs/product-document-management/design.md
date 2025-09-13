@@ -596,7 +596,7 @@ const routes = [
 #### 产品管理API
 ```typescript
 // 获取产品列表
-GET /api/products
+GET /api/v1/products
 Query Parameters:
 - page: number
 - size: number
@@ -613,14 +613,14 @@ Response: {
 }
 
 // 创建产品
-POST /api/products
+POST /api/v1/products
 Body: {
   productInfo: ProductInfo;
   documents: DocumentInfo[];
 }
 
 // 获取产品详情
-GET /api/products/:id
+GET /api/v1/products/:id
 Response: {
   product: Product;
   documents: Document[];
@@ -628,17 +628,17 @@ Response: {
 }
 
 // 更新产品
-PUT /api/products/:id
+PUT /api/v1/products/:id
 Body: {
   productInfo: ProductInfo;
   documents?: DocumentInfo[];
 }
 
 // 删除产品
-DELETE /api/products/:id
+DELETE /api/v1/products/:id
 
 // 批量操作
-POST /api/products/batch
+POST /api/v1/products/batch
 Body: {
   action: 'delete' | 'audit' | 'export';
   productIds: string[];
@@ -648,7 +648,7 @@ Body: {
 #### 文档管理API
 ```typescript
 // 上传文档
-POST /api/documents/upload
+POST /api/v1/documents/upload
 Body: FormData (multipart/form-data)
 - files: File[]
 - documentType: string
@@ -659,21 +659,21 @@ Response: {
 }
 
 // 获取文档内容
-GET /api/documents/:id/content
+GET /api/v1/documents/:id/content
 Response: {
   content: string;
   chapters: Chapter[];
 }
 
 // 智能审核
-POST /api/documents/:id/audit
+POST /api/v1/documents/:id/audit
 Response: {
   auditResults: AuditResult[];
   status: 'completed' | 'processing' | 'failed';
 }
 
 // 导出审核报告
-GET /api/documents/:id/audit-report
+GET /api/v1/documents/:id/audit-report
 Response: File (PDF/Excel)
 ```
 

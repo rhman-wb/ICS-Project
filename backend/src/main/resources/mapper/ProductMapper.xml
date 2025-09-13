@@ -25,6 +25,7 @@
                 typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
         <result column="status" property="status" jdbcType="VARCHAR"
                 typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+        <result column="document_count" property="documentCount" jdbcType="INTEGER"/>
         <result column="created_by" property="createdBy" jdbcType="VARCHAR"/>
         <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
         <result column="updated_by" property="updatedBy" jdbcType="VARCHAR"/>
@@ -40,46 +41,67 @@
         created_by, created_at, updated_by, updated_at
     </sql>
 
-    <!-- 分页查询产品列表（带条件筛选） -->
+    <!-- 分页查询产品列表（带条件筛选和文档数量统计） -->
     <select id="selectPageWithQuery" resultMap="BaseResultMap">
         SELECT
-        <include refid="Base_Column_List"/>
-        FROM products
+        <include refid="Base_Column_List"/>,
+        (SELECT COUNT(*) FROM documents d WHERE d.product_id = p.id) as document_count
+        FROM products p
         <where>
             <if test="query.fileName != null and query.fileName != ''">
-                AND product_name LIKE CONCAT('%', #{query.fileName}, '%')
+                AND p.product_name LIKE CONCAT('%', #{query.fileName}, '%')
             </if>
             <if test="query.reportType != null and query.reportType != ''">
-                AND report_type = #{query.reportType}
+                AND p.report_type = #{query.reportType}
             </if>
             <if test="query.developmentType != null and query.developmentType != ''">
-                AND development_method = #{query.developmentType}
+                AND p.development_method = #{query.developmentType}
             </if>
             <if test="query.productCategory != null and query.productCategory != ''">
-                AND product_category = #{query.productCategory}
+                AND p.product_category = #{query.productCategory}
             </if>
             <if test="query.primaryAdditional != null and query.primaryAdditional != ''">
-                AND primary_additional = #{query.primaryAdditional}
+                AND p.primary_additional = #{query.primaryAdditional}
             </if>
             <if test="query.revisionType != null and query.revisionType != ''">
-                AND revision_type = #{query.revisionType}
+                AND p.revision_type = #{query.revisionType}
             </if>
             <if test="query.operatingRegion != null and query.operatingRegion != ''">
-                AND (operating_region LIKE CONCAT('%', #{query.operatingRegion}, '%')
-                OR operating_region1 LIKE CONCAT('%', #{query.operatingRegion}, '%')
-                OR operating_region2 LIKE CONCAT('%', #{query.operatingRegion}, '%'))
+                AND (p.operating_region LIKE CONCAT('%', #{query.operatingRegion}, '%')
+                OR p.operating_region1 LIKE CONCAT('%', #{query.operatingRegion}, '%')
+                OR p.operating_region2 LIKE CONCAT('%', #{query.operatingRegion}, '%'))
             </if>
             <if test="query.year != null and query.year != ''">
-                AND year = #{query.year}
+                AND p.year = #{query.year}
             </if>
             <if test="query.productType != null and query.productType != ''">
-                AND product_type = #{query.productType}
+                AND p.product_type = #{query.productType}
             </if>
             <if test="query.status != null and query.status != ''">
-                AND status = #{query.status}
+                AND p.status = #{query.status}
             </if>
         </where>
-        ORDER BY created_at DESC
+        <choose>
+            <when test="query.sortField != null and query.sortField != '' and query.sortOrder != null and query.sortOrder != ''">
+                ORDER BY
+                <choose>
+                    <when test="query.sortField == 'fileName'">p.product_name</when>
+                    <when test="query.sortField == 'reportType'">p.report_type</when>
+                    <when test="query.sortField == 'updateTime'">p.updated_at</when>
+                    <when test="query.sortField == 'developmentType'">p.development_method</when>
+                    <when test="query.sortField == 'productCategory'">p.product_category</when>
+                    <when test="query.sortField == 'year'">p.year</when>
+                    <otherwise>p.created_at</otherwise>
+                </choose>
+                <choose>
+                    <when test="query.sortOrder == 'ASC'">ASC</when>
+                    <otherwise>DESC</otherwise>
+                </choose>
+            </when>
+            <otherwise>
+                ORDER BY p.created_at DESC
+            </otherwise>
+        </choose>
     </select>
 
 </mapper>
