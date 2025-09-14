@@ -4,8 +4,10 @@ import com.insurance.audit.product.domain.entity.Document;
 import com.insurance.audit.product.interfaces.dto.response.DocumentResponse;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -17,6 +19,72 @@ import java.util.stream.Collectors;
  */
 @Component
 public class DocumentConverter {
+
+    /**
+     * 将DocumentResponse转换为Document实体用于持久化
+     *
+     * @param response DocumentResponse对象
+     * @param productId 产品ID
+     * @param documentType 文档类型
+     * @return Document实体
+     */
+    public Document toEntity(DocumentResponse response, String productId, String documentType) {
+        if (response == null) {
+            return null;
+        }
+
+        Document document = new Document();
+        document.setId(UUID.randomUUID().toString());
+        document.setFileName(response.getFileName());
+        document.setFilePath(response.getFilePath());
+        document.setFileSize(response.getFileSize());
+        document.setFileType(response.getFileType());
+
+        // 转换文档类型
+        if (documentType != null) {
+            try {
+                document.setDocumentType(Document.DocumentType.valueOf(documentType.toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                // 如果转换失败，设为默认值
+                document.setDocumentType(Document.DocumentType.REGISTRATION);
+            }
+        }
+
+        document.setProductId(productId);
+
+        // 转换上传状态
+        if (response.getUploadStatus() != null) {
+            try {
+                document.setUploadStatus(Document.UploadStatus.valueOf(response.getUploadStatus()));
+            } catch (IllegalArgumentException e) {
+                document.setUploadStatus(Document.UploadStatus.UPLOADED);
+            }
+        } else {
+            document.setUploadStatus(Document.UploadStatus.UPLOADED);
+        }
+
+        // 转换审核状态
+        if (response.getAuditStatus() != null) {
+            try {
+                document.setAuditStatus(Document.AuditStatus.valueOf(response.getAuditStatus()));
+            } catch (IllegalArgumentException e) {
+                document.setAuditStatus(Document.AuditStatus.PENDING);
+            }
+        } else {
+            document.setAuditStatus(Document.AuditStatus.PENDING);
+        }
+
+        // 设置时间戳
+        LocalDateTime now = LocalDateTime.now();
+        document.setCreatedTime(now);
+        document.setUpdatedTime(now);
+
+        // 设置默认值
+        document.setDeleted(false);
+        document.setVersion(1);
+
+        return document;
+    }
 
     /**
      * 将实体转换为响应DTO

@@ -61,6 +61,19 @@
         AND deleted = 0
     </select>
 
+    <!-- 插入文档记录 -->
+    <insert id="insert" parameterType="com.insurance.audit.product.domain.entity.Document">
+        INSERT INTO documents (
+            id, file_name, file_path, file_size, file_type, document_type, product_id,
+            upload_status, audit_status, created_time, updated_time, created_by, updated_by,
+            deleted, version
+        ) VALUES (
+            #{id}, #{fileName}, #{filePath}, #{fileSize}, #{fileType}, #{documentType},
+            #{productId}, #{uploadStatus}, #{auditStatus}, #{createdTime}, #{updatedTime},
+            #{createdBy}, #{updatedBy}, #{deleted}, #{version}
+        )
+    </insert>
+
     <!-- 根据产品ID和上传状态查询文档列表 -->
     <select id="selectByProductIdAndStatus" resultMap="BaseResultMap">
         SELECT

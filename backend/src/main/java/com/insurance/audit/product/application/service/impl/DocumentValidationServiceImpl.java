@@ -50,9 +50,9 @@ public class DocumentValidationServiceImpl implements DocumentValidationService 
     private static final Set<String> SUPPORTED_FILE_TYPES = Set.of("DOCX", "PDF", "XLS", "XLSX");
 
     /**
-     * 最大文件大小 (20MB)
+     * 最大文件大小 (50MB)
      */
-    private static final long MAX_FILE_SIZE = 20 * 1024 * 1024;
+    private static final long MAX_FILE_SIZE = 50 * 1024 * 1024;
 
     @Override
     public DocumentValidationResult validateProductDocuments(String productId) {
@@ -314,10 +314,21 @@ public class DocumentValidationServiceImpl implements DocumentValidationService 
         int totalDocuments = documents.size();
         int requiredDocuments = REQUIRED_DOCUMENT_TYPES.size();
 
-        long uploadedDocuments = documents.stream()
+        // 按文档类型去重统计已上传的文档数量
+        Set<Document.DocumentType> uploadedDocumentTypes = documents.stream()
             .filter(doc -> doc.getUploadStatus() == Document.UploadStatus.UPLOADED
                         || doc.getUploadStatus() == Document.UploadStatus.PROCESSED)
-            .count();
+            .map(Document::getDocumentType)
+            .collect(Collectors.toSet());
+
+        int uploadedDocuments = uploadedDocumentTypes.size();
+
+        // 计算已上传的必需文档类型数量
+        Set<Document.DocumentType> uploadedRequiredTypes = uploadedDocumentTypes.stream()
+            .filter(REQUIRED_DOCUMENT_TYPES::contains)
+            .collect(Collectors.toSet());
+
+        int uploadedRequiredDocuments = uploadedRequiredTypes.size();
 
         // 计算通过校验的文档数（无错误的文档）
         Set<String> errorDocumentIds = errors.stream()
@@ -329,14 +340,15 @@ public class DocumentValidationServiceImpl implements DocumentValidationService 
             .filter(doc -> !errorDocumentIds.contains(doc.getId()))
             .count();
 
+        // 按必需文档类型计算完整性：已上传必需类型数 / 必需类型总数
         double completenessPercentage = requiredDocuments > 0
-            ? (double) uploadedDocuments / requiredDocuments * 100.0
+            ? (double) uploadedRequiredDocuments / requiredDocuments * 100.0
             : 100.0;
 
         return DocumentValidationResult.ValidationSummary.builder()
             .totalDocuments(totalDocuments)
             .requiredDocuments(requiredDocuments)
-            .uploadedDocuments((int) uploadedDocuments)
+            .uploadedDocuments(uploadedDocuments)
             .validDocuments((int) validDocuments)
             .totalErrors(errors.size())
             .totalWarnings(warnings.size())

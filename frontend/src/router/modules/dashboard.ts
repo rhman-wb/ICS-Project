@@ -35,6 +35,16 @@ const dashboardRoutes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/product-management/success',
+    name: 'ProductSubmissionSuccess',
+    component: () => import('@/views/ProductSubmissionSuccess.vue'),
+    meta: {
+      title: '提交成功',
+      requiresAuth: true,
+      hideInMenu: true // 不显示在菜单中
+    }
+  },
+  {
     path: '/product/import',
     name: 'ProductImport',
     component: () => import('@/views/product/Import.vue'),

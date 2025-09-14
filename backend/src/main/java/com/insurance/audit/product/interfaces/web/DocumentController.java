@@ -1,9 +1,12 @@
 package com.insurance.audit.product.interfaces.web;
 
 import com.insurance.audit.common.dto.ApiResponse;
+import com.insurance.audit.product.application.converter.DocumentConverter;
 import com.insurance.audit.product.application.service.DocumentParsingService;
 import com.insurance.audit.product.application.service.DocumentValidationService;
 import com.insurance.audit.product.application.service.FileStorageService;
+import com.insurance.audit.product.domain.entity.Document;
+import com.insurance.audit.product.infrastructure.mapper.DocumentMapper;
 import com.insurance.audit.product.interfaces.dto.response.DocumentParseResult;
 import com.insurance.audit.product.interfaces.dto.response.DocumentResponse;
 import com.insurance.audit.product.interfaces.dto.response.DocumentValidationResult;
@@ -34,9 +37,11 @@ public class DocumentController {
     private final FileStorageService fileStorageService;
     private final DocumentParsingService documentParsingService;
     private final DocumentValidationService documentValidationService;
+    private final DocumentConverter documentConverter;
+    private final DocumentMapper documentMapper;
 
     private static final List<String> ALLOWED_DOCUMENT_TYPES = Arrays.asList(
-            "TERMS", "FEASIBILITY_REPORT", "ACTUARIAL_REPORT", "RATE_TABLE", "REGISTRATION", "REGISTRATION_FORM"
+            "TERMS", "FEASIBILITY_REPORT", "ACTUARIAL_REPORT", "RATE_TABLE", "REGISTRATION"
     );
 
     private static final List<String> ALLOWED_FILE_TYPES = Arrays.asList(
@@ -105,6 +110,15 @@ public class DocumentController {
                     .auditStatusDescription("待审核")
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
+                    .build();
+
+            // 将文档信息持久化到数据库
+            Document document = documentConverter.toEntity(response, safeProductId, normalizedDocType);
+            documentMapper.insert(document);
+
+            // 返回带有生成ID的响应
+            response = response.toBuilder()
+                    .id(document.getId())
                     .build();
 
             return ApiResponse.success(response, "文档上传成功");
@@ -177,6 +191,7 @@ public class DocumentController {
                 String subPath = "documents/" + safeProductId;
                 String filePath = fileStorageService.storeFile(file, subPath);
                 String fileTypeLabel = guessFileType(file);
+
                 DocumentResponse resp = DocumentResponse.builder()
                         .fileName(file.getOriginalFilename())
                         .filePath(filePath)
@@ -191,6 +206,16 @@ public class DocumentController {
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .build();
+
+                // 将文档信息持久化到数据库
+                Document document = documentConverter.toEntity(resp, safeProductId, null);
+                documentMapper.insert(document);
+
+                // 更新响应中的ID
+                resp = resp.toBuilder()
+                        .id(document.getId())
+                        .build();
+
                 results.add(resp);
             }
             return ApiResponse.success(results, "批量上传成功");
@@ -205,7 +230,7 @@ public class DocumentController {
     public ApiResponse<SupportedFormats> getSupportedFormats() {
         List<String> parseFormats = Arrays.asList(documentParsingService.getSupportedFormats());
         SupportedFormats formats = SupportedFormats.builder()
-                .documentTypes(Arrays.asList("TERMS", "FEASIBILITY_REPORT", "ACTUARIAL_REPORT", "RATE_TABLE", "REGISTRATION_FORM"))
+                .documentTypes(Arrays.asList("TERMS", "FEASIBILITY_REPORT", "ACTUARIAL_REPORT", "RATE_TABLE", "REGISTRATION"))
                 .fileTypes(ALLOWED_FILE_TYPES)
                 .allowedUploadTypes(ALLOWED_EXTENSIONS)
                 .maxFileSize(MAX_FILE_SIZE)
@@ -374,8 +399,9 @@ public class DocumentController {
     private String normalizeDocumentType(String docType) {
         if (docType == null) return null;
         String upper = docType.trim().toUpperCase();
+        // 兼容旧版本的REGISTRATION_FORM，统一映射为REGISTRATION
         if ("REGISTRATION_FORM".equals(upper) || "REGISTRATION".equals(upper)) {
-            return "REGISTRATION_FORM";
+            return "REGISTRATION";
         }
         return upper;
     }

@@ -189,6 +189,7 @@ import {
 import ProductFormTemplate from './ProductFormTemplate.vue'
 import DocumentUploadWithValidation from './DocumentUploadWithValidation.vue'
 import ProductFormReset from './ProductFormReset.vue'
+import { createProduct, submitProduct, type ProductCreateRequest } from '@/api/product'
 
 interface Props {
   productId?: string
@@ -269,6 +270,7 @@ const formData = reactive<FormData>({
 const isFormValid = ref(false)
 const validationResult = ref<any>(null)
 const tempProductId = ref(`temp_${Date.now()}`)
+const actualProductId = ref<string | null>(null) // 真实产品ID
 
 // 计算属性
 const canProceedToNext = () => {
@@ -322,10 +324,41 @@ const saveDraft = async () => {
   saving.value = true
 
   try {
-    // 模拟保存API调用
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // 如果还没有实际产品ID，先创建产品
+    if (!actualProductId.value) {
+      const productData: ProductCreateRequest = {
+        productName: formData.productName,
+        productType: formData.productType,
+        reportType: formData.reportType,
+        productNature: formData.productNature,
+        year: formData.year,
+        revisionType: formData.revisionType || undefined,
+        originalProductName: formData.originalProductName || undefined,
+        developmentMethod: formData.developmentMethod || undefined,
+        primaryAdditional: formData.primaryAdditional || undefined,
+        primarySituation: formData.primarySituation || undefined,
+        productCategory: formData.productCategory || undefined,
+        operatingRegion: formData.operatingRegion || undefined,
+        operatingScope: formData.operatingScope || undefined,
+        demonstrationClauseName: formData.demonstrationClauseName || undefined,
+        operatingRegion1: formData.operatingRegion1 || undefined,
+        operatingRegion2: formData.operatingRegion2 || undefined,
+        salesPromotionName: formData.salesPromotionName || undefined
+      }
 
-    message.success('草稿保存成功')
+      const response = await createProduct(productData)
+      if (response.success && response.data) {
+        actualProductId.value = response.data.id
+        formData.productId = response.data.id
+        message.success('产品创建成功，已保存为草稿')
+      } else {
+        throw new Error(response.message || '产品创建失败')
+      }
+    } else {
+      // 如果已有产品ID，可以调用更新接口（这里暂时跳过）
+      message.success('草稿保存成功')
+    }
+
     emit('formSave', { ...formData })
 
   } catch (error: any) {
@@ -350,14 +383,31 @@ const submitForm = async () => {
   submitting.value = true
 
   try {
-    // 模拟提交API调用
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    // 确保先有产品ID
+    let productId = actualProductId.value
 
-    message.success('产品提交成功')
-    emit('formSubmit', { ...formData })
+    if (!productId) {
+      // 先创建产品
+      await saveDraft()
+      productId = actualProductId.value
 
-    // 跳转到成功页面
-    router.push(`/product-management/success?productId=${formData.productId || tempProductId.value}`)
+      if (!productId) {
+        throw new Error('产品创建失败')
+      }
+    }
+
+    // 提交产品进行审核
+    const response = await submitProduct(productId)
+
+    if (response.success) {
+      message.success('产品提交成功')
+      emit('formSubmit', { ...formData })
+
+      // 跳转到成功页面，使用实际产品ID
+      router.push(`/product-management/success?productId=${productId}`)
+    } else {
+      throw new Error(response.message || '产品提交失败')
+    }
 
   } catch (error: any) {
     console.error('产品提交失败:', error)
@@ -379,6 +429,7 @@ const resetFormData = () => {
   currentStep.value = 0
   isFormValid.value = false
   validationResult.value = null
+  actualProductId.value = null // 重置实际产品ID
 }
 
 // 重置事件处理
