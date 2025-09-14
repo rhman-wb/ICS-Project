@@ -24,57 +24,6 @@ const dashboardRoutes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/product-management',
-    name: 'ProductManagement',
-    component: () => import('@/views/ProductManagementView.vue'),
-    meta: {
-      title: '产品管理',
-      requiresAuth: true,
-      icon: 'project',
-      keepAlive: true
-    }
-  },
-  {
-    path: '/product-management/success',
-    name: 'ProductSubmissionSuccess',
-    component: () => import('@/views/ProductSubmissionSuccess.vue'),
-    meta: {
-      title: '提交成功',
-      requiresAuth: true,
-      hideInMenu: true // 不显示在菜单中
-    }
-  },
-  {
-    path: '/product/import',
-    name: 'ProductImport',
-    component: () => import('@/views/product/Import.vue'),
-    meta: {
-      title: '导入产品',
-      requiresAuth: true,
-      icon: 'upload'
-    }
-  },
-  {
-    path: '/product/import/batch',
-    name: 'ProductBatchImport',
-    component: () => import('@/views/product/ImportBatch.vue'),
-    meta: {
-      title: '批量导入',
-      requiresAuth: true,
-      icon: 'batch-upload'
-    }
-  },
-  {
-    path: '/product/detail/:id',
-    name: 'ProductDetail',
-    component: () => import('@/views/product/Detail.vue'),
-    meta: {
-      title: '产品详情',
-      requiresAuth: true,
-      icon: 'detail'
-    }
-  },
-  {
     path: '/rules/create',
     name: 'RulesCreate',
     component: () => import('@/views/rules/Create.vue'),

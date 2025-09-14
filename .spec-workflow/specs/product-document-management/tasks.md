@@ -171,7 +171,7 @@
 
 #### 任务 6: 产品详情和附件管理
 
-- [ ] 6.1 产品详情页面实现
+- [x] 6.1 产品详情页面实现
   - File: frontend/src/views/ProductDetailView.vue
   - 实现要件详情页面，显示产品完整名称和基本信息
   - 包含创建人、创建时间、文件描述等信息展示
@@ -179,7 +179,7 @@
   - _Leverage: 现有的详情页面布局和信息展示组件_
   - _Requirements: 12_
 
-- [ ] 6.2 附件文档管理功能
+- [x] 6.2 附件文档管理功能
   - File: frontend/src/components/AttachmentManagement.vue
   - 实现附件列表表格展示和操作功能
   - 支持文档预览、下载、重新上传等操作
@@ -187,7 +187,7 @@
   - _Leverage: 现有的表格组件和文件操作组件_
   - _Requirements: 13_
 
-- [ ] 6.3 批量文档操作功能
+- [x] 6.3 批量文档操作功能
   - File: frontend/src/components/BatchDocumentOperations.vue
   - 实现批量选择、批量下载等操作功能
   - 支持原文档下载和检核后文档下载
@@ -197,7 +197,7 @@
 
 #### 任务 7: 导航和路由集成
 
-- [ ] 7.1 页面导航功能实现
+- [x] 7.1 页面导航功能实现
   - File: frontend/src/router/product-routes.ts
   - 实现从工作台页面到产品管理功能的路由配置
   - 包含产品管理主界面、新增产品、产品详情等路由
@@ -205,7 +205,7 @@
   - _Leverage: 现有的路由配置和导航组件_
   - _Requirements: 1_
 
-- [ ] 7.2 返回按钮和面包屑导航
+- [x] 7.2 返回按钮和面包屑导航
   - File: frontend/src/components/ProductNavigation.vue
   - 实现返回工作台的箭头按钮和页面导航
   - 显示当前页面层级关系的面包屑导航
