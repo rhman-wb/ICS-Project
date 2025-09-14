@@ -6,6 +6,7 @@ import com.insurance.audit.common.dto.PageResponse;
 import com.insurance.audit.product.application.converter.ProductConverter;
 import com.insurance.audit.product.application.service.ProductService;
 import com.insurance.audit.product.domain.entity.Product;
+import com.insurance.audit.product.interfaces.dto.request.CreateProductRequest;
 import com.insurance.audit.product.interfaces.dto.request.ProductQueryRequest;
 import com.insurance.audit.product.interfaces.dto.response.ProductResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,9 +16,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.access.prepost.PreAuthorize;
+
+import jakarta.validation.Valid;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -74,7 +80,7 @@ public class ProductController {
             @RequestParam(value = "status", required = false) String status,
             @Parameter(description = "排序字段")
             @RequestParam(value = "sortField", required = false) String sortField,
-            @Parameter(description = "排序方向", allowableValues = {"ASC", "DESC"})
+            @Parameter(description = "排序方向 (ASC, DESC)")
             @RequestParam(value = "sortOrder", required = false) String sortOrder) {
 
         log.info("Getting product list with filters - page: {}, size: {}, fileName: {}", page, size, fileName);
@@ -118,6 +124,34 @@ public class ProductController {
         } catch (Exception e) {
             log.error("查询产品列表失败", e);
             return ApiResponse.error("查询产品列表失败: " + e.getMessage());
+        }
+    }
+
+    // ==================== 产品创建功能 ====================
+
+    @PostMapping
+    @Operation(summary = "创建产品", description = "创建新的产品记录")
+    @PreAuthorize("hasAuthority('product:create')")
+    public ApiResponse<ProductResponse> createProduct(
+            @Valid @RequestBody CreateProductRequest request) {
+
+        log.info("Creating product with name: {}, type: {}", request.getProductName(), request.getProductType());
+
+        try {
+            // 转换请求为实体
+            Product product = productConverter.toEntity(request);
+
+            // 创建产品
+            Product createdProduct = productService.createProduct(product);
+
+            // 转换为响应DTO
+            ProductResponse response = productConverter.toResponse(createdProduct);
+
+            return ApiResponse.success(response, "产品创建成功");
+
+        } catch (Exception e) {
+            log.error("产品创建失败", e);
+            return ApiResponse.error("产品创建失败: " + e.getMessage());
         }
     }
 }
