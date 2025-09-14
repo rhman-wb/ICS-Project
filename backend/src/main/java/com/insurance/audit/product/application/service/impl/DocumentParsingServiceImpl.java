@@ -137,13 +137,13 @@ public class DocumentParsingServiceImpl implements DocumentParsingService {
      * 创建Workbook对象
      */
     private Workbook createWorkbook(MultipartFile file) throws IOException {
-        InputStream inputStream = file.getInputStream();
         String fileName = file.getOriginalFilename();
-
-        if (fileName != null && fileName.toLowerCase().endsWith(".xlsx")) {
-            return new XSSFWorkbook(inputStream);
-        } else {
-            return new HSSFWorkbook(inputStream);
+        try (InputStream inputStream = file.getInputStream()) {
+            if (fileName != null && fileName.toLowerCase().endsWith(".xlsx")) {
+                return new XSSFWorkbook(inputStream);
+            } else {
+                return new HSSFWorkbook(inputStream);
+            }
         }
     }
 

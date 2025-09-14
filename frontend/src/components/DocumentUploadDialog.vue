@@ -229,6 +229,7 @@ import {
   UploadOutlined
 } from '@ant-design/icons-vue'
 import type { UploadProps, UploadFile, UploadChangeParam } from 'ant-design-vue'
+import { documentsApi } from '@/api/modules/documents'
 
 interface Props {
   visible?: boolean
@@ -450,7 +451,7 @@ const startUpload = async () => {
     // 逐个上传文件
     for (const file of filesToUpload) {
       if (file.originFileObj) {
-        await uploadSingleFile(file)
+        await uploadSingleFileReal(file)
       }
     }
 
@@ -575,6 +576,35 @@ defineExpose({
   getFileList: () => fileList.value,
   startUpload
 })
+
+// 真实调用后端上传的实现
+const uploadSingleFileReal = async (file: UploadFile): Promise<void> => {
+  if (!file.originFileObj) throw new Error('文件无效')
+  if (!props.productId) throw new Error('缺少产品ID')
+
+  file.status = 'uploading'
+  file.percent = 0
+
+  const onUploadProgress = (evt: ProgressEvent) => {
+    if (evt.total) {
+      const percent = Math.round((evt.loaded * 100) / evt.total)
+      file.percent = Math.min(99, percent)
+    }
+  }
+
+  const resp = await documentsApi.upload(
+    file.originFileObj as File,
+    props.documentType || 'TERMS',
+    props.productId,
+    undefined,
+    onUploadProgress
+  )
+
+  file.status = 'done'
+  file.percent = 100
+  // @ts-ignore
+  file.response = resp.data?.data
+}
 </script>
 
 <style scoped>

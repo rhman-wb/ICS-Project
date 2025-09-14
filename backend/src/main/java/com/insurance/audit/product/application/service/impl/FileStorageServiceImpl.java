@@ -16,18 +16,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
-/**
- * 文件存储服务实现类
- *
- * @author System
- * @version 1.0.0
- * @since 2024-09-14
- */
 @Slf4j
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
 
-    @Value("${app.file.upload-dir:uploads}")
+    @Value("${app.file.upload-dir:${app.file.upload-path:uploads}}")
     private String uploadDir;
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd");
@@ -38,32 +31,42 @@ public class FileStorageServiceImpl implements FileStorageService {
             throw new IllegalArgumentException("文件不能为空");
         }
 
-        // 创建日期子目录
-        String dateStr = LocalDateTime.now().format(DATE_FORMAT);
-        String finalSubPath = StringUtils.isNotBlank(subPath) ? subPath + "/" + dateStr : dateStr;
+        // Normalize and validate sub-path to prevent traversal
+        String safeSubPath = StringUtils.defaultString(subPath, "").replace("\\", "/");
+        // Allow only letters, digits, underscore, dash and slash
+        safeSubPath = safeSubPath.replaceAll("[^A-Za-z0-9_\\-/]", "");
+        if (safeSubPath.contains("../") || safeSubPath.contains("..\\") || "..".equals(safeSubPath)) {
+            throw new IllegalArgumentException("非法的子路径");
+        }
 
-        // 创建目录
-        Path uploadPath = Paths.get(uploadDir, finalSubPath);
+        // Date-based directory
+        String dateStr = LocalDateTime.now().format(DATE_FORMAT);
+        String finalSubPath = StringUtils.isNotBlank(safeSubPath) ? safeSubPath + "/" + dateStr : dateStr;
+
+        Path base = Paths.get(uploadDir).toAbsolutePath().normalize();
+        Path uploadPath = base.resolve(finalSubPath).normalize();
+        if (!uploadPath.startsWith(base)) {
+            throw new SecurityException("目标路径越界");
+        }
+
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
 
-        // 生成唯一文件名
         String originalFilename = file.getOriginalFilename();
         String extension = "";
         if (originalFilename != null && originalFilename.contains(".")) {
-            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            extension = originalFilename.substring(originalFilename.lastIndexOf('.'));
         }
         String fileName = UUID.randomUUID().toString() + extension;
 
-        // 保存文件
         Path targetPath = uploadPath.resolve(fileName);
-        Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+        try (java.io.InputStream in = file.getInputStream()) {
+            Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        }
 
-        // 返回相对路径
         String relativePath = finalSubPath + "/" + fileName;
         log.info("文件保存成功: {}", relativePath);
-
         return relativePath;
     }
 
@@ -72,9 +75,12 @@ public class FileStorageServiceImpl implements FileStorageService {
         if (StringUtils.isBlank(filePath)) {
             return false;
         }
-
         try {
-            Path path = Paths.get(uploadDir, filePath);
+            Path base = Paths.get(uploadDir).toAbsolutePath().normalize();
+            Path path = base.resolve(filePath).normalize();
+            if (!path.startsWith(base)) {
+                throw new SecurityException("文件路径越界");
+            }
             boolean deleted = Files.deleteIfExists(path);
             if (deleted) {
                 log.info("文件删除成功: {}", filePath);
@@ -91,6 +97,12 @@ public class FileStorageServiceImpl implements FileStorageService {
         if (StringUtils.isBlank(filePath)) {
             return null;
         }
-        return Paths.get(uploadDir, filePath).toString();
+        Path base = Paths.get(uploadDir).toAbsolutePath().normalize();
+        Path full = base.resolve(filePath).normalize();
+        if (!full.startsWith(base)) {
+            throw new SecurityException("文件路径越界");
+        }
+        return full.toString();
     }
 }
+
