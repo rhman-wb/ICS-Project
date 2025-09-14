@@ -103,7 +103,7 @@
 
 #### 任务 4: 文档上传和管理功能
 
-- [ ] 4.1 产品信息登记表上传与解析
+- [x] 4.1 产品信息登记表上传与解析
   - File: backend/src/main/java/com/insurance/audit/product/service/DocumentParsingService.java
   - 实现 Excel 格式产品信息登记表的解析功能
   - 自动识别产品名称、险种类别、经营区域等信息
@@ -111,7 +111,7 @@
   - _Leverage: 现有的文件处理工具类和 Excel 解析库_
   - _Requirements: 7_
 
-- [ ] 4.2 文档上传后端 API 实现
+- [x] 4.2 文档上传后端 API 实现
   - File: backend/src/main/java/com/insurance/audit/product/controller/DocumentController.java
   - 实现 POST /api/documents/upload 文档上传接口
   - 支持条款、可行性报告、精算报告、费率表等要件上传
@@ -119,7 +119,7 @@
   - _Leverage: 现有的文件上传和存储服务_
   - _Requirements: 8_
 
-- [ ] 4.3 基础文档上传组件实现
+- [x] 4.3 基础文档上传组件实现
   - File: frontend/src/components/DocumentUploadComponent.vue
   - 实现要件文档路径配置和文件选择功能
   - 支持四种要件类型的文件上传界面
@@ -127,7 +127,7 @@
   - _Leverage: 现有的文件上传组件和路径输入组件_
   - _Requirements: 8_
 
-- [ ] 4.4 文档上传对话框功能实现
+- [x] 4.4 文档上传对话框功能实现
   - File: frontend/src/components/DocumentUploadDialog.vue
   - 实现模态对话框形式的文档上传功能
   - 支持拖拽上传、多文件选择、上传进度显示

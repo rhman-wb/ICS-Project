@@ -34,6 +34,7 @@
         <!-- 工具库版本 -->
         <lombok.version>1.18.30</lombok.version>
         <springdoc.version>2.3.0</springdoc.version>
+        <poi.version>5.2.5</poi.version>
         
         <!-- 代码质量工具版本 -->
         <jacoco.version>0.8.11</jacoco.version>
@@ -209,6 +210,23 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+        </dependency>
+
+        <!-- Apache POI for Excel processing -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-scratchpad</artifactId>
+            <version>${poi.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
