@@ -76,8 +76,8 @@ public class DocumentConverter {
 
         // 设置时间戳
         LocalDateTime now = LocalDateTime.now();
-        document.setCreatedTime(now);
-        document.setUpdatedTime(now);
+        document.setCreatedAt(now);
+        document.setUpdatedAt(now);
 
         // 设置默认值
         document.setDeleted(false);

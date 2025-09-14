@@ -19,6 +19,13 @@ import com.insurance.audit.user.interfaces.dto.request.UserQueryRequest;
 import com.insurance.audit.user.interfaces.dto.response.LoginResponse;
 import com.insurance.audit.user.interfaces.dto.response.UserProfileResponse;
 import com.insurance.audit.user.interfaces.dto.response.UserResponse;
+import com.insurance.audit.product.domain.entity.Product;
+import com.insurance.audit.product.domain.entity.Document;
+import com.insurance.audit.product.interfaces.dto.request.CreateProductRequest;
+import com.insurance.audit.product.interfaces.dto.request.UpdateProductRequest;
+import com.insurance.audit.product.interfaces.dto.request.ProductQueryRequest;
+import com.insurance.audit.product.interfaces.dto.response.ProductResponse;
+import com.insurance.audit.product.interfaces.dto.response.DocumentValidationResult;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -60,6 +67,23 @@ public class TestDataFactory {
     
     public static final String DEFAULT_JWT_TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0dXNlciIsImlhdCI6MTcwNDY3MjAwMCwiZXhwIjoxNzA0NzU4NDAwfQ.test";
     public static final String DEFAULT_REFRESH_TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0dXNlciIsInR5cGUiOiJyZWZyZXNoIiwiaWF0IjoxNzA0NjcyMDAwLCJleHAiOjE3MDUyNzY4MDB9.test";
+
+    // 产品相关常量
+    public static final String DEFAULT_PRODUCT_ID = "test-product-id-001";
+    public static final String DEFAULT_PRODUCT_NAME = "中国人寿财产保险股份有限公司西藏自治区中央财政补贴型羊养殖保险";
+    public static final String DEFAULT_REPORT_TYPE = "修订产品";
+    public static final String DEFAULT_PRODUCT_NATURE = "政策性农险";
+    public static final Integer DEFAULT_YEAR = 2024;
+    public static final String DEFAULT_REVISION_TYPE = "条款修订";
+    public static final String DEFAULT_OPERATING_REGION = "西藏自治区";
+    public static final String DEFAULT_PRODUCT_CATEGORY = "养殖险";
+
+    // 文档相关常量
+    public static final String DEFAULT_DOCUMENT_ID = "test-document-id-001";
+    public static final String DEFAULT_FILE_NAME = "中国人寿财产保险条款.docx";
+    public static final String DEFAULT_FILE_PATH = "/uploads/2024/09/product_001/terms.docx";
+    public static final Long DEFAULT_FILE_SIZE = 2048576L;
+    public static final String DEFAULT_FILE_TYPE = "DOCX";
     
     /**
      * 创建默认用户
@@ -543,5 +567,343 @@ public class TestDataFactory {
     public static String createTestJwtToken(String username) {
         // 返回一个模拟的JWT令牌，实际测试中可能需要真实的JWT工具类
         return "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIiICsgdXNlcm5hbWUgKyAiIiwiaWF0IjoxNzA0NjcyMDAwLCJleHAiOjE3MDQ3NTg0MDB9.test-" + username;
+    }
+
+    // ========== 产品相关测试数据 ==========
+
+    /**
+     * 创建默认产品
+     */
+    public static Product createDefaultProduct() {
+        return Product.builder()
+                .id(DEFAULT_PRODUCT_ID)
+                .productName(DEFAULT_PRODUCT_NAME)
+                .reportType(DEFAULT_REPORT_TYPE)
+                .productNature(DEFAULT_PRODUCT_NATURE)
+                .year(DEFAULT_YEAR)
+                .revisionType(DEFAULT_REVISION_TYPE)
+                .operatingRegion(DEFAULT_OPERATING_REGION)
+                .productCategory(DEFAULT_PRODUCT_CATEGORY)
+                .developmentMethod("自主开发")
+                .primaryAdditional("主险")
+                .productType(Product.ProductType.AGRICULTURAL)
+                .status(Product.ProductStatus.DRAFT)
+                .documentCount(0)
+                .createdAt(LocalDateTime.now().minusDays(1))
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    /**
+     * 创建产品（指定状态）
+     */
+    public static Product createProduct(String productName, Product.ProductStatus status) {
+        return Product.builder()
+                .id(generateId())
+                .productName(productName)
+                .reportType(DEFAULT_REPORT_TYPE)
+                .productNature(DEFAULT_PRODUCT_NATURE)
+                .year(DEFAULT_YEAR)
+                .operatingRegion(DEFAULT_OPERATING_REGION)
+                .productCategory(DEFAULT_PRODUCT_CATEGORY)
+                .developmentMethod("自主开发")
+                .primaryAdditional("主险")
+                .productType(Product.ProductType.AGRICULTURAL)
+                .status(status)
+                .documentCount(0)
+                .createdAt(LocalDateTime.now().minusDays(1))
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    /**
+     * 创建农险产品
+     */
+    public static Product createAgriculturalProduct() {
+        return Product.builder()
+                .id(generateId())
+                .productName("测试农险产品")
+                .reportType("新产品")
+                .productNature("政策性农险")
+                .year(2024)
+                .operatingRegion("全国")
+                .productCategory("种植险")
+                .developmentMethod("自主开发")
+                .primaryAdditional("主险")
+                .productType(Product.ProductType.AGRICULTURAL)
+                .status(Product.ProductStatus.DRAFT)
+                .documentCount(0)
+                .createdAt(LocalDateTime.now().minusDays(1))
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    /**
+     * 创建备案产品
+     */
+    public static Product createFilingProduct() {
+        return Product.builder()
+                .id(generateId())
+                .productName("测试备案产品")
+                .reportType("新产品")
+                .operatingScope("全国范围")
+                .demonstrationClauseName("示范条款V1.0")
+                .operatingRegion1("北京市")
+                .operatingRegion2("上海市")
+                .salesPromotionName("推广名称")
+                .developmentMethod("合作开发")
+                .primaryAdditional("附险")
+                .productType(Product.ProductType.FILING)
+                .status(Product.ProductStatus.DRAFT)
+                .documentCount(0)
+                .createdAt(LocalDateTime.now().minusDays(1))
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    /**
+     * 创建默认文档
+     */
+    public static Document createDefaultDocument() {
+        return Document.builder()
+                .id(DEFAULT_DOCUMENT_ID)
+                .fileName(DEFAULT_FILE_NAME)
+                .filePath(DEFAULT_FILE_PATH)
+                .fileSize(DEFAULT_FILE_SIZE)
+                .fileType(DEFAULT_FILE_TYPE)
+                .documentType(Document.DocumentType.TERMS)
+                .productId(DEFAULT_PRODUCT_ID)
+                .uploadStatus(Document.UploadStatus.UPLOADED)
+                .auditStatus(Document.AuditStatus.PENDING)
+                .createdAt(LocalDateTime.now().minusHours(1))
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    /**
+     * 创建文档（指定类型和产品ID）
+     */
+    public static Document createDocument(Document.DocumentType documentType, String productId) {
+        return Document.builder()
+                .id(generateId())
+                .fileName(documentType.getDescription() + ".docx")
+                .filePath("/uploads/2024/09/" + productId + "/" + documentType.name().toLowerCase() + ".docx")
+                .fileSize(DEFAULT_FILE_SIZE)
+                .fileType(DEFAULT_FILE_TYPE)
+                .documentType(documentType)
+                .productId(productId)
+                .uploadStatus(Document.UploadStatus.UPLOADED)
+                .auditStatus(Document.AuditStatus.PENDING)
+                .createdAt(LocalDateTime.now().minusHours(1))
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    /**
+     * 创建文档（指定上传状态）
+     */
+    public static Document createDocument(Document.DocumentType documentType,
+                                        String productId,
+                                        Document.UploadStatus uploadStatus) {
+        return Document.builder()
+                .id(generateId())
+                .fileName(documentType.getDescription() + ".docx")
+                .filePath("/uploads/2024/09/" + productId + "/" + documentType.name().toLowerCase() + ".docx")
+                .fileSize(DEFAULT_FILE_SIZE)
+                .fileType(DEFAULT_FILE_TYPE)
+                .documentType(documentType)
+                .productId(productId)
+                .uploadStatus(uploadStatus)
+                .auditStatus(Document.AuditStatus.PENDING)
+                .createdAt(LocalDateTime.now().minusHours(1))
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    /**
+     * 创建完整的文档集合（所有必需类型）
+     */
+    public static List<Document> createCompleteDocumentSet(String productId) {
+        List<Document> documents = new ArrayList<>();
+        for (Document.DocumentType type : Arrays.asList(
+                Document.DocumentType.REGISTRATION,
+                Document.DocumentType.TERMS,
+                Document.DocumentType.FEASIBILITY_REPORT,
+                Document.DocumentType.ACTUARIAL_REPORT,
+                Document.DocumentType.RATE_TABLE)) {
+            documents.add(createDocument(type, productId));
+        }
+        return documents;
+    }
+
+    /**
+     * 创建不完整的文档集合（缺少部分必需类型）
+     */
+    public static List<Document> createIncompleteDocumentSet(String productId) {
+        List<Document> documents = new ArrayList<>();
+        // 只创建部分必需文档
+        documents.add(createDocument(Document.DocumentType.REGISTRATION, productId));
+        documents.add(createDocument(Document.DocumentType.TERMS, productId));
+        // 缺少 FEASIBILITY_REPORT, ACTUARIAL_REPORT, RATE_TABLE
+        return documents;
+    }
+
+    /**
+     * 创建产品创建请求
+     */
+    public static CreateProductRequest createDefaultCreateProductRequest() {
+        return CreateProductRequest.builder()
+                .productName("新测试产品")
+                .reportType("新产品")
+                .productNature("政策性农险")
+                .year(2024)
+                .operatingRegion("测试区域")
+                .productCategory("种植险")
+                .developmentMethod("自主开发")
+                .primaryAdditional("主险")
+                .productType("AGRICULTURAL")
+                .build();
+    }
+
+    /**
+     * 创建产品更新请求
+     */
+    public static UpdateProductRequest createDefaultUpdateProductRequest() {
+        return UpdateProductRequest.builder()
+                .productName("更新后的产品名称")
+                .reportType("修订产品")
+                .productNature("政策性农险")
+                .year(2024)
+                .revisionType("条款修订")
+                .operatingRegion("更新区域")
+                .productCategory("养殖险")
+                .build();
+    }
+
+    /**
+     * 创建产品查询请求
+     */
+    public static ProductQueryRequest createDefaultProductQueryRequest() {
+        return ProductQueryRequest.builder()
+                .fileName("测试")
+                .reportType("新产品")
+                .productCategory("种植险")
+                .status("DRAFT")
+                .year(2024)
+                .page(1)
+                .size(10)
+                .build();
+    }
+
+    /**
+     * 创建产品响应
+     */
+    public static ProductResponse createDefaultProductResponse() {
+        return ProductResponse.builder()
+                .id(DEFAULT_PRODUCT_ID)
+                .productName(DEFAULT_PRODUCT_NAME)
+                .reportType(DEFAULT_REPORT_TYPE)
+                .productNature(DEFAULT_PRODUCT_NATURE)
+                .year(DEFAULT_YEAR)
+                .revisionType(DEFAULT_REVISION_TYPE)
+                .operatingRegion(DEFAULT_OPERATING_REGION)
+                .productCategory(DEFAULT_PRODUCT_CATEGORY)
+                .developmentMethod("自主开发")
+                .primaryAdditional("主险")
+                .productType("AGRICULTURAL")
+                .status("DRAFT")
+                .documentCount(5)
+                .createdAt(LocalDateTime.now().minusDays(1))
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    /**
+     * 创建文档验证结果 - 成功
+     */
+    public static DocumentValidationResult createSuccessfulValidationResult(String productId) {
+        DocumentValidationResult.ValidationSummary summary = DocumentValidationResult.ValidationSummary.builder()
+                .totalDocuments(5)
+                .requiredDocuments(5)
+                .uploadedDocuments(5)
+                .validDocuments(5)
+                .totalErrors(0)
+                .totalWarnings(0)
+                .completenessPercentage(100.0)
+                .build();
+
+        return DocumentValidationResult.builder()
+                .isValid(true)
+                .productId(productId)
+                .errors(new ArrayList<>())
+                .warnings(new ArrayList<>())
+                .summary(summary)
+                .build();
+    }
+
+    /**
+     * 创建文档验证结果 - 失败
+     */
+    public static DocumentValidationResult createFailedValidationResult(String productId) {
+        List<DocumentValidationResult.ValidationError> errors = Arrays.asList(
+                DocumentValidationResult.ValidationError.builder()
+                        .errorType("MISSING_DOCUMENT")
+                        .errorCode("DOC_001")
+                        .message("缺少必需的要件文档")
+                        .documentType("FEASIBILITY_REPORT")
+                        .severity("HIGH")
+                        .suggestion("请上传可行性报告文档")
+                        .build(),
+                DocumentValidationResult.ValidationError.builder()
+                        .errorType("UNSUPPORTED_FILE_TYPE")
+                        .errorCode("DOC_002")
+                        .message("不支持的文件类型")
+                        .documentType("TERMS")
+                        .documentId("doc_001")
+                        .severity("MEDIUM")
+                        .suggestion("请上传支持的文件格式：DOCX, PDF, XLS, XLSX")
+                        .build()
+        );
+
+        DocumentValidationResult.ValidationSummary summary = DocumentValidationResult.ValidationSummary.builder()
+                .totalDocuments(3)
+                .requiredDocuments(5)
+                .uploadedDocuments(3)
+                .validDocuments(1)
+                .totalErrors(2)
+                .totalWarnings(0)
+                .completenessPercentage(60.0)
+                .build();
+
+        return DocumentValidationResult.builder()
+                .isValid(false)
+                .productId(productId)
+                .errors(errors)
+                .warnings(new ArrayList<>())
+                .summary(summary)
+                .build();
+    }
+
+    /**
+     * 创建产品列表
+     */
+    public static List<Product> createProductList(int count) {
+        List<Product> products = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            products.add(createProduct("测试产品" + i, Product.ProductStatus.DRAFT));
+        }
+        return products;
+    }
+
+    /**
+     * 创建文档列表
+     */
+    public static List<Document> createDocumentList(String productId, int count) {
+        List<Document> documents = new ArrayList<>();
+        Document.DocumentType[] types = Document.DocumentType.values();
+        for (int i = 0; i < count && i < types.length; i++) {
+            documents.add(createDocument(types[i], productId));
+        }
+        return documents;
     }
 }

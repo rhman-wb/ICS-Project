@@ -18,7 +18,7 @@ import java.util.List;
  * @since 2024-09-12
  */
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "文档响应")
