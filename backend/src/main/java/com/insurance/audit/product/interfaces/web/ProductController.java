@@ -16,7 +16,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -152,6 +154,60 @@ public class ProductController {
         } catch (Exception e) {
             log.error("产品创建失败", e);
             return ApiResponse.error("产品创建失败: " + e.getMessage());
+        }
+    }
+
+    // ==================== 产品提交功能 ====================
+
+    @PutMapping("/{productId}/submit")
+    @Operation(summary = "提交产品", description = "将产品提交进行审核")
+    @PreAuthorize("hasAuthority('product:submit')")
+    public ApiResponse<ProductResponse> submitProduct(
+            @Parameter(description = "产品ID", required = true)
+            @PathVariable("productId") String productId) {
+
+        log.info("提交产品进行审核, productId: {}", productId);
+
+        try {
+            // 提交产品
+            Product submittedProduct = productService.submitProduct(productId);
+
+            // 转换为响应DTO
+            ProductResponse response = productConverter.toResponse(submittedProduct);
+
+            return ApiResponse.success(response, "产品提交成功");
+
+        } catch (Exception e) {
+            log.error("产品提交失败, productId: {}", productId, e);
+            return ApiResponse.error("产品提交失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{productId}")
+    @Operation(summary = "获取产品详情", description = "根据ID获取产品详细信息")
+    @PreAuthorize("hasAuthority('product:view')")
+    public ApiResponse<ProductResponse> getProductDetail(
+            @Parameter(description = "产品ID", required = true)
+            @PathVariable("productId") String productId) {
+
+        log.info("获取产品详情, productId: {}", productId);
+
+        try {
+            // 获取产品详情
+            Product product = productService.getProductById(productId);
+
+            if (product == null) {
+                return ApiResponse.error("产品不存在");
+            }
+
+            // 转换为响应DTO
+            ProductResponse response = productConverter.toResponse(product);
+
+            return ApiResponse.success(response, "获取产品详情成功");
+
+        } catch (Exception e) {
+            log.error("获取产品详情失败, productId: {}", productId, e);
+            return ApiResponse.error("获取产品详情失败: " + e.getMessage());
         }
     }
 }

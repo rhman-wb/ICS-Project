@@ -52,4 +52,12 @@ public interface ProductService {
      * @return 是否删除成功
      */
     boolean deleteProduct(String id);
+
+    /**
+     * 提交产品进行审核
+     *
+     * @param productId 产品ID
+     * @return 提交后的产品实体
+     */
+    Product submitProduct(String productId);
 }

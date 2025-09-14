@@ -2,9 +2,11 @@ package com.insurance.audit.product.interfaces.web;
 
 import com.insurance.audit.common.dto.ApiResponse;
 import com.insurance.audit.product.application.service.DocumentParsingService;
+import com.insurance.audit.product.application.service.DocumentValidationService;
 import com.insurance.audit.product.application.service.FileStorageService;
 import com.insurance.audit.product.interfaces.dto.response.DocumentParseResult;
 import com.insurance.audit.product.interfaces.dto.response.DocumentResponse;
+import com.insurance.audit.product.interfaces.dto.response.DocumentValidationResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,6 +33,7 @@ public class DocumentController {
 
     private final FileStorageService fileStorageService;
     private final DocumentParsingService documentParsingService;
+    private final DocumentValidationService documentValidationService;
 
     private static final List<String> ALLOWED_DOCUMENT_TYPES = Arrays.asList(
             "TERMS", "FEASIBILITY_REPORT", "ACTUARIAL_REPORT", "RATE_TABLE", "REGISTRATION", "REGISTRATION_FORM"
@@ -210,6 +213,118 @@ public class DocumentController {
                 .parsableFormats(parseFormats)
                 .build();
         return ApiResponse.success(formats, "获取支持格式成功");
+    }
+
+    @GetMapping("/validate/{productId}")
+    @Operation(summary = "校验产品文档", description = "校验产品的所有文档，检查完整性、名称一致性和格式规范")
+    @PreAuthorize("hasAuthority('document:validate')")
+    public ApiResponse<DocumentValidationResult> validateProductDocuments(
+            @Parameter(description = "产品ID", required = true)
+            @PathVariable("productId") String productId) {
+
+        log.info("校验产品文档, productId: {}", productId);
+
+        try {
+            DocumentValidationResult result = documentValidationService.validateProductDocuments(productId);
+
+            if (result.getIsValid()) {
+                return ApiResponse.success(result, "文档校验通过");
+            } else {
+                return ApiResponse.success(result, "文档校验未通过，请查看错误详情");
+            }
+
+        } catch (Exception e) {
+            log.error("文档校验异常, productId: {}", productId, e);
+            return ApiResponse.error("文档校验失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/validate-single/{documentId}")
+    @Operation(summary = "校验单个文档", description = "校验指定的单个文档")
+    @PreAuthorize("hasAuthority('document:validate')")
+    public ApiResponse<DocumentValidationResult> validateSingleDocument(
+            @Parameter(description = "文档ID", required = true)
+            @PathVariable("documentId") String documentId) {
+
+        log.info("校验单个文档, documentId: {}", documentId);
+
+        try {
+            DocumentValidationResult result = documentValidationService.validateSingleDocument(documentId);
+
+            if (result.getIsValid()) {
+                return ApiResponse.success(result, "文档校验通过");
+            } else {
+                return ApiResponse.success(result, "文档校验未通过，请查看错误详情");
+            }
+
+        } catch (Exception e) {
+            log.error("文档校验异常, documentId: {}", documentId, e);
+            return ApiResponse.error("文档校验失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/validate-completeness/{productId}")
+    @Operation(summary = "校验文档完整性", description = "检查产品是否上传了所有必需的要件文档")
+    @PreAuthorize("hasAuthority('document:validate')")
+    public ApiResponse<DocumentValidationResult> validateDocumentCompleteness(
+            @Parameter(description = "产品ID", required = true)
+            @PathVariable("productId") String productId) {
+
+        log.info("校验文档完整性, productId: {}", productId);
+
+        try {
+            DocumentValidationResult result = documentValidationService.validateDocumentCompleteness(productId);
+
+            String message = result.getIsValid() ? "文档完整性校验通过" : "文档不完整，缺少必需要件";
+            return ApiResponse.success(result, message);
+
+        } catch (Exception e) {
+            log.error("文档完整性校验异常, productId: {}", productId, e);
+            return ApiResponse.error("文档完整性校验失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/validate-consistency/{productId}")
+    @Operation(summary = "校验文档名称一致性", description = "检查文档名称与产品名称是否一致")
+    @PreAuthorize("hasAuthority('document:validate')")
+    public ApiResponse<DocumentValidationResult> validateDocumentNameConsistency(
+            @Parameter(description = "产品ID", required = true)
+            @PathVariable("productId") String productId) {
+
+        log.info("校验文档名称一致性, productId: {}", productId);
+
+        try {
+            DocumentValidationResult result = documentValidationService.validateDocumentNameConsistency(productId);
+
+            String message = result.getWarnings().isEmpty() ?
+                "文档名称一致性校验通过" : "发现文档名称一致性问题，请查看警告详情";
+            return ApiResponse.success(result, message);
+
+        } catch (Exception e) {
+            log.error("文档名称一致性校验异常, productId: {}", productId, e);
+            return ApiResponse.error("文档名称一致性校验失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/validate-format/{productId}")
+    @Operation(summary = "校验文档格式", description = "检查文档格式是否符合要求")
+    @PreAuthorize("hasAuthority('document:validate')")
+    public ApiResponse<DocumentValidationResult> validateDocumentFormat(
+            @Parameter(description = "产品ID", required = true)
+            @PathVariable("productId") String productId) {
+
+        log.info("校验文档格式, productId: {}", productId);
+
+        try {
+            DocumentValidationResult result = documentValidationService.validateDocumentFormat(productId);
+
+            String message = result.getIsValid() ? "文档格式校验通过" : "文档格式校验未通过，请查看错误详情";
+            return ApiResponse.success(result, message);
+
+        } catch (Exception e) {
+            log.error("文档格式校验异常, productId: {}", productId, e);
+            return ApiResponse.error("文档格式校验失败: " + e.getMessage());
+        }
     }
 
     private ApiResponse<String> validateUploadRequest(MultipartFile file, String documentType, String productId) {

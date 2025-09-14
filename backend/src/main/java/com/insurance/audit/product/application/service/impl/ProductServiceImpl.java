@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.insurance.audit.common.exception.BusinessException;
 import com.insurance.audit.common.exception.ErrorCode;
+import com.insurance.audit.product.application.service.DocumentValidationService;
 import com.insurance.audit.product.application.service.ProductService;
 import com.insurance.audit.product.domain.entity.Product;
 import com.insurance.audit.product.infrastructure.mapper.ProductMapper;
 import com.insurance.audit.product.interfaces.dto.request.ProductQueryRequest;
+import com.insurance.audit.product.interfaces.dto.response.DocumentValidationResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductMapper productMapper;
+    private final DocumentValidationService documentValidationService;
 
     @Override
     public IPage<Product> getProductPage(ProductQueryRequest queryRequest) {
@@ -112,5 +115,59 @@ public class ProductServiceImpl implements ProductService {
             log.error("删除产品失败: {}", id);
             return false;
         }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Product submitProduct(String productId) {
+        log.info("提交产品进行审核: {}", productId);
+
+        // 1. 获取产品信息
+        Product product = getProductById(productId);
+        if (product == null) {
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, "产品不存在: " + productId);
+        }
+
+        // 2. 检查产品状态
+        if (product.getStatus() == Product.ProductStatus.SUBMITTED) {
+            throw new BusinessException(ErrorCode.INVALID_PARAMETER, "产品已提交，无需重复提交");
+        }
+        if (product.getStatus() == Product.ProductStatus.APPROVED) {
+            throw new BusinessException(ErrorCode.INVALID_PARAMETER, "产品已审批通过，无法重新提交");
+        }
+
+        // 3. 校验文档完整性
+        try {
+            DocumentValidationResult validationResult = documentValidationService.validateProductDocuments(productId);
+
+            if (!validationResult.getIsValid()) {
+                StringBuilder errorMsg = new StringBuilder("文档校验未通过：");
+                validationResult.getErrors().forEach(error ->
+                    errorMsg.append("\n").append(error.getMessage()));
+                throw new BusinessException(ErrorCode.DOCUMENT_VALIDATION_FAILED, errorMsg.toString());
+            }
+
+            // 检查文档完整性
+            if (validationResult.getSummary().getCompletenessPercentage() < 100.0) {
+                throw new BusinessException(ErrorCode.DOCUMENT_VALIDATION_FAILED,
+                    "文档不完整，完整性为：" + validationResult.getSummary().getCompletenessPercentage() + "%");
+            }
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("文档校验异常", e);
+            throw new BusinessException(ErrorCode.DOCUMENT_VALIDATION_FAILED, "文档校验异常：" + e.getMessage());
+        }
+
+        // 4. 更新产品状态为已提交
+        product.setStatus(Product.ProductStatus.SUBMITTED);
+
+        int result = productMapper.updateById(product);
+        if (result <= 0) {
+            throw new BusinessException(ErrorCode.PRODUCT_UPDATE_FAILED, "更新产品状态失败");
+        }
+
+        log.info("产品提交成功: {}", productId);
+        return product;
     }
 }

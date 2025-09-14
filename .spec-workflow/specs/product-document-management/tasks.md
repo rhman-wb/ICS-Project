@@ -137,7 +137,7 @@
 
 #### 任务 5: 文档校验和表单提交
 
-- [ ] 5.1 文档校验服务实现
+- [x] 5.1 文档校验服务实现
   - File: backend/src/main/java/com/insurance/audit/product/service/DocumentValidationService.java
   - 实现要件类型完整性校验、名称一致性校验等规则
   - 提供校验结果和错误提示信息
@@ -145,7 +145,7 @@
   - _Leverage: 现有的验证框架和业务规则引擎_
   - _Requirements: 9_
 
-- [ ] 5.2 前端文档校验和错误提示
+- [x] 5.2 前端文档校验和错误提示
   - File: frontend/src/components/DocumentValidation.vue
   - 实现前端文档校验逻辑和错误提示展示
   - 在对应要件区域显示红色错误提示信息
@@ -153,7 +153,7 @@
   - _Leverage: 现有的验证提示组件和错误处理机制_
   - _Requirements: 9_
 
-- [ ] 5.3 产品提交和成功页面
+- [x] 5.3 产品提交和成功页面
   - File: frontend/src/views/ProductSubmissionSuccess.vue
   - 实现产品提交成功页面，包含项目详情和操作按钮
   - 显示项目ID、负责人、生效时间等信息
@@ -161,7 +161,7 @@
   - _Leverage: 现有的成功页面模板和操作按钮组件_
   - _Requirements: 10_
 
-- [ ] 5.4 表单重置功能
+- [x] 5.4 表单重置功能
   - File: frontend/src/components/ProductFormReset.vue
   - 实现表单内容清空和重置到初始状态
   - 包含确认对话框避免误操作

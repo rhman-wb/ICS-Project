@@ -70,3 +70,12 @@ export const formatSmartTime = (time: string | number | Date): string => {
   
   return target.format('YYYY-MM-DD')
 }
+
+/**
+ * 格式化完整日期时间
+ * @param time 时间字符串或时间戳
+ * @returns 格式化后的日期时间字符串
+ */
+export const formatDateTime = (time: string | number | Date): string => {
+  return formatTime(time, 'YYYY-MM-DD HH:mm:ss')
+}
