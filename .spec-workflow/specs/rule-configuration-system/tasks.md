@@ -7,7 +7,7 @@
 
 ### Phase 1: 前端路由与页面框架（优先级：高）
 
-- [ ] 1.1 新增规则模块路由
+- [x] 1.1 新增规则模块路由
   - File: frontend/src/router/rules-routes.ts
   - 配置`/rules`、`/rules/new?type=single|double|format|advanced`、`/rules/success`、`/rules/jump`
   - Purpose: 建立规则模块导航体系，支持从dashboard-home跳转
@@ -15,7 +15,7 @@
   - _Requirements: 导航与入口_
   - _Prompt: Role: 前端路由工程师 | Task: 新增并注册规则模块路由，支持参数与守卫 | Restrictions: 不破坏既有路由，保持命名一致 | Success: 路由可达、刷新可恢复、权限守卫生效_
 
-- [ ] 1.2 规则管理主界面骨架
+- [x] 1.2 规则管理主界面骨架
   - File: frontend/src/views/rules/RulesListView.vue
   - 实现筛选栏、工具栏、表格与分页骨架（静态UI占位）
   - Purpose: 对齐原型结构，为后续数据接入做准备
@@ -25,7 +25,7 @@
 
 ### Phase 2: 后端API与数据模型（优先级：高）
 
-- [ ] 2.1 规则主表与枚举建模
+- [x] 2.1 规则主表与枚举建模
   - File: backend/src/main/java/.../domain/Rule.java, enums/*
   - 定义Rule主实体与审核/有效状态枚举
   - Purpose: 为列表筛选与状态流转提供基础
@@ -33,7 +33,7 @@
   - _Requirements: 数据模型、状态机_
   - _Prompt: Role: 后端开发 | Task: 建模Rule与状态枚举并加索引字段 | Restrictions: 命名与设计对齐 | Success: 编译通过、迁移可执行_
 
-- [ ] 2.2 四类规则子结构
+- [x] 2.2 四类规则子结构
   - File: backend/src/main/java/.../domain/ruletypes/*
   - 定义SingleRule/DoubleRule/FormatRule/AdvancedRule结构
   - Purpose: 支撑创建/编辑字段校验
@@ -41,7 +41,7 @@
   - _Requirements: 四类创建页面字段_
   - _Prompt: Role: 后端开发 | Task: 建模四类规则结构并与主表关联 | Restrictions: 字段名与原型一致 | Success: CRUD契约清晰、校验可用_
 
-- [ ] 2.3 数据库迁移脚本
+- [x] 2.3 数据库迁移脚本
   - File: backend/src/main/resources/db/migration/Vxxx__rules.sql
   - 建表、索引（last_updated_at、audit_status、effective_status）
   - Purpose: 提升查询与筛选性能
@@ -49,7 +49,7 @@
   - _Requirements: 性能与分页_
   - _Prompt: Role: 数据库工程师 | Task: 编写迁移并验证回滚 | Restrictions: 生产安全、可重复执行 | Success: 上线无阻塞、索引命中良好_
 
-- [ ] 2.4 REST API 控制器与服务
+- [x] 2.4 REST API 控制器与服务
   - File: backend/src/main/java/.../controller/RuleController.java
   - Endpoints: GET /api/rules, POST /api/rules, GET/PUT/DELETE /api/rules/{id}
   - Purpose: 提供规则列表与CRUD
@@ -57,7 +57,7 @@
   - _Requirements: 列表与查询、创建与更新_
   - _Prompt: Role: 后端开发 | Task: 实现契约、参数校验、分页 | Restrictions: 遵循REST与项目规范 | Success: 集成测试通过、代码评审通过_
 
-- [ ] 2.5 状态流转与提交OA接口
+- [x] 2.5 状态流转与提交OA接口
   - File: backend/src/main/java/.../controller/RuleStatusController.java
   - Endpoints: PATCH /audit-status, PATCH /effective-status, POST /submit-oa
   - Purpose: 支持审核状态与有效状态变更、批量提交OA
@@ -65,7 +65,7 @@
   - _Requirements: 规则状态管理_
   - _Prompt: Role: 后端开发 | Task: 实现状态机与约束校验，返回友好信息 | Restrictions: 禁止非法流转 | Success: 用例齐全，错误码清晰_
 
-- [ ] 2.6 模板批量导入接口
+- [x] 2.6 模板批量导入接口
   - File: backend/src/main/java/.../controller/RuleImportController.java
   - Endpoint: POST /api/rules/import (multipart)
   - Purpose: 支持Excel模板导入，返回明细

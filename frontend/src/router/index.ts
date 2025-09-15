@@ -9,6 +9,7 @@ import userRoutes from './modules/user'
 import adminRoutes from './modules/admin'
 import errorRoutes from './modules/error'
 import productRoutes from './product-routes'
+import rulesRoutes from './rules-routes'
 
 // 扩展路由元信息类型
 declare module 'vue-router' {
@@ -42,6 +43,7 @@ const routes: RouteRecordRaw[] = [
   ...authRoutes,
   ...dashboardRoutes,
   ...productRoutes,
+  ...rulesRoutes,
   ...userRoutes,
   ...adminRoutes,
   ...errorRoutes,
