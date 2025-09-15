@@ -245,7 +245,7 @@
 
 #### 任务 9: 单元测试和集成测试
 
-- [ ] 9.1 后端单元测试实现
+- [x] 9.1 后端单元测试实现
   - File: backend/src/test/java/com/insurance/audit/product/
   - 编写 Controller、Service、Repository 层的单元测试
   - 确保代码覆盖率达到 80% 以上
@@ -253,7 +253,7 @@
   - _Leverage: 现有的测试框架和测试工具类_
   - _Requirements: All backend functionality_
 
-- [ ] 9.2 前端组件测试实现
+- [x] 9.2 前端组件测试实现
   - File: frontend/src/test/components/
   - 编写主要组件的单元测试和集成测试
   - 测试用户交互和数据流
