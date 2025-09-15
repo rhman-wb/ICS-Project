@@ -274,10 +274,34 @@
 /* ==================== 消息组件定制 ==================== */
 
 .ant-message {
+  /* Ensure message container never blocks header/menu and fits content width */
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  /* Place messages below the header to prevent overlap */
+  top: calc(var(--header-height) + 12px) !important;
+  width: auto !important;
+  max-width: calc(100% - 32px);
+  z-index: var(--z-index-notification);
+  pointer-events: none; /* allow clicking elements under empty area */
+
+  /* Hide container when there is no notice (modern browsers) */
+  &:not(:has(.ant-message-notice)) {
+    display: none;
+  }
+
   .ant-message-notice {
+    margin: 0 8px;
+    width: auto;
+    display: inline-block;
+    pointer-events: auto; /* keep interactions for notices (close etc.) */
     .ant-message-notice-content {
       border-radius: var(--border-radius-lg);
       box-shadow: var(--box-shadow-lg);
+      width: auto;
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
     }
   }
 }

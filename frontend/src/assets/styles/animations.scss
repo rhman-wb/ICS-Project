@@ -724,31 +724,17 @@
 
 /* ==================== Ant Design 组件动画增强 ==================== */
 
-/* Message 组件动画 */
+/* Message 组件动画（不覆盖背景，避免出现顶端色块） */
 :global(.ant-message) {
+  pointer-events: none;
   .ant-message-notice {
     border-radius: var(--border-radius-lg);
     box-shadow: var(--box-shadow-lg);
     backdrop-filter: blur(8px);
-    
-    &.ant-message-notice-success {
-      background: rgba(246, 255, 237, 0.95);
-      border: 1px solid rgba(183, 235, 143, 0.3);
-    }
-    
-    &.ant-message-notice-error {
-      background: rgba(255, 241, 240, 0.95);
-      border: 1px solid rgba(255, 163, 158, 0.3);
-    }
-    
-    &.ant-message-notice-warning {
-      background: rgba(255, 251, 230, 0.95);
-      border: 1px solid rgba(255, 229, 143, 0.3);
-    }
-    
-    &.ant-message-notice-info {
-      background: rgba(240, 249, 255, 0.95);
-      border: 1px solid rgba(145, 213, 255, 0.3);
+    background: transparent; /* keep transparent; theme handles content */
+    border: none;
+    .ant-message-notice-content {
+      pointer-events: auto;
     }
   }
 }

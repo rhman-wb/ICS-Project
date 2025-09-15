@@ -43,16 +43,25 @@ const router = useRouter()
 // 处理按钮点击
 const handleItemClick = (item: any) => {
   emit('click', item)
-  
+
   // 特殊处理下载模板
   if (item.route === '/template/download') {
     handleDownload()
     return
   }
-  
-  // 路由跳转
-  if (item.route) {
-    router.push(item.route)
+
+  // 更健壮的导航匹配：优先按已知功能名跳转命名路由
+  const label = (item.label || '').replace(/\s+/g, '')
+  const route = item.route as string | undefined
+
+  if (route === '/product/import' || label.includes('导入产品')) {
+    router.push({ name: 'ProductImport' })
+    return
+  }
+
+  // 兜底按提供的 route 跳转
+  if (route) {
+    router.push(route)
   }
 }
 

@@ -6,7 +6,7 @@
       :menus="homeData.topNav.menus"
       :active="homeData.topNav.active"
       :username="homeData.topNav.username"
-      @navigate="handleNavigate"
+      @navigate="onNavigate"
     />
     
     <!-- 主容器：1440px 固定宽度，左右两栏布局 -->
@@ -97,10 +97,41 @@ import SummaryTotals from '@/components/dashboard/SummaryTotals.vue'
 const homeData = useHomeMock()
 const router = useRouter()
 
+// 顶部菜单点击处理（健壮匹配）
+const onNavigate = (menu: string) => {
+  const key = (menu || '').replace(/\s+/g, '')
+  if (key === '产品管理' || key.includes('产品')) {
+    router.push('/product-management')
+    return
+  }
+  if (key === '主页') {
+    router.push('/dashboard/home')
+    return
+  }
+  if (key === '规则管理') {
+    router.push('/rules/create')
+    return
+  }
+  // 兜底：记录未识别的菜单
+  console.log('Navigate to (unmapped):', menu)
+}
+
 // 事件处理函数
 const handleNavigate = (menu: string) => {
-  console.log('Navigate to:', menu)
-  // 这里可以添加路由导航逻辑
+  // 顶部菜单导航到对应页面
+  switch (menu) {
+    case '产品管理':
+      router.push('/product-management')
+      break
+    case '主页':
+      router.push('/dashboard/home')
+      break
+    case '规则管理':
+      router.push('/rules/create')
+      break
+    default:
+      console.log('Navigate to:', menu)
+  }
 }
 
 const handleSelectItem = (item: any) => {
@@ -120,10 +151,8 @@ const handleChangeTab = (tab: string) => {
 }
 
 const handleQuickStartClick = (item: any) => {
+  // 子组件已处理路由跳转，这里仅做埋点或日志
   console.log('Quick start click:', item)
-  if (item.route) {
-    router.push(item.route)
-  }
 }
 
 const handleOpenLink = (link: string) => {
@@ -141,12 +170,11 @@ const handleViewMore = () => {
 <style scoped lang="scss">
 @use '@/assets/styles/dashboard/_tokens.scss' as tokens;
 
-.dashboard-home {
+  .dashboard-home {
   min-height: 100vh;
   background-color: tokens.$bg-page;
-  // 预留顶部空间，避免被固定导航遮挡
+  // 由于 TopNav 采用 sticky，不再需要额外的占位空白
   padding: tokens.$spacing-lg;
-  padding-top: calc(tokens.$nav-height + #{tokens.$spacing-lg});
   font-family: tokens.$font-family;
 }
 

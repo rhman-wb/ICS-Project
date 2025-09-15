@@ -11,7 +11,7 @@ export const configureAntdMessage = () => {
   message.config({
     duration: 3, // 显示时长（秒）
     maxCount: 5, // 最大显示数量
-    top: '20px', // 距离顶部距离
+    // top: 由样式统一控制，避免遮挡导航
     rtl: false, // 是否从右到左
     prefixCls: 'ant-message', // 自定义类名前缀
   })

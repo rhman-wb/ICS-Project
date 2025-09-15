@@ -186,6 +186,7 @@ export const homeMock: HomeMock = {
   // 快速开始/便捷导航 - Requirement 5
   quickStart: {
     items: [
+      { label: '产品管理', route: '/product-management' },
       { label: '导入产品', route: '/product/import', badge: 24 },
       { label: '创建规则', route: '/rules/create', badge: 24 },
       { label: '批量导入', route: '/product/import/batch' },

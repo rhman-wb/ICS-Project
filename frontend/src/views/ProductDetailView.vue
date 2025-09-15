@@ -142,6 +142,7 @@ import type { ProductResponse } from '@/api/product'
 import type { Document } from '@/types/product'
 import { getProduct } from '@/api/product'
 import { formatDateTime } from '@/utils/format'
+import { documentsApi, type DocumentResponseDto } from '@/api/modules/documents'
 import AttachmentManagement from '@/components/AttachmentManagement.vue'
 
 // 路由相关
@@ -172,8 +173,8 @@ const fetchProductDetail = async () => {
     const response = await getProduct(productId.value)
     if (response.success) {
       productDetail.value = response.data
-      // TODO: 获取文档列表，现在使用mock数据
-      documents.value = mockDocuments
+      // 获取文档列表（后端）
+      await fetchDocuments()
     } else {
       error.value = response.message || '获取产品详情失败'
     }
@@ -228,6 +229,43 @@ const handleDocumentUpdated = (document: Document) => {
 const handleDocumentDeleted = (documentId: string) => {
   // 从文档列表中移除已删除的文档
   documents.value = documents.value.filter(doc => doc.id !== documentId)
+}
+
+// 拉取并转换后端文档列表
+const fetchDocuments = async () => {
+  try {
+    documentsLoading.value = true
+    const res = await documentsApi.listByProduct(productId.value)
+    if (res.data.success) {
+      const list = res.data.data || []
+      documents.value = list.map(mapDocumentResponseToView)
+    } else {
+      message.error(res.data.message || '获取文档列表失败')
+    }
+  } catch (err: any) {
+    console.error('Fetch documents error:', err)
+    message.error(err.message || '获取文档列表失败')
+  } finally {
+    documentsLoading.value = false
+  }
+}
+
+const mapDocumentResponseToView = (d: DocumentResponseDto): Document => {
+  const mapDocType = (t?: string | null): any => {
+    if (!t) return 'TERMS'
+    return t === 'REGISTRATION' ? 'REGISTRATION_FORM' : t
+  }
+  return {
+    id: d.id || '',
+    fileName: d.fileName,
+    filePath: d.filePath,
+    fileSize: d.fileSize,
+    fileType: (d.fileType || '').toLowerCase(),
+    documentType: mapDocType(d.documentType),
+    productId: d.productId,
+    uploadedAt: d.createdAt || '',
+    auditResults: []
+  }
 }
 
 // 工具函数

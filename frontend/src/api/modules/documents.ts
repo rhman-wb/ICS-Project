@@ -66,5 +66,24 @@ export const documentsApi = {
 
   getSupportedFormats() {
     return request.get<ApiResponse<SupportedFormatsDto>>('/v1/documents/supported-formats')
+  },
+
+  // 根据产品ID查询文档列表
+  listByProduct(productId: string) {
+    return request.get<ApiResponse<DocumentResponseDto[]>>('/v1/documents', {
+      params: { productId }
+    })
+  },
+
+  // 删除文档
+  deleteDocument(documentId: string) {
+    return request.delete<ApiResponse<boolean>>(`/v1/documents/${documentId}`)
+  },
+
+  // 获取下载URL（直接用于 window.open）
+  getDownloadUrl(documentId: string) {
+    // axios 实例在开发环境 baseURL=/api，这里直接拼接以便浏览器直接下载
+    const base = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_BASE_URL || '/api')
+    return `${base}/v1/documents/${documentId}/download`
   }
 }

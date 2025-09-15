@@ -46,7 +46,9 @@ const emit = defineEmits<Emits>()
 
 // 处理菜单点击
 const handleMenuClick = (menuKey: string) => {
-  emit('navigate', menuKey)
+  // 规整菜单键，避免尾随空格或不可见字符导致匹配失败
+  const normalized = (menuKey || '').trim()
+  emit('navigate', normalized)
 }
 </script>
 
@@ -54,10 +56,11 @@ const handleMenuClick = (menuKey: string) => {
 .top-nav {
   width: 100%;
   height: 64px;
-  position: fixed;
+  /* Use sticky so it participates in layout and won't need spacer gaps */
+  position: sticky;
   top: 0;
   left: 0;
-  z-index: 1000;
+  z-index: 1050; /* keep above page content */
   background-color: #001529;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }

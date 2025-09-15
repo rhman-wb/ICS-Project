@@ -67,6 +67,23 @@ public class DocumentController {
 
     private static final long MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
+    @GetMapping
+    @Operation(summary = "查询产品文档列表", description = "根据产品ID查询已上传的文档列表")
+    @PreAuthorize("hasAuthority('document:view') or hasAuthority('product:view')")
+    public ApiResponse<List<DocumentResponse>> listDocuments(
+            @Parameter(description = "产品ID", required = true)
+            @RequestParam("productId") String productId) {
+        try {
+            String safeProductId = normalizeProductId(productId);
+            List<Document> documents = documentMapper.selectByProductId(safeProductId);
+            List<DocumentResponse> responses = documentConverter.toResponseList(documents);
+            return ApiResponse.success(responses, "查询文档列表成功");
+        } catch (Exception e) {
+            log.error("查询文档列表失败, productId: {}", productId, e);
+            return ApiResponse.error("查询文档列表失败: " + e.getMessage());
+        }
+    }
+
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "上传文档", description = "上传产品要件文档，支持条款、可行性报告、精算报告、费率表等")
     @PreAuthorize("hasAuthority('document:upload')")
@@ -222,6 +239,76 @@ public class DocumentController {
         } catch (Exception e) {
             log.error("批量上传异常", e);
             return ApiResponse.error("批量上传异常: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{documentId}")
+    @Operation(summary = "删除文档", description = "根据文档ID删除文档记录，并删除对应文件")
+    @PreAuthorize("hasAuthority('document:delete') or hasAuthority('document:upload')")
+    public ApiResponse<Boolean> deleteDocument(
+            @Parameter(description = "文档ID", required = true)
+            @PathVariable("documentId") String documentId) {
+        try {
+            Document doc = documentMapper.selectById(documentId);
+            if (doc == null) {
+                return ApiResponse.error("文档不存在");
+            }
+
+            try {
+                if (doc.getFilePath() != null) {
+                    fileStorageService.deleteFile(doc.getFilePath());
+                }
+            } catch (Exception ex) {
+                log.warn("删除文件失败，忽略。documentId={}, path={}", documentId, doc.getFilePath(), ex);
+            }
+
+            int affected = documentMapper.deleteById(documentId);
+            if (affected > 0) {
+                return ApiResponse.success(Boolean.TRUE, "删除成功");
+            } else {
+                return ApiResponse.error("删除失败");
+            }
+        } catch (Exception e) {
+            log.error("删除文档异常, documentId: {}", documentId, e);
+            return ApiResponse.error("删除文档异常: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{documentId}/download")
+    @Operation(summary = "下载文档", description = "下载指定文档文件")
+    @PreAuthorize("hasAuthority('document:view') or hasAuthority('document:download')")
+    public org.springframework.http.ResponseEntity<org.springframework.core.io.Resource> downloadDocument(
+            @Parameter(description = "文档ID", required = true)
+            @PathVariable("documentId") String documentId) {
+        try {
+            Document doc = documentMapper.selectById(documentId);
+            if (doc == null || doc.getFilePath() == null) {
+                return org.springframework.http.ResponseEntity.notFound().build();
+            }
+
+            String fullPath = fileStorageService.getFullPath(doc.getFilePath());
+            java.nio.file.Path path = java.nio.file.Paths.get(fullPath);
+            if (!java.nio.file.Files.exists(path)) {
+                return org.springframework.http.ResponseEntity.notFound().build();
+            }
+
+            org.springframework.core.io.Resource resource = new org.springframework.core.io.FileSystemResource(path);
+            String fileName = doc.getFileName() != null ? doc.getFileName() : path.getFileName().toString();
+            String contentType = null;
+            try {
+                contentType = java.nio.file.Files.probeContentType(path);
+            } catch (Exception ignore) {}
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+
+            return org.springframework.http.ResponseEntity.ok()
+                    .contentType(org.springframework.http.MediaType.parseMediaType(contentType))
+                    .header("Content-Disposition", "attachment; filename=\"" + encodeFileName(fileName) + "\"")
+                    .body(resource);
+        } catch (Exception e) {
+            log.error("下载文档异常, documentId: {}", documentId, e);
+            return org.springframework.http.ResponseEntity.internalServerError().build();
         }
     }
 
@@ -423,6 +510,15 @@ public class DocumentController {
         return "UNKNOWN";
     }
 
+    private String encodeFileName(String fileName) {
+        try {
+            return java.net.URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8)
+                    .replaceAll("\\+", "%20");
+        } catch (Exception e) {
+            return fileName;
+        }
+    }
+
     @lombok.Data
     @lombok.Builder
     @lombok.NoArgsConstructor
@@ -436,4 +532,3 @@ public class DocumentController {
         private List<String> parsableFormats;
     }
 }
-
