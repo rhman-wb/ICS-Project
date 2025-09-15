@@ -29,7 +29,7 @@ const rulesRoutes: RouteRecordRaw[] = [
     }
   },
 
-  // 新增规则页面 - 单句规则
+  // 新增规则页面 - 主页面带Tab
   {
     path: '/rules/new',
     name: 'RuleCreate',
@@ -43,78 +43,6 @@ const rulesRoutes: RouteRecordRaw[] = [
         { title: '工作台', path: '/dashboard/home' },
         { title: '规则管理', path: '/rules' },
         { title: '新增规则' }
-      ]
-    }
-  },
-
-  // 新增单句规则页面
-  {
-    path: '/rules/new/single',
-    name: 'RuleCreateSingle',
-    component: () => import('@/views/rules/RuleCreateSingleView.vue'),
-    meta: {
-      title: '新增单句规则',
-      requiresAuth: true,
-      hideInMenu: true,
-      permissions: ['RULE_CREATE'],
-      breadcrumb: [
-        { title: '工作台', path: '/dashboard/home' },
-        { title: '规则管理', path: '/rules' },
-        { title: '新增单句规则' }
-      ]
-    }
-  },
-
-  // 新增双句规则页面
-  {
-    path: '/rules/new/double',
-    name: 'RuleCreateDouble',
-    component: () => import('@/views/rules/RuleCreateDoubleView.vue'),
-    meta: {
-      title: '新增双句规则',
-      requiresAuth: true,
-      hideInMenu: true,
-      permissions: ['RULE_CREATE'],
-      breadcrumb: [
-        { title: '工作台', path: '/dashboard/home' },
-        { title: '规则管理', path: '/rules' },
-        { title: '新增双句规则' }
-      ]
-    }
-  },
-
-  // 新增格式规则页面
-  {
-    path: '/rules/new/format',
-    name: 'RuleCreateFormat',
-    component: () => import('@/views/rules/RuleCreateFormatView.vue'),
-    meta: {
-      title: '新增格式规则',
-      requiresAuth: true,
-      hideInMenu: true,
-      permissions: ['RULE_CREATE'],
-      breadcrumb: [
-        { title: '工作台', path: '/dashboard/home' },
-        { title: '规则管理', path: '/rules' },
-        { title: '新增格式规则' }
-      ]
-    }
-  },
-
-  // 新增高级规则页面
-  {
-    path: '/rules/new/advanced',
-    name: 'RuleCreateAdvanced',
-    component: () => import('@/views/rules/RuleCreateAdvancedView.vue'),
-    meta: {
-      title: '新增高级规则',
-      requiresAuth: true,
-      hideInMenu: true,
-      permissions: ['RULE_CREATE'],
-      breadcrumb: [
-        { title: '工作台', path: '/dashboard/home' },
-        { title: '规则管理', path: '/rules' },
-        { title: '新增高级规则' }
       ]
     }
   },
@@ -208,7 +136,7 @@ export const rulesNavigationHelpers = {
    */
   goToRuleCreate: (type?: 'single' | 'double' | 'format' | 'advanced') => {
     if (type) {
-      return `/rules/new/${type}`
+      return `/rules/new?type=${type}`
     }
     return '/rules/new'
   },

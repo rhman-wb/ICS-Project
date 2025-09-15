@@ -75,7 +75,7 @@
 
 ### Phase 3: 前端数据接入与交互（优先级：高）
 
-- [ ] 3.1 列表与筛选接入
+- [x] 3.1 列表与筛选接入
   - File: frontend/src/views/rules/RulesListView.vue
   - 调用GET /api/rules，绑定筛选项、已选条件与分页
   - Purpose: 实现“全部规则”列表与筛选交互
@@ -83,7 +83,7 @@
   - _Requirements: 规则管理主界面_
   - _Prompt: Role: 前端开发 | Task: 完成API接入与状态管理 | Restrictions: UI文案一致、性能<3s | Success: 交互顺滑、筛选准确_
 
-- [ ] 3.2 顶部动作与批量操作
+- [x] 3.2 顶部动作与批量操作
   - File: frontend/src/views/rules/RulesListView.vue
   - 实现导入、添加、全部规则、删除、单条规则创建、关注、模板批量导入、提交OA审核，支持全选/反选/批量操作
   - Purpose: 完成列表操作闭环
@@ -91,7 +91,7 @@
   - _Requirements: 列表操作与状态管理_
   - _Prompt: Role: 前端开发 | Task: 完成批量选择与操作 | Restrictions: 按钮权限控制 | Success: 批量操作正确、反馈清晰_
 
-- [ ] 3.3 四类创建页面实现
+- [x] 3.3 四类创建页面实现
   - File: frontend/src/views/rules/RuleCreate*.vue
   - 单句/双句/格式/高级：字段、占位、必填校验、提交/重置、Tab
   - Purpose: 对齐原型与需求的表单交互
@@ -99,7 +99,7 @@
   - _Requirements: 添加规则单句/双句/格式/高级_
   - _Prompt: Role: 前端开发 | Task: 实现四类表单与提交成功跳转 | Restrictions: 字段名与占位逐字一致 | Success: 表单校验完整、成功页可达_
 
-- [ ] 3.4 检核跳转页面实现
+- [x] 3.4 检核跳转页面实现
   - File: frontend/src/views/rules/RuleJumpView.vue
   - 标题与筛选控件、标签、选中规则列表，确定/取消
   - Purpose: 完成检核前选择流程
