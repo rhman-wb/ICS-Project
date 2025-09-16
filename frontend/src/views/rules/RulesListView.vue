@@ -196,28 +196,52 @@ const submitOAModalVisible = ref(false)
 // 表格列定义
 const columns = [
   {
+    title: '',
+    key: 'selection',
+    width: 50,
+    align: 'center'
+  },
+  {
     title: '规则编号',
     dataIndex: 'ruleNumber',
     key: 'ruleNumber',
     width: 120
   },
   {
-    title: '规则名称',
-    dataIndex: 'ruleName',
-    key: 'ruleName',
-    width: 200
-  },
-  {
-    title: '规则类型',
-    dataIndex: 'ruleType',
-    key: 'ruleType',
-    width: 100
+    title: '规则描述',
+    dataIndex: 'ruleDescription',
+    key: 'ruleDescription',
+    width: 250
   },
   {
     title: '规则来源',
     dataIndex: 'ruleSource',
     key: 'ruleSource',
-    width: 100
+    width: 120
+  },
+  {
+    title: '规则管理部门',
+    dataIndex: 'managementDepartment',
+    key: 'managementDepartment',
+    width: 150
+  },
+  {
+    title: '适用险种',
+    dataIndex: 'applicableInsurance',
+    key: 'applicableInsurance',
+    width: 120
+  },
+  {
+    title: '适用要件',
+    dataIndex: 'applicableRequirements',
+    key: 'applicableRequirements',
+    width: 150
+  },
+  {
+    title: '适用章节',
+    dataIndex: 'applicableChapter',
+    key: 'applicableChapter',
+    width: 120
   },
   {
     title: '审核状态',
@@ -232,21 +256,15 @@ const columns = [
     width: 120
   },
   {
-    title: '关注',
-    key: 'followed',
-    width: 80,
-    align: 'center'
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'createdAt',
-    key: 'createdAt',
+    title: '最后更新时间',
+    dataIndex: 'lastUpdatedAt',
+    key: 'lastUpdatedAt',
     width: 180
   },
   {
     title: '操作',
     key: 'actions',
-    width: 100,
+    width: 150,
     fixed: 'right'
   }
 ]

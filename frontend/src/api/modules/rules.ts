@@ -157,8 +157,13 @@ export interface ImportPreviewResponse {
 }
 
 export interface SubmitOARequest {
-  ids: string[]
-  comments?: string
+  ruleIds: string[]
+  submittedBy: string
+  priority: string
+  expectedCompletionDate?: string
+  comments: string
+  ccUsers?: string[]
+  notifyEmail?: boolean
 }
 
 // 规则API服务
@@ -179,7 +184,7 @@ export const rulesApi = {
    */
   getRuleById(id: string): Promise<ApiResponse<RuleInfo>> {
     return request({
-      url: `/rules/${id}`,
+      url: `/v1/rules/${id}`,
       method: 'GET'
     })
   },
@@ -200,7 +205,7 @@ export const rulesApi = {
    */
   updateRule(id: string, data: UpdateRuleRequest): Promise<ApiResponse<RuleInfo>> {
     return request({
-      url: `/rules/${id}`,
+      url: `/v1/rules/${id}`,
       method: 'PUT',
       data
     })
@@ -211,7 +216,7 @@ export const rulesApi = {
    */
   deleteRule(id: string): Promise<ApiResponse<void>> {
     return request({
-      url: `/rules/${id}`,
+      url: `/v1/rules/${id}`,
       method: 'DELETE'
     })
   },
@@ -221,7 +226,7 @@ export const rulesApi = {
    */
   batchDeleteRules(data: BatchDeleteRequest): Promise<ApiResponse<BatchOperationResponse>> {
     return request({
-      url: '/rules/batch',
+      url: '/v1/rules/batch',
       method: 'DELETE',
       data
     })
@@ -232,7 +237,7 @@ export const rulesApi = {
    */
   getAllRules(): Promise<ApiResponse<RuleInfo[]>> {
     return request({
-      url: '/rules/all',
+      url: '/v1/rules/all',
       method: 'GET'
     })
   },
@@ -242,7 +247,7 @@ export const rulesApi = {
    */
   searchRules(keyword: string): Promise<ApiResponse<RuleInfo[]>> {
     return request({
-      url: '/rules/search',
+      url: '/v1/rules/search',
       method: 'GET',
       params: { keyword }
     })
@@ -253,7 +258,7 @@ export const rulesApi = {
    */
   toggleRuleFollow(id: string, followed: boolean): Promise<ApiResponse<RuleInfo>> {
     return request({
-      url: `/rules/${id}/follow`,
+      url: `/v1/rules/${id}/follow`,
       method: 'POST',
       params: { followed }
     })
@@ -264,7 +269,7 @@ export const rulesApi = {
    */
   copyRule(id: string): Promise<ApiResponse<RuleInfo>> {
     return request({
-      url: `/rules/${id}/copy`,
+      url: `/v1/rules/${id}/copy`,
       method: 'POST'
     })
   },
@@ -274,7 +279,7 @@ export const rulesApi = {
    */
   getRuleStatistics(): Promise<ApiResponse<RuleStatistics>> {
     return request({
-      url: '/rules/statistics',
+      url: '/v1/rules/statistics',
       method: 'GET'
     })
   },
@@ -284,7 +289,7 @@ export const rulesApi = {
    */
   batchToggleFollow(data: BatchFollowRequest): Promise<ApiResponse<BatchOperationResponse>> {
     return request({
-      url: '/rules/batch/follow',
+      url: '/v1/rules/batch/follow',
       method: 'POST',
       data
     })
@@ -295,7 +300,7 @@ export const rulesApi = {
    */
   batchUpdateStatus(data: BatchStatusUpdateRequest): Promise<ApiResponse<BatchOperationResponse>> {
     return request({
-      url: '/rules/batch/status',
+      url: '/v1/rules/batch/status',
       method: 'PATCH',
       data
     })
@@ -306,7 +311,7 @@ export const rulesApi = {
    */
   batchSubmitOA(data: SubmitOARequest): Promise<ApiResponse<BatchOperationResponse>> {
     return request({
-      url: '/rules/batch/submit-oa',
+      url: '/v1/rules/batch/submit-oa',
       method: 'POST',
       data
     })
@@ -319,7 +324,7 @@ export const rulesApi = {
     const formData = new FormData()
     formData.append('file', file)
     return request({
-      url: '/rules/import/preview',
+      url: '/v1/rules/import/preview',
       method: 'POST',
       data: formData,
       headers: {
@@ -339,11 +344,36 @@ export const rulesApi = {
   },
 
   /**
+   * 导入规则
+   */
+  importRules(formData: FormData): Promise<ApiResponse<any>> {
+    return request({
+      url: '/v1/rules/import',
+      method: 'POST',
+      data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  },
+
+  /**
+   * 下载导入模板
+   */
+  downloadImportTemplate(): Promise<any> {
+    return request({
+      url: '/v1/rules/template/download',
+      method: 'GET',
+      responseType: 'blob'
+    })
+  },
+
+  /**
    * 下载导入模板
    */
   downloadTemplate(): Promise<Blob> {
     return request({
-      url: '/rules/template/download',
+      url: '/v1/rules/template/download',
       method: 'GET',
       responseType: 'blob'
     })

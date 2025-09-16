@@ -1,6 +1,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
+import dayjs from 'dayjs'
 import { rulesApi, type RuleQueryParams, type RuleInfo } from '@/api/modules/rules'
 import { createLoadingRef } from '@/utils/loading'
 
@@ -93,10 +94,28 @@ export function useRulesList() {
     try {
       loading.value = true
 
+      // 格式化时间参数
+      const formatTime = (time: any) => {
+        if (!time) return undefined
+        // 如果是dayjs对象，格式化为HH:mm:ss格式
+        if (dayjs.isDayjs(time)) {
+          return time.format('HH:mm:ss')
+        }
+        // 如果是其他格式，尝试转换
+        if (time instanceof Date) {
+          return dayjs(time).format('HH:mm:ss')
+        }
+        // 如果已经是字符串，直接返回
+        return time
+      }
+
       const params: RuleQueryParams = {
         page: pagination.current,
         size: pagination.pageSize,
-        ...filters
+        ...filters,
+        // 格式化时间字段
+        startTime: formatTime(filters.startTime),
+        endTime: formatTime(filters.endTime)
       }
 
       const response = await rulesApi.getRuleList(params)
@@ -207,7 +226,7 @@ export function useRulesList() {
 
     try {
       const response = await rulesApi.batchToggleFollow({
-        ruleIds: selectedRules.value,
+        ids: selectedRules.value,
         followed: true
       })
 

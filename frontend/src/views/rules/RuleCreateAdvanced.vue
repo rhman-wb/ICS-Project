@@ -19,7 +19,7 @@
               v-model:value="formData.ruleDescription"
               placeholder="请输入规则描述"
               :rows="3"
-              :maxlength="500"
+              :maxlength="300"
               show-count
             />
           </a-form-item>
@@ -262,12 +262,6 @@ interface AdvancedRuleForm {
   llmModelConfig?: string
 }
 
-// 定义事件
-defineEmits<{
-  success: [data: any]
-  cancel: []
-}>()
-
 // 表单引用
 const formRef = ref<FormInstance>()
 const submitting = ref(false)
@@ -295,7 +289,7 @@ const formData = reactive<AdvancedRuleForm>({
 const rules: Record<string, Rule[]> = {
   ruleDescription: [
     { required: true, message: '请输入规则描述', trigger: 'blur' },
-    { min: 10, max: 500, message: '规则描述长度应在10-500字符之间', trigger: 'blur' }
+    { max: 300, message: '规则描述长度不能超过300字符', trigger: 'blur' }
   ],
   alertType: [
     { required: true, message: '请选择提示类型', trigger: 'change' }
@@ -403,7 +397,7 @@ const handleReset = () => {
   formData.advancedRuleConfig = '{"complexity": "high", "llm_enabled": false}'
 }
 
-// 获取emit函数
+// 定义事件
 const emit = defineEmits<{
   success: [data: any]
   cancel: []
