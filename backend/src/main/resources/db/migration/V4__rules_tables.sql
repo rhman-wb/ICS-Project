@@ -11,8 +11,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- =====================================================
 -- 1. 规则主表 (rule)
 -- =====================================================
-DROP TABLE IF EXISTS `rule`;
-CREATE TABLE `rule` (
+CREATE TABLE IF NOT EXISTS `rule` (
   `id` varchar(32) NOT NULL COMMENT '主键ID',
   `rule_number` varchar(50) NOT NULL COMMENT '规则编号',
   `rule_name` varchar(200) NOT NULL COMMENT '规则名称',
@@ -63,8 +62,7 @@ CREATE TABLE `rule` (
 -- =====================================================
 -- 2. 单句规则表 (rule_single)
 -- =====================================================
-DROP TABLE IF EXISTS `rule_single`;
-CREATE TABLE `rule_single` (
+CREATE TABLE IF NOT EXISTS `rule_single` (
   `id` varchar(32) NOT NULL COMMENT '主键ID',
   `rule_id` varchar(32) NOT NULL COMMENT '关联规则ID',
   `rule_description` text NOT NULL COMMENT '规则描述',
@@ -99,8 +97,7 @@ CREATE TABLE `rule_single` (
 -- =====================================================
 -- 3. 双句规则表 (rule_double)
 -- =====================================================
-DROP TABLE IF EXISTS `rule_double`;
-CREATE TABLE `rule_double` (
+CREATE TABLE IF NOT EXISTS `rule_double` (
   `id` varchar(32) NOT NULL COMMENT '主键ID',
   `rule_id` varchar(32) NOT NULL COMMENT '关联规则ID',
   `rule_description` text NOT NULL COMMENT '规则描述',
@@ -139,8 +136,7 @@ CREATE TABLE `rule_double` (
 -- =====================================================
 -- 4. 格式规则表 (rule_format)
 -- =====================================================
-DROP TABLE IF EXISTS `rule_format`;
-CREATE TABLE `rule_format` (
+CREATE TABLE IF NOT EXISTS `rule_format` (
   `id` varchar(32) NOT NULL COMMENT '主键ID',
   `rule_id` varchar(32) NOT NULL COMMENT '关联规则ID',
   `rule_description` text NOT NULL COMMENT '规则描述',
@@ -175,8 +171,7 @@ CREATE TABLE `rule_format` (
 -- =====================================================
 -- 5. 高级规则表 (rule_advanced)
 -- =====================================================
-DROP TABLE IF EXISTS `rule_advanced`;
-CREATE TABLE `rule_advanced` (
+CREATE TABLE IF NOT EXISTS `rule_advanced` (
   `id` varchar(32) NOT NULL COMMENT '主键ID',
   `rule_id` varchar(32) NOT NULL COMMENT '关联规则ID',
   `rule_description` text NOT NULL COMMENT '规则描述',
@@ -213,8 +208,7 @@ CREATE TABLE `rule_advanced` (
 -- =====================================================
 -- 6. 规则操作日志表 (rule_operation_log)
 -- =====================================================
-DROP TABLE IF EXISTS `rule_operation_log`;
-CREATE TABLE `rule_operation_log` (
+CREATE TABLE IF NOT EXISTS `rule_operation_log` (
   `id` varchar(32) NOT NULL COMMENT '主键ID',
   `rule_id` varchar(32) NOT NULL COMMENT '规则ID',
   `operation_type` varchar(50) NOT NULL COMMENT '操作类型：CREATE/UPDATE/DELETE/SUBMIT/AUDIT/IMPORT',

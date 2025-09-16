@@ -3,11 +3,13 @@ package com.insurance.audit.rules.interfaces.web;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.insurance.audit.common.dto.ApiResponse;
 import com.insurance.audit.common.dto.PageResponse;
+import com.insurance.audit.rules.application.converter.RuleConverter;
 import com.insurance.audit.rules.application.service.RuleService;
 import com.insurance.audit.rules.domain.Rule;
 import com.insurance.audit.rules.interfaces.dto.request.CreateRuleRequest;
 import com.insurance.audit.rules.interfaces.dto.request.RuleQueryRequest;
 import com.insurance.audit.rules.interfaces.dto.request.UpdateRuleRequest;
+import com.insurance.audit.rules.interfaces.dto.response.BatchOperationResponse;
 import com.insurance.audit.rules.interfaces.dto.response.RuleResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,19 +33,20 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/rules")
+@RequestMapping("/v1/rules")
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "规则管理", description = "规则管理相关API")
 public class RuleController {
 
     private final RuleService ruleService;
+    private final RuleConverter ruleConverter;
 
     @GetMapping
     @Operation(summary = "分页查询规则列表", description = "根据条件分页查询规则列表")
     @PreAuthorize("hasAuthority('RULE_VIEW')")
     public ApiResponse<PageResponse<RuleResponse>> getRules(
-            @Parameter(description = "查询条件") RuleQueryRequest queryRequest) {
+            @Parameter(description = "查询条件") @Valid RuleQueryRequest queryRequest) {
 
         log.info("查询规则列表，查询条件: {}", queryRequest);
 
@@ -52,7 +55,7 @@ public class RuleController {
         // 转换为响应DTO
         PageResponse<RuleResponse> response = PageResponse.of(
             rulePage.getRecords().stream()
-                .map(this::convertToResponse)
+                .map(ruleConverter::convertToResponse)
                 .toList(),
             rulePage.getCurrent(),
             rulePage.getSize(),
@@ -71,7 +74,7 @@ public class RuleController {
         log.info("获取规则详情，ID: {}", id);
 
         Rule rule = ruleService.getRuleById(id);
-        RuleResponse response = convertToResponse(rule);
+        RuleResponse response = ruleConverter.convertToResponse(rule);
 
         return ApiResponse.success(response);
     }
@@ -85,7 +88,7 @@ public class RuleController {
         log.info("创建规则，请求: {}", request);
 
         Rule rule = ruleService.createRule(request);
-        RuleResponse response = convertToResponse(rule);
+        RuleResponse response = ruleConverter.convertToResponse(rule);
 
         return ApiResponse.success(response);
     }
@@ -100,7 +103,7 @@ public class RuleController {
         log.info("更新规则，ID: {}, 请求: {}", id, request);
 
         Rule rule = ruleService.updateRule(id, request);
-        RuleResponse response = convertToResponse(rule);
+        RuleResponse response = ruleConverter.convertToResponse(rule);
 
         return ApiResponse.success(response);
     }
@@ -125,20 +128,19 @@ public class RuleController {
     @DeleteMapping("/batch")
     @Operation(summary = "批量删除规则", description = "批量删除多个规则")
     @PreAuthorize("hasAuthority('RULE_DELETE')")
-    public ApiResponse<Map<String, Object>> batchDeleteRules(
+    public ApiResponse<BatchOperationResponse> batchDeleteRules(
             @Parameter(description = "规则ID列表") @RequestBody List<String> ids) {
 
         log.info("批量删除规则，IDs: {}", ids);
 
         int deletedCount = ruleService.batchDeleteRules(ids);
 
-        Map<String, Object> result = Map.of(
-            "totalRequested", ids.size(),
-            "deletedCount", deletedCount,
-            "success", deletedCount > 0
-        );
+        BatchOperationResponse response = new BatchOperationResponse();
+        response.setSuccessCount(deletedCount);
+        response.setFailedCount(ids.size() - deletedCount);
+        response.setTotalCount(ids.size());
 
-        return ApiResponse.success(result);
+        return ApiResponse.success(response);
     }
 
     @GetMapping("/all")
@@ -150,7 +152,7 @@ public class RuleController {
 
         List<Rule> rules = ruleService.getAllRules();
         List<RuleResponse> response = rules.stream()
-            .map(this::convertToResponse)
+            .map(ruleConverter::convertToResponse)
             .toList();
 
         return ApiResponse.success(response);
@@ -166,7 +168,7 @@ public class RuleController {
 
         List<Rule> rules = ruleService.searchRules(keyword);
         List<RuleResponse> response = rules.stream()
-            .map(this::convertToResponse)
+            .map(ruleConverter::convertToResponse)
             .toList();
 
         return ApiResponse.success(response);
@@ -182,7 +184,7 @@ public class RuleController {
         log.info("切换规则关注状态，ID: {}, 关注: {}", id, followed);
 
         Rule rule = ruleService.toggleRuleFollow(id, followed);
-        RuleResponse response = convertToResponse(rule);
+        RuleResponse response = ruleConverter.convertToResponse(rule);
 
         return ApiResponse.success(response);
     }
@@ -196,7 +198,7 @@ public class RuleController {
         log.info("复制规则，ID: {}", id);
 
         Rule rule = ruleService.copyRule(id);
-        RuleResponse response = convertToResponse(rule);
+        RuleResponse response = ruleConverter.convertToResponse(rule);
 
         return ApiResponse.success(response);
     }
@@ -211,50 +213,5 @@ public class RuleController {
         Map<String, Object> statistics = ruleService.getRuleStatistics();
 
         return ApiResponse.success(statistics);
-    }
-
-    /**
-     * 转换Rule实体为RuleResponse
-     */
-    private RuleResponse convertToResponse(Rule rule) {
-        RuleResponse response = new RuleResponse();
-        response.setId(rule.getId());
-        response.setRuleNumber(rule.getRuleNumber());
-        response.setRuleName(rule.getRuleName());
-        response.setRuleDescription(rule.getRuleDescription());
-        response.setRuleType(rule.getRuleType());
-        response.setRuleSource(rule.getRuleSource());
-        response.setManageDepartment(rule.getManageDepartment());
-        response.setApplicableInsurance(rule.getApplicableInsurance());
-        response.setApplicableRequirements(rule.getApplicableRequirements());
-        response.setApplicableChapter(rule.getApplicableChapter());
-        response.setBusinessArea(rule.getBusinessArea());
-        response.setAuditStatus(rule.getAuditStatus());
-        response.setEffectiveStatus(rule.getEffectiveStatus());
-        response.setRuleContent(rule.getRuleContent());
-        response.setRuleConfig(rule.getRuleConfig());
-        response.setEffectiveTime(rule.getEffectiveTime());
-        response.setExpiryTime(rule.getExpiryTime());
-        response.setLastUpdatedAt(rule.getLastUpdatedAt());
-        response.setSubmittedBy(rule.getSubmittedBy());
-        response.setSubmittedAt(rule.getSubmittedAt());
-        response.setAuditedBy(rule.getAuditedBy());
-        response.setAuditedAt(rule.getAuditedAt());
-        response.setAuditComments(rule.getAuditComments());
-        response.setFollowed(rule.getFollowed());
-        response.setPriority(rule.getPriority());
-        response.setSortOrder(rule.getSortOrder());
-        response.setTags(rule.getTags());
-        response.setRemarks(rule.getRemarks());
-        response.setCreatedBy(rule.getCreatedBy());
-        response.setCreatedAt(rule.getCreatedAt());
-        response.setUpdatedBy(rule.getUpdatedBy());
-        response.setUpdatedAt(rule.getUpdatedAt());
-        response.setVersion(rule.getVersion());
-
-        // TODO: 根据规则类型加载子规则数据
-        // response.setSubRuleData(loadSubRuleData(rule));
-
-        return response;
     }
 }

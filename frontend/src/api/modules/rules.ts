@@ -168,7 +168,7 @@ export const rulesApi = {
    */
   getRuleList(params: RuleQueryParams): Promise<ApiResponse<PageResponse<RuleInfo>>> {
     return request({
-      url: '/rules',
+      url: '/v1/rules',
       method: 'GET',
       params
     })
@@ -189,7 +189,7 @@ export const rulesApi = {
    */
   createRule(data: CreateRuleRequest): Promise<ApiResponse<RuleInfo>> {
     return request({
-      url: '/rules',
+      url: '/v1/rules',
       method: 'POST',
       data
     })
@@ -333,7 +333,7 @@ export const rulesApi = {
    */
   confirmImport(importId: string): Promise<ApiResponse<BatchOperationResponse>> {
     return request({
-      url: `/rules/import/${importId}/confirm`,
+      url: `/v1/rules/import/${importId}/confirm`,
       method: 'POST'
     })
   },

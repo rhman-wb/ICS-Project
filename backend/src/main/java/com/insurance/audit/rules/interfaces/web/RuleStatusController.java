@@ -28,7 +28,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/rules/status")
+@RequestMapping("/v1/rules/status")
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "规则状态管理", description = "规则状态流转相关API")

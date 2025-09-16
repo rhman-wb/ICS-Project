@@ -31,7 +31,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/rules/import")
+@RequestMapping("/v1/rules/import")
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "规则导入", description = "规则批量导入相关API")

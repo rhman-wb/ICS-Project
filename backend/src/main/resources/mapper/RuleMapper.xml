@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.insurance.audit.rules.infrastructure.mapper.RuleMapper">
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.insurance.audit.rules.domain.Rule">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="rule_number" property="ruleNumber" jdbcType="VARCHAR"/>
+        <result column="rule_name" property="ruleName" jdbcType="VARCHAR"/>
+        <result column="rule_description" property="ruleDescription" jdbcType="VARCHAR"/>
+        <result column="rule_type" property="ruleType" jdbcType="VARCHAR"/>
+        <result column="rule_source" property="ruleSource" jdbcType="VARCHAR"/>
+        <result column="manage_department" property="manageDepartment" jdbcType="VARCHAR"/>
+        <result column="applicable_insurance" property="applicableInsurance" jdbcType="VARCHAR"/>
+        <result column="applicable_requirements" property="applicableRequirements" jdbcType="VARCHAR"/>
+        <result column="applicable_chapter" property="applicableChapter" jdbcType="VARCHAR"/>
+        <result column="business_area" property="businessArea" jdbcType="VARCHAR"/>
+        <result column="audit_status" property="auditStatus" jdbcType="VARCHAR"/>
+        <result column="effective_status" property="effectiveStatus" jdbcType="VARCHAR"/>
+        <result column="rule_content" property="ruleContent" jdbcType="LONGVARCHAR"/>
+        <result column="rule_config" property="ruleConfig" jdbcType="LONGVARCHAR"/>
+        <result column="effective_time" property="effectiveTime" jdbcType="TIMESTAMP"/>
+        <result column="expiry_time" property="expiryTime" jdbcType="TIMESTAMP"/>
+        <result column="last_updated_at" property="lastUpdatedAt" jdbcType="TIMESTAMP"/>
+        <result column="submitted_by" property="submittedBy" jdbcType="VARCHAR"/>
+        <result column="submitted_at" property="submittedAt" jdbcType="TIMESTAMP"/>
+        <result column="audited_by" property="auditedBy" jdbcType="VARCHAR"/>
+        <result column="audited_at" property="auditedAt" jdbcType="TIMESTAMP"/>
+        <result column="audit_comments" property="auditComments" jdbcType="VARCHAR"/>
+        <result column="is_followed" property="followed" jdbcType="BOOLEAN"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+        <result column="created_by" property="createdBy" jdbcType="VARCHAR"/>
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+        <result column="updated_by" property="updatedBy" jdbcType="VARCHAR"/>
+        <result column="deleted" property="deleted" jdbcType="BOOLEAN"/>
+    </resultMap>
+
+    <!-- 分页查询规则列表（带条件筛选） -->
+    <select id="selectPageWithQuery" resultMap="BaseResultMap">
+        SELECT * FROM rule
+        <where>
+            deleted = 0
+            <if test="query.ruleSource != null">
+                AND rule_source = #{query.ruleSource}
+            </if>
+            <if test="query.applicableInsurance != null and query.applicableInsurance != ''">
+                AND applicable_insurance = #{query.applicableInsurance}
+            </if>
+            <if test="query.manageDepartment != null and query.manageDepartment != ''">
+                AND manage_department = #{query.manageDepartment}
+            </if>
+            <if test="query.auditStatus != null">
+                AND audit_status = #{query.auditStatus}
+            </if>
+            <if test="query.effectiveStatus != null">
+                AND effective_status = #{query.effectiveStatus}
+            </if>
+            <if test="query.applicableChapter != null and query.applicableChapter != ''">
+                AND applicable_chapter = #{query.applicableChapter}
+            </if>
+            <if test="query.businessArea != null and query.businessArea != ''">
+                AND business_area = #{query.businessArea}
+            </if>
+            <if test="query.keyword != null and query.keyword != ''">
+                AND (rule_name LIKE CONCAT('%', #{query.keyword}, '%')
+                OR rule_description LIKE CONCAT('%', #{query.keyword}, '%')
+                OR rule_content LIKE CONCAT('%', #{query.keyword}, '%'))
+            </if>
+            <if test="query.startTime != null">
+                AND last_updated_at >= #{query.startTime}
+            </if>
+            <if test="query.endTime != null">
+                AND last_updated_at <![CDATA[<=]]> #{query.endTime}
+            </if>
+            <if test="query.ruleType != null">
+                AND rule_type = #{query.ruleType}
+            </if>
+            <if test="query.followed != null">
+                AND is_followed = #{query.followed}
+            </if>
+        </where>
+        <choose>
+            <when test="query.sortField != null and query.sortDirection != null">
+                ORDER BY ${query.sortField} ${query.sortDirection}
+            </when>
+            <otherwise>
+                ORDER BY last_updated_at DESC
+            </otherwise>
+        </choose>
+    </select>
+
+</mapper>
