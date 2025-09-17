@@ -38,7 +38,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
     void getRules_Success() {
         // Given
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
-        String url = getApiUrl("/v1/rules?page=1&size=10");
+        String url = getV1ApiUrl("/rules?page=1&size=10");
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
@@ -49,11 +49,18 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
                 new ParameterizedTypeReference<ApiResponse<PageResponse<RuleResponse>>>() {}
         );
 
-        // Then
+        // Then - 具体的断言而不是通用的OK状态
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getSuccess()).isTrue();
-        assertThat(response.getBody().getData()).isNotNull();
+        assertThat(response.getBody().getMessage()).isEqualTo("查询成功");
+
+        PageResponse<RuleResponse> pageData = response.getBody().getData();
+        assertThat(pageData).isNotNull();
+        assertThat(pageData.getPage()).isEqualTo(1);
+        assertThat(pageData.getSize()).isEqualTo(10);
+        assertThat(pageData.getTotal()).isGreaterThanOrEqualTo(0);
+        assertThat(pageData.getData()).isNotNull();
     }
 
     @Test
@@ -61,7 +68,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
     void getRules_WithFilters() {
         // Given
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
-        String url = getApiUrl("/v1/rules?page=1&size=10&ruleType=SINGLE&auditStatus=PENDING");
+        String url = getV1ApiUrl("/rules?page=1&size=10&ruleType=SINGLE&auditStatus=PENDING");
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
@@ -82,7 +89,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
     @DisplayName("分页查询规则列表 - 未认证")
     void getRules_Unauthorized() {
         // Given
-        String url = getApiUrl("/v1/rules");
+        String url = getV1ApiUrl("/rules");
         HttpEntity<Void> entity = new HttpEntity<>(new org.springframework.http.HttpHeaders());
 
         // When
@@ -93,8 +100,14 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
                 ApiResponse.class
         );
 
-        // Then
+        // Then - 明确的错误状态断言
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+        // 验证错误响应体
+        if (response.getBody() != null) {
+            assertThat(response.getBody().getSuccess()).isFalse();
+            assertThat(response.getBody().getMessage()).contains("认证失败");
+        }
     }
 
     @Test
@@ -103,7 +116,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
         // Given
         String ruleId = "test-rule-id-001";
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
-        String url = getApiUrl("/v1/rules/" + ruleId);
+        String url = getV1ApiUrl("/rules/" + ruleId);
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
@@ -126,7 +139,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
         // Given
         String ruleId = "non-existent-rule-id";
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
-        String url = getApiUrl("/v1/rules/" + ruleId);
+        String url = getV1ApiUrl("/rules/" + ruleId);
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
@@ -153,7 +166,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse<RuleResponse>> response = restTemplate.postForEntity(
-                getApiUrl("/v1/rules"),
+                getV1ApiUrl("/rules"),
                 entity,
                 new ParameterizedTypeReference<ApiResponse<RuleResponse>>() {}.getClass()
         );
@@ -179,7 +192,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse> response = restTemplate.postForEntity(
-                getApiUrl("/v1/rules"),
+                getV1ApiUrl("/rules"),
                 entity,
                 ApiResponse.class
         );
@@ -201,7 +214,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/" + ruleId),
+                getV1ApiUrl("/rules/" + ruleId),
                 HttpMethod.PUT,
                 entity,
                 ApiResponse.class
@@ -223,7 +236,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/" + ruleId),
+                getV1ApiUrl("/rules/" + ruleId),
                 HttpMethod.DELETE,
                 entity,
                 ApiResponse.class
@@ -245,7 +258,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse<BatchOperationResponse>> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/batch"),
+                getV1ApiUrl("/rules/batch"),
                 HttpMethod.DELETE,
                 entity,
                 new ParameterizedTypeReference<ApiResponse<BatchOperationResponse>>() {}
@@ -269,7 +282,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/batch"),
+                getV1ApiUrl("/rules/batch"),
                 HttpMethod.DELETE,
                 entity,
                 ApiResponse.class
@@ -290,7 +303,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse<List<RuleResponse>>> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/all"),
+                getV1ApiUrl("/rules/all"),
                 HttpMethod.GET,
                 entity,
                 new ParameterizedTypeReference<ApiResponse<List<RuleResponse>>>() {}
@@ -309,7 +322,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
         // Given
         String keyword = "测试";
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
-        String url = getApiUrl("/v1/rules/search?keyword=" + keyword);
+        String url = getV1ApiUrl("/rules/search?keyword=" + keyword);
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
@@ -332,7 +345,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
         // Given
         String keyword = "";
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
-        String url = getApiUrl("/v1/rules/search?keyword=" + keyword);
+        String url = getV1ApiUrl("/rules/search?keyword=" + keyword);
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
@@ -356,7 +369,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
         String ruleId = "test-rule-id-001";
         boolean followed = true;
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
-        String url = getApiUrl("/v1/rules/" + ruleId + "/follow?followed=" + followed);
+        String url = getV1ApiUrl("/rules/" + ruleId + "/follow?followed=" + followed);
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
@@ -383,7 +396,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/" + ruleId + "/copy"),
+                getV1ApiUrl("/rules/" + ruleId + "/copy"),
                 HttpMethod.POST,
                 entity,
                 ApiResponse.class
@@ -404,7 +417,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse<Map<String, Object>>> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/statistics"),
+                getV1ApiUrl("/rules/statistics"),
                 HttpMethod.GET,
                 entity,
                 new ParameterizedTypeReference<ApiResponse<Map<String, Object>>>() {}
@@ -428,7 +441,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse> response = restTemplate.postForEntity(
-                getApiUrl("/v1/rules"),
+                getV1ApiUrl("/rules"),
                 entity,
                 ApiResponse.class
         );
@@ -448,7 +461,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/" + ruleId),
+                getV1ApiUrl("/rules/" + ruleId),
                 HttpMethod.DELETE,
                 entity,
                 ApiResponse.class
@@ -465,7 +478,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
 
         // Test case 1: 默认分页
-        String url1 = getApiUrl("/v1/rules");
+        String url1 = getV1ApiUrl("/rules");
         HttpEntity<Void> entity1 = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         ResponseEntity<ApiResponse<PageResponse<RuleResponse>>> response1 = restTemplate.exchange(
@@ -478,7 +491,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
         assertThat(response1.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         // Test case 2: 自定义分页
-        String url2 = getApiUrl("/v1/rules?page=2&size=5");
+        String url2 = getV1ApiUrl("/rules?page=2&size=5");
         HttpEntity<Void> entity2 = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         ResponseEntity<ApiResponse<PageResponse<RuleResponse>>> response2 = restTemplate.exchange(
@@ -491,7 +504,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
         assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         // Test case 3: 无效分页参数
-        String url3 = getApiUrl("/v1/rules?page=-1&size=0");
+        String url3 = getV1ApiUrl("/rules?page=-1&size=0");
         HttpEntity<Void> entity3 = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         ResponseEntity<ApiResponse> response3 = restTemplate.exchange(
@@ -514,7 +527,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
         String[] ruleTypes = {"SINGLE", "DOUBLE", "FORMAT", "ADVANCED"};
 
         for (String ruleType : ruleTypes) {
-            String url = getApiUrl("/v1/rules?ruleType=" + ruleType);
+            String url = getV1ApiUrl("/rules?ruleType=" + ruleType);
             HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
             ResponseEntity<ApiResponse<PageResponse<RuleResponse>>> response = restTemplate.exchange(
@@ -541,7 +554,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
         String[] effectiveStatuses = {"DRAFT", "EFFECTIVE", "EXPIRED"};
 
         for (String auditStatus : auditStatuses) {
-            String url = getApiUrl("/v1/rules?auditStatus=" + auditStatus);
+            String url = getV1ApiUrl("/rules?auditStatus=" + auditStatus);
             HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
             ResponseEntity<ApiResponse<PageResponse<RuleResponse>>> response = restTemplate.exchange(
@@ -555,7 +568,7 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
         }
 
         for (String effectiveStatus : effectiveStatuses) {
-            String url = getApiUrl("/v1/rules?effectiveStatus=" + effectiveStatus);
+            String url = getV1ApiUrl("/rules?effectiveStatus=" + effectiveStatus);
             HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
             ResponseEntity<ApiResponse<PageResponse<RuleResponse>>> response = restTemplate.exchange(

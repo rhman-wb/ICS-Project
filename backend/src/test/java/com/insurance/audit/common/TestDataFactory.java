@@ -1049,7 +1049,10 @@ public class TestDataFactory {
                 createApiPermission("规则审核", "RULE_AUDIT", "/api/v1/rules/status/*"),
                 createApiPermission("规则管理", "RULE_ADMIN", "/api/v1/rules/*"),
                 createApiPermission("规则导入", "RULE_IMPORT", "/api/v1/rules/import/*"),
-                createApiPermission("OA提交", "RULE_SUBMIT_OA", "/api/v1/rules/status/submit-oa")
+                createApiPermission("OA提交", "RULE_OA_SUBMIT", "/api/v1/rules/status/submit-oa"),
+                createApiPermission("规则发布", "RULE_PUBLISH", "/api/v1/rules/status/publish"),
+                createApiPermission("规则审批", "RULE_APPROVE", "/api/v1/rules/status/approve"),
+                createApiPermission("规则统计", "RULE_STATISTICS", "/api/v1/rules/statistics/*")
         );
     }
 
@@ -1074,7 +1077,8 @@ public class TestDataFactory {
                 .authorities(authorities)
                 .permissions(Arrays.asList(
                         "RULE_VIEW", "RULE_CREATE", "RULE_EDIT", "RULE_DELETE",
-                        "RULE_AUDIT", "RULE_ADMIN", "RULE_IMPORT", "RULE_SUBMIT_OA"
+                        "RULE_AUDIT", "RULE_ADMIN", "RULE_IMPORT", "RULE_OA_SUBMIT",
+                        "RULE_PUBLISH", "RULE_APPROVE", "RULE_STATISTICS"
                 ))
                 .build();
     }

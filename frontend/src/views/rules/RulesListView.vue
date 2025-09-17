@@ -1,11 +1,12 @@
 <template>
-  <div class="rules-management">
+  <div class="rules-management" data-testid="rules-management">
     <!-- 页面标题和返回按钮 -->
-    <div class="page-header">
+    <div class="page-header" data-testid="page-header">
       <div class="header-left">
         <a-button
           type="link"
           class="back-button"
+          data-testid="back-button"
           @click="handleBack"
         >
           <template #icon>
@@ -13,10 +14,10 @@
           </template>
           返回
         </a-button>
-        <h1 class="page-title">规则管理</h1>
+        <h1 class="page-title" data-testid="page-title">规则管理</h1>
       </div>
       <div class="header-right">
-        <a-button @click="handleRefresh">
+        <a-button data-testid="refresh-button" @click="handleRefresh">
           <template #icon>
             <ReloadOutlined />
           </template>
@@ -55,80 +56,18 @@
     />
 
     <!-- 规则列表表格 -->
-    <div class="table-section">
-      <a-table
-        :columns="columns"
-        :data-source="rulesData"
-        :row-selection="{
-          selectedRowKeys: selectedRules,
-          onChange: onSelectChange,
-          preserveSelectedRowKeys: true
-        }"
-        :pagination="pagination"
-        :loading="loading"
-        @change="handleTableChange"
-        row-key="id"
-      >
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'ruleName'">
-            <a @click="handleEdit(record)">{{ record.ruleName }}</a>
-          </template>
-          <template v-else-if="column.key === 'auditStatus'">
-            <a-tag :color="getStatusColor(record.auditStatus)">
-              {{ getStatusText(record.auditStatus) }}
-            </a-tag>
-          </template>
-          <template v-else-if="column.key === 'effectiveStatus'">
-            <a-tag :color="getStatusColor(record.effectiveStatus)">
-              {{ getStatusText(record.effectiveStatus) }}
-            </a-tag>
-          </template>
-          <template v-else-if="column.key === 'followed'">
-            <a-button
-              type="link"
-              @click="handleToggleFollow(record)"
-            >
-              <StarFilled v-if="record.followed" style="color: #faad14;" />
-              <StarOutlined v-else />
-            </a-button>
-          </template>
-          <template v-else-if="column.key === 'actions'">
-            <a-dropdown>
-              <a-button type="link">
-                操作 <DownOutlined />
-              </a-button>
-              <template #overlay>
-                <a-menu>
-                  <PermissionWrapper permissions="RULE_EDIT">
-                    <a-menu-item @click="handleEdit(record)">
-                      <EditOutlined />
-                      编辑
-                    </a-menu-item>
-                  </PermissionWrapper>
-                  <a-menu-item @click="handleToggleFollow(record)">
-                    <StarOutlined />
-                    {{ record.followed ? '取消关注' : '关注' }}
-                  </a-menu-item>
-                  <PermissionWrapper permissions="RULE_COPY">
-                    <a-menu-item @click="$router.push(`/rules/copy/${record.id}`)">
-                      <CopyOutlined />
-                      复制
-                    </a-menu-item>
-                  </PermissionWrapper>
-                  <a-menu-divider />
-                  <PermissionWrapper permissions="RULE_DELETE">
-                    <a-menu-item @click="handleDelete(record)" class="danger-item">
-                      <DeleteOutlined />
-                      删除
-                    </a-menu-item>
-                  </PermissionWrapper>
-                </a-menu>
-              </template>
-            </a-dropdown>
-          </template>
-        </template>
-      </a-table>
-    </div>
+    <RulesTable
+      :data-source="rulesData"
+      :loading="loading"
+      :selected-row-keys="selectedRules"
+      :pagination="pagination"
+      @select-change="onSelectChange"
+      @table-change="handleTableChange"
+      @toggle-follow="handleToggleFollow"
+      @edit="handleEdit"
+      @copy="handleCopy"
+      @delete="handleDelete"
+    />
 
     <!-- 导入规则对话框 -->
     <ImportModal
@@ -147,25 +86,19 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import {
-  ArrowLeftOutlined,
-  ReloadOutlined,
-  StarFilled,
-  StarOutlined,
-  DownOutlined,
-  EditOutlined,
-  CopyOutlined,
-  DeleteOutlined
-} from '@ant-design/icons-vue'
+import { ArrowLeftOutlined, ReloadOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
+import { useRouter } from 'vue-router'
 import { useRulesList } from '@/composables/rules/useRulesList'
 import RulesToolbar from '@/components/rules/RulesToolbar.vue'
 import RulesFilterBar from '@/components/rules/RulesFilterBar.vue'
 import SelectedChips from '@/components/rules/SelectedChips.vue'
+import RulesTable from '@/components/rules/RulesTable.vue'
 import ImportModal from '@/components/rules/ImportModal.vue'
 import SubmitOAModal from '@/components/rules/SubmitOAModal.vue'
-import PermissionWrapper from '@/components/common/PermissionWrapper.vue'
 import { rulesApi } from '@/api/modules/rules'
+
+const router = useRouter()
 
 // 使用composable
 const {
@@ -200,123 +133,14 @@ const {
 const importModalVisible = ref(false)
 const submitOAModalVisible = ref(false)
 
-// 表格列定义
-const columns = [
-  {
-    title: '',
-    key: 'selection',
-    width: 50,
-    align: 'center'
-  },
-  {
-    title: '规则编号',
-    dataIndex: 'ruleNumber',
-    key: 'ruleNumber',
-    width: 120
-  },
-  {
-    title: '规则描述',
-    dataIndex: 'ruleDescription',
-    key: 'ruleDescription',
-    width: 250
-  },
-  {
-    title: '规则来源',
-    dataIndex: 'ruleSource',
-    key: 'ruleSource',
-    width: 120
-  },
-  {
-    title: '规则管理部门',
-    dataIndex: 'managementDepartment',
-    key: 'managementDepartment',
-    width: 150
-  },
-  {
-    title: '适用险种',
-    dataIndex: 'applicableInsurance',
-    key: 'applicableInsurance',
-    width: 120
-  },
-  {
-    title: '适用要件',
-    dataIndex: 'applicableRequirements',
-    key: 'applicableRequirements',
-    width: 150
-  },
-  {
-    title: '适用章节',
-    dataIndex: 'applicableChapter',
-    key: 'applicableChapter',
-    width: 120
-  },
-  {
-    title: '审核状态',
-    dataIndex: 'auditStatus',
-    key: 'auditStatus',
-    width: 120
-  },
-  {
-    title: '有效状态',
-    dataIndex: 'effectiveStatus',
-    key: 'effectiveStatus',
-    width: 120
-  },
-  {
-    title: '最后更新时间',
-    dataIndex: 'lastUpdatedAt',
-    key: 'lastUpdatedAt',
-    width: 180
-  },
-  {
-    title: '操作',
-    key: 'actions',
-    width: 150,
-    fixed: 'right'
-  }
-]
-
 // 选择改变
 const onSelectChange = (selectedRowKeys: string[]) => {
   selectedRules.value = selectedRowKeys
 }
 
-// 状态颜色
-const getStatusColor = (status: string) => {
-  const colorMap: Record<string, string> = {
-    'PENDING_TECH_EVALUATION': 'orange',
-    'PENDING_OA_SUBMISSION': 'blue',
-    'SUBMITTED_TO_OA': 'cyan',
-    'OA_APPROVED': 'green',
-    'OA_REJECTED': 'red',
-    'TECH_APPROVED': 'green',
-    'TECH_REJECTED': 'red',
-    'EFFECTIVE': 'green',
-    'INACTIVE': 'red',
-    'PENDING_DEPLOYMENT': 'orange',
-    'OFFLINE': 'default',
-    'TESTING': 'blue'
-  }
-  return colorMap[status] || 'default'
-}
-
-// 状态文本
-const getStatusText = (status: string) => {
-  const textMap: Record<string, string> = {
-    'PENDING_TECH_EVALUATION': '待技术评估',
-    'PENDING_OA_SUBMISSION': '待提交OA',
-    'SUBMITTED_TO_OA': '已提交OA',
-    'OA_APPROVED': 'OA已通过',
-    'OA_REJECTED': 'OA驳回',
-    'TECH_APPROVED': '技术评估通过',
-    'TECH_REJECTED': '技术评估驳回',
-    'EFFECTIVE': '有效',
-    'INACTIVE': '无效',
-    'PENDING_DEPLOYMENT': '待上线',
-    'OFFLINE': '已下线',
-    'TESTING': '测试中'
-  }
-  return textMap[status] || status
+// 复制操作
+const handleCopy = (record: any) => {
+  router.push(`/rules/copy/${record.id}`)
 }
 
 // 导入
@@ -401,20 +225,5 @@ const handleSubmitOASuccess = () => {
 .header-right {
   display: flex;
   gap: 8px;
-}
-
-.table-section {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-.danger-item {
-  color: #ff4d4f;
-}
-
-.danger-item:hover {
-  background-color: #fff2f0;
 }
 </style>

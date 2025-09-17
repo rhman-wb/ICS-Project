@@ -48,9 +48,16 @@ public abstract class BaseIntegrationTest {
     }
     
     /**
-     * 获取API基础URL
+     * 获取API基础URL（用于非版本化路径）
      */
     protected String getApiUrl(String path) {
+        return baseUrl + path;
+    }
+
+    /**
+     * 获取API v1版本URL（用于版本化路径）
+     */
+    protected String getV1ApiUrl(String path) {
         return baseUrl + "/api/v1" + path;
     }
     

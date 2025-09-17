@@ -42,7 +42,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse<RuleResponse>> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/status/" + ruleId + "/audit-status"),
+                getV1ApiUrl("/rules/status/" + ruleId + "/audit-status"),
                 HttpMethod.PATCH,
                 entity,
                 new ParameterizedTypeReference<ApiResponse<RuleResponse>>() {}
@@ -68,7 +68,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/status/" + ruleId + "/audit-status"),
+                getV1ApiUrl("/rules/status/" + ruleId + "/audit-status"),
                 HttpMethod.PATCH,
                 entity,
                 ApiResponse.class
@@ -93,7 +93,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse<BatchOperationResponse>> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/status/batch/audit-status"),
+                getV1ApiUrl("/rules/status/batch/audit-status"),
                 HttpMethod.PATCH,
                 entity,
                 new ParameterizedTypeReference<ApiResponse<BatchOperationResponse>>() {}
@@ -118,7 +118,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse<RuleResponse>> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/status/" + ruleId + "/effective-status"),
+                getV1ApiUrl("/rules/status/" + ruleId + "/effective-status"),
                 HttpMethod.PATCH,
                 entity,
                 new ParameterizedTypeReference<ApiResponse<RuleResponse>>() {}
@@ -143,7 +143,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse<BatchOperationResponse>> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/status/batch/effective-status"),
+                getV1ApiUrl("/rules/status/batch/effective-status"),
                 HttpMethod.PATCH,
                 entity,
                 new ParameterizedTypeReference<ApiResponse<BatchOperationResponse>>() {}
@@ -165,7 +165,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse<BatchOperationResponse>> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/status/submit-oa"),
+                getV1ApiUrl("/rules/status/submit-oa"),
                 HttpMethod.POST,
                 entity,
                 new ParameterizedTypeReference<ApiResponse<BatchOperationResponse>>() {}
@@ -183,7 +183,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
         // Given
         String currentStatus = "PENDING";
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
-        String url = getApiUrl("/v1/rules/status/flow/audit?currentStatus=" + currentStatus);
+        String url = getV1ApiUrl("/rules/status/flow/audit?currentStatus=" + currentStatus);
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
@@ -207,7 +207,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
         // Given
         String currentStatus = "DRAFT";
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
-        String url = getApiUrl("/v1/rules/status/flow/effective?currentStatus=" + currentStatus);
+        String url = getV1ApiUrl("/rules/status/flow/effective?currentStatus=" + currentStatus);
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
@@ -234,7 +234,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse<List<Object>>> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/status/" + ruleId + "/history"),
+                getV1ApiUrl("/rules/status/" + ruleId + "/history"),
                 HttpMethod.GET,
                 entity,
                 new ParameterizedTypeReference<ApiResponse<List<Object>>>() {}
@@ -253,7 +253,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
         String ruleId = "test-rule-id-001";
         String reason = "测试回滚";
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
-        String url = getApiUrl("/v1/rules/status/" + ruleId + "/rollback?reason=" + reason);
+        String url = getV1ApiUrl("/rules/status/" + ruleId + "/rollback?reason=" + reason);
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
@@ -282,7 +282,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/status/" + ruleId + "/audit-status"),
+                getV1ApiUrl("/rules/status/" + ruleId + "/audit-status"),
                 HttpMethod.PATCH,
                 entity,
                 ApiResponse.class
@@ -304,7 +304,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/status/" + ruleId + "/effective-status"),
+                getV1ApiUrl("/rules/status/" + ruleId + "/effective-status"),
                 HttpMethod.PATCH,
                 entity,
                 ApiResponse.class
@@ -315,17 +315,17 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @DisplayName("权限测试 - RULE_SUBMIT_OA权限")
+    @DisplayName("权限测试 - RULE_OA_SUBMIT权限")
     void submitToOA_WithoutPermission() {
         // Given
         SubmitOARequest request = TestDataFactory.createDefaultSubmitOARequest();
-        // 使用没有RULE_SUBMIT_OA权限的用户Token
+        // 使用没有RULE_OA_SUBMIT权限的用户Token
         String token = TestDataFactory.createTestJwtToken("limiteduser");
         HttpEntity<SubmitOARequest> entity = new HttpEntity<>(request, getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
         ResponseEntity<ApiResponse> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/status/submit-oa"),
+                getV1ApiUrl("/rules/status/submit-oa"),
                 HttpMethod.POST,
                 entity,
                 ApiResponse.class
@@ -350,7 +350,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
         HttpEntity<UpdateAuditStatusRequest> submitEntity = new HttpEntity<>(submitRequest, getAuthHeaders(token.replace("Bearer ", "")));
 
         ResponseEntity<ApiResponse> submitResponse = restTemplate.exchange(
-                getApiUrl("/v1/rules/status/" + ruleId + "/audit-status"),
+                getV1ApiUrl("/rules/status/" + ruleId + "/audit-status"),
                 HttpMethod.PATCH,
                 submitEntity,
                 ApiResponse.class
@@ -364,7 +364,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
         HttpEntity<UpdateAuditStatusRequest> approveEntity = new HttpEntity<>(approveRequest, getAuthHeaders(token.replace("Bearer ", "")));
 
         ResponseEntity<ApiResponse> approveResponse = restTemplate.exchange(
-                getApiUrl("/v1/rules/status/" + ruleId + "/audit-status"),
+                getV1ApiUrl("/rules/status/" + ruleId + "/audit-status"),
                 HttpMethod.PATCH,
                 approveEntity,
                 ApiResponse.class
@@ -379,7 +379,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
         HttpEntity<UpdateEffectiveStatusRequest> effectiveEntity = new HttpEntity<>(effectiveRequest, getAuthHeaders(token.replace("Bearer ", "")));
 
         ResponseEntity<ApiResponse> effectiveResponse = restTemplate.exchange(
-                getApiUrl("/v1/rules/status/" + ruleId + "/effective-status"),
+                getV1ApiUrl("/rules/status/" + ruleId + "/effective-status"),
                 HttpMethod.PATCH,
                 effectiveEntity,
                 ApiResponse.class
@@ -406,7 +406,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse<BatchOperationResponse>> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/status/batch/audit-status"),
+                getV1ApiUrl("/rules/status/batch/audit-status"),
                 HttpMethod.PATCH,
                 entity,
                 new ParameterizedTypeReference<ApiResponse<BatchOperationResponse>>() {}

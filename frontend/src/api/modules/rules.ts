@@ -311,7 +311,7 @@ export const rulesApi = {
    */
   batchSubmitOA(data: SubmitOARequest): Promise<ApiResponse<BatchOperationResponse>> {
     return request({
-      url: '/v1/rules/batch/submit-oa',
+      url: '/v1/rules/status/submit-oa',
       method: 'POST',
       data
     })
@@ -362,7 +362,7 @@ export const rulesApi = {
    */
   downloadImportTemplate(): Promise<any> {
     return request({
-      url: '/v1/rules/template/download',
+      url: '/v1/rules/import/template',
       method: 'GET',
       responseType: 'blob'
     })
@@ -373,7 +373,7 @@ export const rulesApi = {
    */
   downloadTemplate(): Promise<Blob> {
     return request({
-      url: '/v1/rules/template/download',
+      url: '/v1/rules/import/template',
       method: 'GET',
       responseType: 'blob'
     })

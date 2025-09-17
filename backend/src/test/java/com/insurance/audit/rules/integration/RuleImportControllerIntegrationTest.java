@@ -40,7 +40,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
         // Given
         String ruleType = "SINGLE";
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
-        String url = getApiUrl("/v1/rules/import/template?ruleType=" + ruleType);
+        String url = getV1ApiUrl("/rules/import/template?ruleType=" + ruleType);
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
@@ -63,7 +63,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
     void downloadTemplate_WithoutRuleType() {
         // Given
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
-        String url = getApiUrl("/v1/rules/import/template");
+        String url = getV1ApiUrl("/rules/import/template");
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
@@ -86,7 +86,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
         // Given
         String ruleType = "SINGLE";
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
-        String url = getApiUrl("/v1/rules/import/template/info?ruleType=" + ruleType);
+        String url = getV1ApiUrl("/rules/import/template/info?ruleType=" + ruleType);
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
@@ -132,7 +132,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse<ImportResultResponse>> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/import/validate"),
+                getV1ApiUrl("/rules/import/validate"),
                 HttpMethod.POST,
                 entity,
                 new ParameterizedTypeReference<ApiResponse<ImportResultResponse>>() {}
@@ -169,7 +169,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/import/validate"),
+                getV1ApiUrl("/rules/import/validate"),
                 HttpMethod.POST,
                 entity,
                 ApiResponse.class
@@ -207,7 +207,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse<ImportResultResponse>> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/import"),
+                getV1ApiUrl("/rules/import"),
                 HttpMethod.POST,
                 entity,
                 new ParameterizedTypeReference<ApiResponse<ImportResultResponse>>() {}
@@ -245,7 +245,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/import"),
+                getV1ApiUrl("/rules/import"),
                 HttpMethod.POST,
                 entity,
                 ApiResponse.class
@@ -281,7 +281,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse<ImportResultResponse>> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/import/preview"),
+                getV1ApiUrl("/rules/import/preview"),
                 HttpMethod.POST,
                 entity,
                 new ParameterizedTypeReference<ApiResponse<ImportResultResponse>>() {}
@@ -299,7 +299,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
     void getImportHistory_Success() {
         // Given
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
-        String url = getApiUrl("/v1/rules/import/history?page=1&size=20");
+        String url = getV1ApiUrl("/rules/import/history?page=1&size=20");
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
@@ -327,7 +327,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse<ImportResultResponse>> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/import/result/" + batchId),
+                getV1ApiUrl("/rules/import/result/" + batchId),
                 HttpMethod.GET,
                 entity,
                 new ParameterizedTypeReference<ApiResponse<ImportResultResponse>>() {}
@@ -349,7 +349,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<Resource> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/import/result/" + batchId + "/download"),
+                getV1ApiUrl("/rules/import/result/" + batchId + "/download"),
                 HttpMethod.GET,
                 entity,
                 Resource.class
@@ -370,7 +370,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
         // Given
         String batchId = "test-batch-id-001";
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
-        String url = getApiUrl("/v1/rules/import/result/" + batchId + "?deleteData=false");
+        String url = getV1ApiUrl("/rules/import/result/" + batchId + "?deleteData=false");
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
@@ -394,7 +394,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
         String batchId = "test-batch-id-001";
         String reason = "测试回滚";
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
-        String url = getApiUrl("/v1/rules/import/rollback/" + batchId + "?reason=" + reason);
+        String url = getV1ApiUrl("/rules/import/rollback/" + batchId + "?reason=" + reason);
         HttpEntity<Void> entity = new HttpEntity<>(getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
@@ -435,7 +435,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/import"),
+                getV1ApiUrl("/rules/import"),
                 HttpMethod.POST,
                 entity,
                 ApiResponse.class
@@ -456,7 +456,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
 
         // When
         ResponseEntity<ApiResponse> response = restTemplate.exchange(
-                getApiUrl("/v1/rules/import/result/" + batchId),
+                getV1ApiUrl("/rules/import/result/" + batchId),
                 HttpMethod.DELETE,
                 entity,
                 ApiResponse.class
@@ -495,7 +495,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
 
             // When
             ResponseEntity<ApiResponse<ImportResultResponse>> response = restTemplate.exchange(
-                    getApiUrl("/v1/rules/import"),
+                    getV1ApiUrl("/rules/import"),
                     HttpMethod.POST,
                     entity,
                     new ParameterizedTypeReference<ApiResponse<ImportResultResponse>>() {}
@@ -537,7 +537,7 @@ class RuleImportControllerIntegrationTest extends BaseIntegrationTest {
 
             // When
             ResponseEntity<ApiResponse<ImportResultResponse>> response = restTemplate.exchange(
-                    getApiUrl("/v1/rules/import"),
+                    getV1ApiUrl("/rules/import"),
                     HttpMethod.POST,
                     entity,
                     new ParameterizedTypeReference<ApiResponse<ImportResultResponse>>() {}
