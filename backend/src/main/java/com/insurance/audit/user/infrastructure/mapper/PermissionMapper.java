@@ -24,20 +24,20 @@ public interface PermissionMapper extends BaseMapper<Permission> {
     /**
      * 根据权限名称查询权限
      */
-    default Permission findByName(String name) {
-        return selectOne(Wrappers.<Permission>lambdaQuery()
-                .eq(Permission::getName, name)
-                .eq(Permission::getDeleted, false));
-    }
+    @Select("""
+        SELECT * FROM permissions
+        WHERE permission_name = #{name} AND is_deleted = 0
+        """)
+    Permission findByName(@Param("name") String name);
     
     /**
      * 检查权限名称是否存在
      */
-    default boolean existsByName(String name) {
-        return selectCount(Wrappers.<Permission>lambdaQuery()
-                .eq(Permission::getName, name)
-                .eq(Permission::getDeleted, false)) > 0;
-    }
+    @Select("""
+        SELECT COUNT(*) FROM permissions
+        WHERE permission_name = #{name} AND is_deleted = 0
+        """)
+    boolean existsByName(@Param("name") String name);
     
     /**
      * 根据角色ID查询权限列表
@@ -67,11 +67,12 @@ public interface PermissionMapper extends BaseMapper<Permission> {
     /**
      * 查询所有可用权限
      */
-    default List<Permission> findAllAvailable() {
-        return selectList(Wrappers.<Permission>lambdaQuery()
-                .eq(Permission::getDeleted, false)
-                .orderByAsc(Permission::getName));
-    }
+    @Select("""
+        SELECT * FROM permissions
+        WHERE is_deleted = 0
+        ORDER BY permission_name
+        """)
+    List<Permission> findAllAvailable();
     
     /**
      * 根据资源路径查询权限

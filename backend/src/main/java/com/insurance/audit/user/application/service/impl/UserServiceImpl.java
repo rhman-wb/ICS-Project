@@ -602,6 +602,10 @@ public class UserServiceImpl implements UserService {
         // 查询用户角色
         List<Role> roles = roleMapper.findByUserId(userId);
         user.setRoles(roles);
+
+        // 查询用户权限
+        List<Permission> permissions = getUserPermissions(userId);
+        user.setPermissions(permissions);
         
         return convertToUserProfileResponse(user);
     }

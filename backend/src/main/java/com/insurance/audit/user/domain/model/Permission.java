@@ -35,7 +35,7 @@ public class Permission extends BaseEntity {
     /**
      * 权限名称
      */
-    @TableField("name")
+    @TableField("permission_name")
     @NotBlank(message = "权限名称不能为空")
     @Size(max = 100, message = "权限名称长度不能超过100字符")
     @Schema(description = "权限名称", required = true, example = "用户管理")
@@ -44,7 +44,7 @@ public class Permission extends BaseEntity {
     /**
      * 权限编码
      */
-    @TableField("code")
+    @TableField("permission_code")
     @NotBlank(message = "权限编码不能为空")
     @Size(max = 100, message = "权限编码长度不能超过100字符")
     @Schema(description = "权限编码", required = true, example = "user:view")

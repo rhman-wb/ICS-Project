@@ -3,31 +3,31 @@
 -- =====================================================
 
 -- 插入规则管理相关权限
-INSERT INTO permissions (id, permission_name, description, resource_path, created_by, created_at, updated_by, updated_at, is_deleted, version) VALUES
+INSERT INTO permissions (id, permission_name, permission_code, description, resource_path, created_by, created_at, updated_by, updated_at, is_deleted, version) VALUES
 -- 规则基础权限
-('perm_rule_view', 'RULE_VIEW', '查看规则信息', '/api/v1/rules/**', 'system', NOW(), 'system', NOW(), 0, 0),
-('perm_rule_create', 'RULE_CREATE', '创建规则', '/api/v1/rules', 'system', NOW(), 'system', NOW(), 0, 0),
-('perm_rule_edit', 'RULE_EDIT', '编辑规则', '/api/v1/rules/**', 'system', NOW(), 'system', NOW(), 0, 0),
-('perm_rule_delete', 'RULE_DELETE', '删除规则', '/api/v1/rules/**', 'system', NOW(), 'system', NOW(), 0, 0),
+('perm_rule_view', 'RULE_VIEW', 'RULE_VIEW', '查看规则信息', '/api/v1/rules/**', 'system', NOW(), 'system', NOW(), 0, 0),
+('perm_rule_create', 'RULE_CREATE', 'RULE_CREATE', '创建规则', '/api/v1/rules', 'system', NOW(), 'system', NOW(), 0, 0),
+('perm_rule_edit', 'RULE_EDIT', 'RULE_EDIT', '编辑规则', '/api/v1/rules/**', 'system', NOW(), 'system', NOW(), 0, 0),
+('perm_rule_delete', 'RULE_DELETE', 'RULE_DELETE', '删除规则', '/api/v1/rules/**', 'system', NOW(), 'system', NOW(), 0, 0),
 
 -- 规则状态管理权限
-('perm_rule_audit', 'RULE_AUDIT', '规则审核', '/api/v1/rules/*/audit', 'system', NOW(), 'system', NOW(), 0, 0),
-('perm_rule_approve', 'RULE_APPROVE', '规则审批', '/api/v1/rules/*/approve', 'system', NOW(), 'system', NOW(), 0, 0),
-('perm_rule_publish', 'RULE_PUBLISH', '规则发布', '/api/v1/rules/*/publish', 'system', NOW(), 'system', NOW(), 0, 0),
+('perm_rule_audit', 'RULE_AUDIT', 'RULE_AUDIT', '规则审核', '/api/v1/rules/*/audit', 'system', NOW(), 'system', NOW(), 0, 0),
+('perm_rule_approve', 'RULE_APPROVE', 'RULE_APPROVE', '规则审批', '/api/v1/rules/*/approve', 'system', NOW(), 'system', NOW(), 0, 0),
+('perm_rule_publish', 'RULE_PUBLISH', 'RULE_PUBLISH', '规则发布', '/api/v1/rules/*/publish', 'system', NOW(), 'system', NOW(), 0, 0),
 
 -- 规则导入导出权限
-('perm_rule_import', 'RULE_IMPORT', '规则导入', '/api/v1/rules/import', 'system', NOW(), 'system', NOW(), 0, 0),
-('perm_rule_export', 'RULE_EXPORT', '规则导出', '/api/v1/rules/export', 'system', NOW(), 'system', NOW(), 0, 0),
+('perm_rule_import', 'RULE_IMPORT', 'RULE_IMPORT', '规则导入', '/api/v1/rules/import', 'system', NOW(), 'system', NOW(), 0, 0),
+('perm_rule_export', 'RULE_EXPORT', 'RULE_EXPORT', '规则导出', '/api/v1/rules/export', 'system', NOW(), 'system', NOW(), 0, 0),
 
 -- 规则高级操作权限
-('perm_rule_copy', 'RULE_COPY', '复制规则', '/api/v1/rules/*/copy', 'system', NOW(), 'system', NOW(), 0, 0),
-('perm_rule_batch', 'RULE_BATCH', '批量操作规则', '/api/v1/rules/batch/**', 'system', NOW(), 'system', NOW(), 0, 0),
+('perm_rule_copy', 'RULE_COPY', 'RULE_COPY', '复制规则', '/api/v1/rules/*/copy', 'system', NOW(), 'system', NOW(), 0, 0),
+('perm_rule_batch', 'RULE_BATCH', 'RULE_BATCH', '批量操作规则', '/api/v1/rules/batch/**', 'system', NOW(), 'system', NOW(), 0, 0),
 
 -- OA系统集成权限
-('perm_rule_oa_submit', 'RULE_OA_SUBMIT', '提交OA审核', '/api/v1/rules/oa/submit', 'system', NOW(), 'system', NOW(), 0, 0),
+('perm_rule_oa_submit', 'RULE_OA_SUBMIT', 'RULE_OA_SUBMIT', '提交OA审核', '/api/v1/rules/oa/submit', 'system', NOW(), 'system', NOW(), 0, 0),
 
 -- 规则统计权限
-('perm_rule_statistics', 'RULE_STATISTICS', '规则统计', '/api/v1/rules/statistics', 'system', NOW(), 'system', NOW(), 0, 0);
+('perm_rule_statistics', 'RULE_STATISTICS', 'RULE_STATISTICS', '规则统计', '/api/v1/rules/statistics', 'system', NOW(), 'system', NOW(), 0, 0);
 
 -- 创建规则管理相关角色
 INSERT INTO roles (id, role_code, role_name, description, created_by, created_at, updated_by, updated_at, is_deleted, version) VALUES

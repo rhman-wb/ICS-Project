@@ -5,12 +5,19 @@ REM Description: 验证规则管理相关查询的性能表现
 REM Usage: performance_test.bat
 REM =====================================================
 
-REM 数据库连接配置
-set DB_HOST=localhost
-set DB_PORT=3306
-set DB_NAME=insurance_audit
-set DB_USER=insurance_user
-set DB_PASSWORD=20150826
+REM 数据库连接配置 - 从环境变量获取敏感信息
+if "%DB_HOST%"=="" set DB_HOST=localhost
+if "%DB_PORT%"=="" set DB_PORT=3306
+if "%DB_NAME%"=="" set DB_NAME=insurance_audit
+if "%DB_USER%"=="" set DB_USER=insurance_user
+
+REM 检查必要的环境变量
+if "%DB_PASSWORD%"=="" (
+    echo [错误] 请设置环境变量 DB_PASSWORD
+    echo 使用示例: set DB_PASSWORD=your_password ^&^& performance_test.bat
+    pause
+    exit /b 1
+)
 
 echo ==========================================
 echo 规则模块数据库性能测试

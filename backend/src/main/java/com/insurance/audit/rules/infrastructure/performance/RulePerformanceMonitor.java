@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * 规则模块性能监控和优化工具
@@ -39,10 +40,11 @@ public class RulePerformanceMonitor {
 
         log.info("开始验证规则模块查询性能...");
 
-        // 1. 验证分页列表查询性能
+        // 1. 验证分页列表查询性能（优化为具体列名）
         long listQueryTime = measureQueryTime(() -> {
             return jdbcTemplate.queryForList(
-                "SELECT * FROM rule " +
+                "SELECT id, rule_name, rule_type, audit_status, effective_status, manage_department, last_updated_at, priority " +
+                "FROM rule " +
                 "WHERE is_deleted = 0 " +
                 "  AND audit_status IN ('PENDING_TECH_EVALUATION', 'APPROVED') " +
                 "  AND effective_status = 'EFFECTIVE' " +
@@ -51,10 +53,11 @@ public class RulePerformanceMonitor {
             );
         });
 
-        // 2. 验证筛选查询性能
+        // 2. 验证筛选查询性能（优化为具体列名）
         long filterQueryTime = measureQueryTime(() -> {
             return jdbcTemplate.queryForList(
-                "SELECT * FROM rule " +
+                "SELECT id, rule_name, rule_type, manage_department, priority, created_at " +
+                "FROM rule " +
                 "WHERE is_deleted = 0 " +
                 "  AND rule_type = 'SINGLE' " +
                 "  AND manage_department = '技术部门' " +
@@ -73,21 +76,15 @@ public class RulePerformanceMonitor {
             );
         });
 
-        // 4. 验证搜索查询性能
+        // 4. 验证搜索查询性能 - 支持FULLTEXT和LIKE两种方式
         long searchQueryTime = measureQueryTime(() -> {
-            return jdbcTemplate.queryForList(
-                "SELECT * FROM rule " +
-                "WHERE is_deleted = 0 " +
-                "  AND (rule_name LIKE '%保险%' OR rule_description LIKE '%保险%') " +
-                "ORDER BY last_updated_at DESC " +
-                "LIMIT 20 OFFSET 0"
-            );
+            return executeSearchQuery("保险");
         });
 
-        // 5. 验证联表查询性能（规则详情）
+        // 5. 验证联表查询性能（规则详情）- 优化为具体列名
         long joinQueryTime = measureQueryTime(() -> {
             return jdbcTemplate.queryForList(
-                "SELECT r.*, rs.rule_description as single_description " +
+                "SELECT r.id, r.rule_name, r.rule_type, r.audit_status, r.effective_status, rs.rule_description as single_description " +
                 "FROM rule r " +
                 "LEFT JOIN rule_single rs ON r.id = rs.rule_id " +
                 "WHERE r.is_deleted = 0 " +
@@ -135,12 +132,12 @@ public class RulePerformanceMonitor {
 
         log.info("开始分析查询执行计划...");
 
-        // 常用查询的执行计划
+        // 常用查询的执行计划（已优化为具体列名并支持FULLTEXT）
         String[] queries = {
-            "SELECT * FROM rule WHERE is_deleted = 0 AND audit_status = 'APPROVED' ORDER BY last_updated_at DESC LIMIT 20",
-            "SELECT * FROM rule WHERE is_deleted = 0 AND rule_type = 'SINGLE' AND manage_department = '技术部门' LIMIT 20",
+            "SELECT id, rule_name, audit_status, effective_status, last_updated_at FROM rule WHERE is_deleted = 0 AND audit_status = 'APPROVED' ORDER BY last_updated_at DESC LIMIT 20",
+            "SELECT id, rule_name, rule_type, manage_department, last_updated_at FROM rule WHERE is_deleted = 0 AND rule_type = 'SINGLE' AND manage_department = '技术部门' LIMIT 20",
             "SELECT audit_status, COUNT(*) FROM rule WHERE is_deleted = 0 GROUP BY audit_status",
-            "SELECT * FROM rule WHERE is_deleted = 0 AND rule_name LIKE '%保险%' LIMIT 20"
+            "SELECT id, rule_name, rule_description, last_updated_at FROM rule WHERE is_deleted = 0 AND MATCH(rule_name, rule_description) AGAINST('保险' IN NATURAL LANGUAGE MODE) LIMIT 20"
         };
 
         List<Map<String, Object>> plans = new ArrayList<>();
@@ -210,15 +207,57 @@ public class RulePerformanceMonitor {
     }
 
     /**
+     * 执行搜索查询 - 支持FULLTEXT和LIKE两种方式
+     *
+     * @param keyword 搜索关键词
+     * @return 查询结果
+     */
+    private List<Map<String, Object>> executeSearchQuery(String keyword) {
+        try {
+            // 首先尝试使用FULLTEXT索引查询
+            String fulltextQuery =
+                "SELECT id, rule_name, rule_description, audit_status, effective_status, last_updated_at " +
+                "FROM rule " +
+                "WHERE is_deleted = 0 " +
+                "  AND MATCH(rule_name, rule_description) AGAINST(? IN NATURAL LANGUAGE MODE) " +
+                "ORDER BY last_updated_at DESC " +
+                "LIMIT 20 OFFSET 0";
+
+            List<Map<String, Object>> result = jdbcTemplate.queryForList(fulltextQuery, keyword);
+
+            log.info("使用FULLTEXT索引搜索，关键词: {}, 结果数: {}", keyword, result.size());
+            return result;
+
+        } catch (Exception e) {
+            // FULLTEXT查询失败时，回退到LIKE查询
+            log.warn("FULLTEXT查询失败，回退到LIKE查询: " + e.getMessage());
+
+            String likeQuery =
+                "SELECT id, rule_name, rule_description, audit_status, effective_status, last_updated_at " +
+                "FROM rule " +
+                "WHERE is_deleted = 0 " +
+                "  AND (rule_name LIKE ? OR rule_description LIKE ?) " +
+                "ORDER BY last_updated_at DESC " +
+                "LIMIT 20 OFFSET 0";
+
+            String likePattern = "%" + keyword + "%";
+            List<Map<String, Object>> result = jdbcTemplate.queryForList(likeQuery, likePattern, likePattern);
+
+            log.info("使用LIKE搜索，关键词: {}, 结果数: {}", keyword, result.size());
+            return result;
+        }
+    }
+
+    /**
      * 测量查询执行时间
      *
      * @param queryAction 查询操作
      * @return 执行时间（毫秒）
      */
-    private long measureQueryTime(Runnable queryAction) {
+    private <T> long measureQueryTime(Supplier<T> queryAction) {
         long startTime = System.currentTimeMillis();
         try {
-            queryAction.run();
+            queryAction.get(); // 调用查询并获取结果
         } catch (Exception e) {
             log.warn("查询执行失败", e);
         }

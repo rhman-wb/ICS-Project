@@ -6,12 +6,19 @@
 # Usage: ./performance_test.sh
 # =====================================================
 
-# 数据库连接配置
-DB_HOST="localhost"
-DB_PORT="3306"
-DB_NAME="insurance_audit"
-DB_USER="insurance_user"
-DB_PASSWORD="20150826"
+# 数据库连接配置 - 从环境变量获取敏感信息
+DB_HOST="${DB_HOST:-localhost}"
+DB_PORT="${DB_PORT:-3306}"
+DB_NAME="${DB_NAME:-insurance_audit}"
+DB_USER="${DB_USER:-insurance_user}"
+DB_PASSWORD="${DB_PASSWORD:-}"
+
+# 检查必要的环境变量
+if [ -z "$DB_PASSWORD" ]; then
+    echo -e "${RED}错误: 请设置环境变量 DB_PASSWORD${NC}"
+    echo -e "${YELLOW}使用示例: export DB_PASSWORD='your_password' && ./performance_test.sh${NC}"
+    exit 1
+fi
 
 # 颜色输出
 RED='\033[0;31m'

@@ -91,6 +91,14 @@ public class UserProfileResponse {
                 .collect(java.util.stream.Collectors.toList());
             builder.roles(roleNames);
         }
+
+        // 转换权限列表
+        if (user.getPermissions() != null) {
+            List<String> permissionCodes = user.getPermissions().stream()
+                .map(com.insurance.audit.user.domain.model.Permission::getCode)
+                .collect(java.util.stream.Collectors.toList());
+            builder.permissions(permissionCodes);
+        }
         
         return builder.build();
     }
