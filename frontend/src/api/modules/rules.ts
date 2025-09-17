@@ -377,5 +377,59 @@ export const rulesApi = {
       method: 'GET',
       responseType: 'blob'
     })
+  },
+
+  // =====================================================
+  // 性能监控相关API
+  // =====================================================
+
+  /**
+   * 验证查询性能
+   */
+  validateQueryPerformance(): Promise<ApiResponse<any>> {
+    return request({
+      url: '/v1/rules/performance/validate',
+      method: 'GET'
+    })
+  },
+
+  /**
+   * 分析查询执行计划
+   */
+  analyzeExecutionPlans(): Promise<ApiResponse<any>> {
+    return request({
+      url: '/v1/rules/performance/execution-plans',
+      method: 'GET'
+    })
+  },
+
+  /**
+   * 获取索引使用情况
+   */
+  getIndexUsageStatistics(): Promise<ApiResponse<any>> {
+    return request({
+      url: '/v1/rules/performance/indexes',
+      method: 'GET'
+    })
+  },
+
+  /**
+   * 生成性能报告
+   */
+  generatePerformanceReport(): Promise<ApiResponse<any>> {
+    return request({
+      url: '/v1/rules/performance/report',
+      method: 'GET'
+    })
+  },
+
+  /**
+   * 执行性能优化
+   */
+  optimizePerformance(): Promise<ApiResponse<any>> {
+    return request({
+      url: '/v1/rules/performance/optimize',
+      method: 'POST'
+    })
   }
 }

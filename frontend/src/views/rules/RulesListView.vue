@@ -99,23 +99,29 @@
               </a-button>
               <template #overlay>
                 <a-menu>
-                  <a-menu-item @click="handleEdit(record)">
-                    <EditOutlined />
-                    编辑
-                  </a-menu-item>
+                  <PermissionWrapper permissions="RULE_EDIT">
+                    <a-menu-item @click="handleEdit(record)">
+                      <EditOutlined />
+                      编辑
+                    </a-menu-item>
+                  </PermissionWrapper>
                   <a-menu-item @click="handleToggleFollow(record)">
                     <StarOutlined />
                     {{ record.followed ? '取消关注' : '关注' }}
                   </a-menu-item>
-                  <a-menu-item @click="$router.push(`/rules/copy/${record.id}`)">
-                    <CopyOutlined />
-                    复制
-                  </a-menu-item>
+                  <PermissionWrapper permissions="RULE_COPY">
+                    <a-menu-item @click="$router.push(`/rules/copy/${record.id}`)">
+                      <CopyOutlined />
+                      复制
+                    </a-menu-item>
+                  </PermissionWrapper>
                   <a-menu-divider />
-                  <a-menu-item @click="handleDelete(record)" class="danger-item">
-                    <DeleteOutlined />
-                    删除
-                  </a-menu-item>
+                  <PermissionWrapper permissions="RULE_DELETE">
+                    <a-menu-item @click="handleDelete(record)" class="danger-item">
+                      <DeleteOutlined />
+                      删除
+                    </a-menu-item>
+                  </PermissionWrapper>
                 </a-menu>
               </template>
             </a-dropdown>
@@ -158,6 +164,7 @@ import RulesFilterBar from '@/components/rules/RulesFilterBar.vue'
 import SelectedChips from '@/components/rules/SelectedChips.vue'
 import ImportModal from '@/components/rules/ImportModal.vue'
 import SubmitOAModal from '@/components/rules/SubmitOAModal.vue'
+import PermissionWrapper from '@/components/common/PermissionWrapper.vue'
 import { rulesApi } from '@/api/modules/rules'
 
 // 使用composable

@@ -65,7 +65,7 @@ public class RuleStatusController {
 
     @PatchMapping("/{id}/effective-status")
     @Operation(summary = "更新规则有效状态", description = "更新单个规则的有效状态")
-    @PreAuthorize("hasAuthority('RULE_ADMIN')")
+    @PreAuthorize("hasAuthority('RULE_PUBLISH')")
     public ApiResponse<RuleResponse> updateEffectiveStatus(
             @Parameter(description = "规则ID") @PathVariable String id,
             @Parameter(description = "更新有效状态请求") @Valid @RequestBody UpdateEffectiveStatusRequest request) {
@@ -79,7 +79,7 @@ public class RuleStatusController {
 
     @PatchMapping("/batch/effective-status")
     @Operation(summary = "批量更新规则有效状态", description = "批量更新多个规则的有效状态")
-    @PreAuthorize("hasAuthority('RULE_ADMIN')")
+    @PreAuthorize("hasAuthority('RULE_PUBLISH')")
     public ApiResponse<BatchOperationResponse> batchUpdateEffectiveStatus(
             @Parameter(description = "批量更新有效状态请求") @Valid @RequestBody List<UpdateEffectiveStatusRequest> requests) {
 
@@ -92,7 +92,7 @@ public class RuleStatusController {
 
     @PostMapping("/submit-oa")
     @Operation(summary = "提交OA审核", description = "将规则提交到OA系统进行审核")
-    @PreAuthorize("hasAuthority('RULE_SUBMIT_OA')")
+    @PreAuthorize("hasAuthority('RULE_OA_SUBMIT')")
     public ApiResponse<BatchOperationResponse> submitToOA(
             @Parameter(description = "提交OA请求") @Valid @RequestBody SubmitOARequest request) {
 
@@ -144,7 +144,7 @@ public class RuleStatusController {
 
     @PostMapping("/{id}/rollback")
     @Operation(summary = "回滚规则状态", description = "将规则状态回滚到上一个状态")
-    @PreAuthorize("hasAuthority('RULE_ADMIN')")
+    @PreAuthorize("hasAuthority('RULE_APPROVE')")
     public ApiResponse<RuleResponse> rollbackRuleStatus(
             @Parameter(description = "规则ID") @PathVariable String id,
             @Parameter(description = "回滚原因") @RequestParam String reason) {

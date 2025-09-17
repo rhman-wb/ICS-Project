@@ -1,13 +1,21 @@
 <template>
   <div class="toolbar">
     <div class="toolbar-left">
-      <a-button type="primary" @click="$emit('import')">
+      <a-button
+        v-permission="'RULE_IMPORT'"
+        type="primary"
+        @click="$emit('import')"
+      >
         <template #icon>
           <ImportOutlined />
         </template>
         导入
       </a-button>
-      <a-button type="primary" @click="$emit('add')">
+      <a-button
+        v-permission="'RULE_CREATE'"
+        type="primary"
+        @click="$emit('add')"
+      >
         <template #icon>
           <PlusOutlined />
         </template>
@@ -27,6 +35,7 @@
     </div>
     <div class="toolbar-right">
       <a-button
+        v-permission="'RULE_DELETE'"
         danger
         :disabled="selectedCount === 0"
         @click="$emit('batchDelete')"
@@ -36,7 +45,12 @@
         </template>
         删除
       </a-button>
-      <a-button @click="$emit('singleRuleCreate')">单条规则创建</a-button>
+      <a-button
+        v-permission="'RULE_CREATE'"
+        @click="$emit('singleRuleCreate')"
+      >
+        单条规则创建
+      </a-button>
       <a-button
         :disabled="selectedCount === 0"
         @click="$emit('focus')"
@@ -46,13 +60,17 @@
         </template>
         关注
       </a-button>
-      <a-button @click="$emit('templateBatchImport')">
+      <a-button
+        v-permission="'RULE_IMPORT'"
+        @click="$emit('templateBatchImport')"
+      >
         <template #icon>
           <DownloadOutlined />
         </template>
         模板批量导入
       </a-button>
       <a-button
+        v-permission="'RULE_OA_SUBMIT'"
         type="primary"
         :disabled="selectedCount === 0"
         @click="$emit('submitOA')"

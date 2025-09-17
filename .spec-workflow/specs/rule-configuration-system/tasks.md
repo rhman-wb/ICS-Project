@@ -135,14 +135,14 @@
 
 ### Phase 5: 性能、权限与运维（优先级：中）
 
-- [ ] 5.1 权限控制与可见性
+- [x] 5.1 权限控制与可见性
   - File: frontend/src/directives/permission.ts, backend 权限注解
   - Purpose: RULE_ADMIN/AUDITOR/VIEWER 按钮与接口权限
   - _Leverage: user-auth-system_
   - _Requirements: 权限与安全_
   - _Prompt: Role: 全栈 | Task: 接入权限指令与后端鉴权 | Restrictions: 最小权限原则 | Success: 非授权操作被拦截_
 
-- [ ] 5.2 性能优化与索引验证
+- [x] 5.2 性能优化与索引验证
   - File: backend/…，DB指标与Explain
   - Purpose: 确保筛选<3s、列表分页稳定
   - _Leverage: 数据库索引、缓存（可选）_
