@@ -906,4 +906,222 @@ public class TestDataFactory {
         }
         return documents;
     }
+
+    // ========== 规则相关测试数据 ==========
+
+    // 规则相关常量
+    public static final String DEFAULT_RULE_ID = "test-rule-id-001";
+    public static final String DEFAULT_RULE_NAME = "测试规则";
+    public static final String DEFAULT_RULE_DESCRIPTION = "这是一个测试规则的描述";
+
+    /**
+     * 创建默认创建规则请求
+     */
+    public static com.insurance.audit.rules.interfaces.dto.request.CreateRuleRequest createDefaultCreateRuleRequest() {
+        return com.insurance.audit.rules.interfaces.dto.request.CreateRuleRequest.builder()
+                .ruleName(DEFAULT_RULE_NAME)
+                .ruleType("SINGLE")
+                .description(DEFAULT_RULE_DESCRIPTION)
+                .expression("测试表达式")
+                .errorMessage("规则验证失败")
+                .isActive(true)
+                .build();
+    }
+
+    /**
+     * 创建创建规则请求（指定类型）
+     */
+    public static com.insurance.audit.rules.interfaces.dto.request.CreateRuleRequest createCreateRuleRequest(String ruleType) {
+        return com.insurance.audit.rules.interfaces.dto.request.CreateRuleRequest.builder()
+                .ruleName("测试" + ruleType + "规则")
+                .ruleType(ruleType)
+                .description("测试" + ruleType + "规则描述")
+                .expression("测试表达式")
+                .errorMessage("规则验证失败")
+                .isActive(true)
+                .build();
+    }
+
+    /**
+     * 创建默认更新规则请求
+     */
+    public static com.insurance.audit.rules.interfaces.dto.request.UpdateRuleRequest createDefaultUpdateRuleRequest() {
+        return com.insurance.audit.rules.interfaces.dto.request.UpdateRuleRequest.builder()
+                .ruleName("更新后的规则名称")
+                .description("更新后的规则描述")
+                .expression("更新后的表达式")
+                .errorMessage("更新后的错误消息")
+                .isActive(true)
+                .build();
+    }
+
+    /**
+     * 创建默认更新审核状态请求
+     */
+    public static com.insurance.audit.rules.interfaces.dto.request.UpdateAuditStatusRequest createDefaultUpdateAuditStatusRequest() {
+        return com.insurance.audit.rules.interfaces.dto.request.UpdateAuditStatusRequest.builder()
+                .auditStatus("APPROVED")
+                .comments("审核通过")
+                .build();
+    }
+
+    /**
+     * 创建更新审核状态请求（指定状态）
+     */
+    public static com.insurance.audit.rules.interfaces.dto.request.UpdateAuditStatusRequest createUpdateAuditStatusRequest(String ruleId, String status) {
+        return com.insurance.audit.rules.interfaces.dto.request.UpdateAuditStatusRequest.builder()
+                .ruleId(ruleId)
+                .auditStatus(status)
+                .comments("更新状态为: " + status)
+                .build();
+    }
+
+    /**
+     * 创建默认更新有效状态请求
+     */
+    public static com.insurance.audit.rules.interfaces.dto.request.UpdateEffectiveStatusRequest createDefaultUpdateEffectiveStatusRequest() {
+        return com.insurance.audit.rules.interfaces.dto.request.UpdateEffectiveStatusRequest.builder()
+                .effectiveStatus("EFFECTIVE")
+                .effectiveDate(LocalDateTime.now())
+                .comments("设置为有效")
+                .build();
+    }
+
+    /**
+     * 创建更新有效状态请求（指定状态）
+     */
+    public static com.insurance.audit.rules.interfaces.dto.request.UpdateEffectiveStatusRequest createUpdateEffectiveStatusRequest(String ruleId, String status) {
+        return com.insurance.audit.rules.interfaces.dto.request.UpdateEffectiveStatusRequest.builder()
+                .ruleId(ruleId)
+                .effectiveStatus(status)
+                .effectiveDate(LocalDateTime.now())
+                .comments("更新状态为: " + status)
+                .build();
+    }
+
+    /**
+     * 创建默认提交OA请求
+     */
+    public static com.insurance.audit.rules.interfaces.dto.request.SubmitOARequest createDefaultSubmitOARequest() {
+        return com.insurance.audit.rules.interfaces.dto.request.SubmitOARequest.builder()
+                .ruleIds(Arrays.asList("rule-id-001", "rule-id-002"))
+                .submissionType("BATCH")
+                .urgencyLevel("NORMAL")
+                .comments("批量提交OA审核")
+                .build();
+    }
+
+    /**
+     * 创建提交OA请求（指定规则IDs）
+     */
+    public static com.insurance.audit.rules.interfaces.dto.request.SubmitOARequest createSubmitOARequest(List<String> ruleIds) {
+        return com.insurance.audit.rules.interfaces.dto.request.SubmitOARequest.builder()
+                .ruleIds(ruleIds)
+                .submissionType("BATCH")
+                .urgencyLevel("NORMAL")
+                .comments("提交OA审核")
+                .build();
+    }
+
+    /**
+     * 创建模拟Excel内容
+     */
+    public static byte[] createMockExcelContent() {
+        // 创建简单的Excel内容模拟
+        String mockContent = """
+                规则名称,规则类型,描述,表达式,错误消息
+                测试规则1,SINGLE,测试描述1,表达式1,错误消息1
+                测试规则2,DOUBLE,测试描述2,表达式2,错误消息2
+                测试规则3,FORMAT,测试描述3,表达式3,错误消息3
+                """;
+        return mockContent.getBytes();
+    }
+
+    /**
+     * 创建规则权限列表
+     */
+    public static List<Permission> createRulePermissionList() {
+        return Arrays.asList(
+                createApiPermission("规则查看", "RULE_VIEW", "/api/v1/rules/*"),
+                createApiPermission("规则创建", "RULE_CREATE", "/api/v1/rules"),
+                createApiPermission("规则编辑", "RULE_EDIT", "/api/v1/rules/*"),
+                createApiPermission("规则删除", "RULE_DELETE", "/api/v1/rules/*"),
+                createApiPermission("规则审核", "RULE_AUDIT", "/api/v1/rules/status/*"),
+                createApiPermission("规则管理", "RULE_ADMIN", "/api/v1/rules/*"),
+                createApiPermission("规则导入", "RULE_IMPORT", "/api/v1/rules/import/*"),
+                createApiPermission("OA提交", "RULE_SUBMIT_OA", "/api/v1/rules/status/submit-oa")
+        );
+    }
+
+    /**
+     * 创建规则管理员用户详情
+     */
+    public static CustomUserDetails createRuleAdminUserDetails() {
+        Collection<GrantedAuthority> authorities = Arrays.asList(
+                new SimpleGrantedAuthority("ROLE_RULE_ADMIN"),
+                new SimpleGrantedAuthority("ROLE_USER")
+        );
+
+        return CustomUserDetails.builder()
+                .userId("rule-admin-user-id")
+                .username("ruleadmin")
+                .password(DEFAULT_ENCODED_PASSWORD)
+                .realName("规则管理员")
+                .enabled(true)
+                .accountNonExpired(true)
+                .credentialsNonExpired(true)
+                .accountNonLocked(true)
+                .authorities(authorities)
+                .permissions(Arrays.asList(
+                        "RULE_VIEW", "RULE_CREATE", "RULE_EDIT", "RULE_DELETE",
+                        "RULE_AUDIT", "RULE_ADMIN", "RULE_IMPORT", "RULE_SUBMIT_OA"
+                ))
+                .build();
+    }
+
+    /**
+     * 创建规则审核员用户详情
+     */
+    public static CustomUserDetails createRuleAuditorUserDetails() {
+        Collection<GrantedAuthority> authorities = Arrays.asList(
+                new SimpleGrantedAuthority("ROLE_RULE_AUDITOR"),
+                new SimpleGrantedAuthority("ROLE_USER")
+        );
+
+        return CustomUserDetails.builder()
+                .userId("rule-auditor-user-id")
+                .username("ruleauditor")
+                .password(DEFAULT_ENCODED_PASSWORD)
+                .realName("规则审核员")
+                .enabled(true)
+                .accountNonExpired(true)
+                .credentialsNonExpired(true)
+                .accountNonLocked(true)
+                .authorities(authorities)
+                .permissions(Arrays.asList("RULE_VIEW", "RULE_AUDIT"))
+                .build();
+    }
+
+    /**
+     * 创建规则查看者用户详情
+     */
+    public static CustomUserDetails createRuleViewerUserDetails() {
+        Collection<GrantedAuthority> authorities = Arrays.asList(
+                new SimpleGrantedAuthority("ROLE_RULE_VIEWER"),
+                new SimpleGrantedAuthority("ROLE_USER")
+        );
+
+        return CustomUserDetails.builder()
+                .userId("rule-viewer-user-id")
+                .username("ruleviewer")
+                .password(DEFAULT_ENCODED_PASSWORD)
+                .realName("规则查看者")
+                .enabled(true)
+                .accountNonExpired(true)
+                .credentialsNonExpired(true)
+                .accountNonLocked(true)
+                .authorities(authorities)
+                .permissions(Arrays.asList("RULE_VIEW"))
+                .build();
+    }
 }

@@ -109,7 +109,7 @@
 
 ### Phase 4: 测试与质量（优先级：高）
 
-- [ ] 4.1 后端集成测试
+- [x] 4.1 后端集成测试
   - File: backend/src/test/java/.../rule/*
   - 覆盖列表分页筛选、CRUD、状态流转、导入
   - Purpose: 保证接口契约与业务正确
@@ -117,7 +117,7 @@
   - _Requirements: 全部后端接口_
   - _Prompt: Role: QA | Task: 编写高覆盖率集成测试 | Restrictions: 独立可重复、含边界用例 | Success: 覆盖率≥80%，用例通过_
 
-- [ ] 4.2 前端组件与视图测试
+- [x] 4.2 前端组件与视图测试
   - File: frontend/src/test/rules/*
   - 组件单测（表单校验、筛选交互）、视图集成测试
   - Purpose: 保证主要交互稳定性
@@ -125,7 +125,7 @@
   - _Requirements: 主要前端功能_
   - _Prompt: Role: 前端QA | Task: 覆盖关键交互与错误提示 | Restrictions: 不依赖真实后端 | Success: 关键路径覆盖充分_
 
-- [ ] 4.3 E2E 测试
+- [-] 4.3 E2E 测试
   - File: frontend/tests/e2e/rules.e2e.spec.ts
   - 场景：从工作台进入→规则列表筛选→创建单句规则→提交成功→返回列表；检核跳转筛选→确定
   - Purpose: 验证端到端用户旅程
