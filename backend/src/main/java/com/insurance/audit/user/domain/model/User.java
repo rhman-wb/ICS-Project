@@ -132,6 +132,13 @@ public class User extends BaseEntity {
     @TableField(exist = false)
     @Schema(description = "用户角色列表")
     private List<Role> roles;
+
+    /**
+     * 用户权限列表（不存储在数据库中）
+     */
+    @TableField(exist = false)
+    @Schema(description = "用户权限列表")
+    private List<Permission> permissions;
     
     /**
      * 记录成功登录

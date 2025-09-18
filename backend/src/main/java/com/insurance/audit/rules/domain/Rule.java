@@ -193,6 +193,20 @@ public class Rule extends BaseEntity {
     private String auditComments;
 
     /**
+     * 审核备注
+     */
+    @TableField("audit_remark")
+    @Schema(description = "审核备注", example = "审核通过")
+    private String auditRemark;
+
+    /**
+     * 生效备注
+     */
+    @TableField("effective_remark")
+    @Schema(description = "生效备注", example = "规则已生效")
+    private String effectiveRemark;
+
+    /**
      * 是否关注
      */
     @TableField("is_followed")

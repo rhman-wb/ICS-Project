@@ -2,6 +2,8 @@ package com.insurance.audit.rules.interfaces.dto.request;
 
 import com.insurance.audit.rules.enums.RuleType;
 import com.insurance.audit.rules.enums.RuleSource;
+import com.insurance.audit.rules.enums.RuleAuditStatus;
+import com.insurance.audit.rules.enums.RuleEffectiveStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -53,6 +55,12 @@ public class CreateRuleRequest {
 
     @Schema(description = "适用经营区域", example = "全国")
     private String businessArea;
+
+    @Schema(description = "审核状态", example = "DRAFT")
+    private RuleAuditStatus auditStatus;
+
+    @Schema(description = "有效状态", example = "INACTIVE")
+    private RuleEffectiveStatus effectiveStatus;
 
     @Schema(description = "规则内容JSON", example = "{\"conditions\": [], \"actions\": []}")
     private String ruleContent;

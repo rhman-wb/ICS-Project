@@ -95,6 +95,12 @@ public class RuleResponse {
     @Schema(description = "审核意见")
     private String auditComments;
 
+    @Schema(description = "审核备注")
+    private String auditRemark;
+
+    @Schema(description = "生效备注")
+    private String effectiveRemark;
+
     @Schema(description = "是否关注")
     private Boolean followed;
 

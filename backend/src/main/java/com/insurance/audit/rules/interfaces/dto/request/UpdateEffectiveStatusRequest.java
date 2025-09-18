@@ -27,6 +27,10 @@ public class UpdateEffectiveStatusRequest {
     @Schema(description = "目标有效状态", example = "EFFECTIVE", required = true)
     private RuleEffectiveStatus targetStatus;
 
+    @NotNull(message = "有效状态不能为空")
+    @Schema(description = "有效状态", example = "EFFECTIVE", required = true)
+    private RuleEffectiveStatus effectiveStatus;
+
     @Schema(description = "生效时间")
     private LocalDateTime effectiveTime;
 
@@ -36,6 +40,9 @@ public class UpdateEffectiveStatusRequest {
     @Size(max = 500, message = "变更原因长度不能超过500字符")
     @Schema(description = "变更原因", example = "规则需要立即生效")
     private String changeReason;
+
+    @Schema(description = "备注", example = "规则生效")
+    private String remark;
 
     @NotBlank(message = "操作人不能为空")
     @Schema(description = "操作人ID", required = true)

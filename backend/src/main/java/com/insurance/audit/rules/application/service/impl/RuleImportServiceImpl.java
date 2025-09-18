@@ -103,7 +103,21 @@ public class RuleImportServiceImpl implements RuleImportService {
             response.setTemplateVersion("1.0");
             response.setHeaders(Arrays.asList(getTemplateHeaders(type)));
             response.setRequiredFields(getRequiredFields(type));
-            response.setValidationRules(getValidationRules(type));
+
+            // Convert Map<String, String> to List<ValidationRule>
+            Map<String, String> validationMap = getValidationRules(type);
+            List<ImportTemplateResponse.ValidationRule> validationRuleList = validationMap.entrySet().stream()
+                .map(entry -> {
+                    ImportTemplateResponse.ValidationRule rule = new ImportTemplateResponse.ValidationRule();
+                    rule.setRuleName(entry.getKey());
+                    rule.setErrorMessage(entry.getValue());
+                    rule.setRuleType("VALIDATION");
+                    rule.setSeverity("ERROR");
+                    return rule;
+                })
+                .collect(java.util.stream.Collectors.toList());
+            response.setValidationRules(validationRuleList);
+
             response.setCreatedAt(LocalDateTime.now());
 
             log.info("获取模板信息成功: {}", ruleType);

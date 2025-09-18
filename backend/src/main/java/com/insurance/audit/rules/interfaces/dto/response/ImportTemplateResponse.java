@@ -3,6 +3,7 @@ package com.insurance.audit.rules.interfaces.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,15 @@ public class ImportTemplateResponse {
 
     @Schema(description = "模板版本")
     private String templateVersion;
+
+    @Schema(description = "表头列表")
+    private List<String> headers;
+
+    @Schema(description = "必填字段列表")
+    private List<String> requiredFields;
+
+    @Schema(description = "创建时间")
+    private LocalDateTime createdAt;
 
     @Schema(description = "字段定义")
     private List<FieldDefinition> fields;

@@ -26,6 +26,12 @@ public class BatchOperationResponse {
     @Schema(description = "失败处理数量")
     private Integer failureCount;
 
+    @Schema(description = "失败数量（别名）")
+    private Integer failedCount;
+
+    @Schema(description = "总数量（别名）")
+    private Integer totalCount;
+
     @Schema(description = "操作是否整体成功")
     private Boolean success;
 
@@ -35,8 +41,14 @@ public class BatchOperationResponse {
     @Schema(description = "失败处理的ID列表")
     private List<String> failureIds;
 
+    @Schema(description = "失败ID列表（别名）")
+    private List<String> failedIds;
+
     @Schema(description = "失败详情")
     private Map<String, String> failureDetails;
+
+    @Schema(description = "错误消息（别名）")
+    private Map<String, String> errorMessages;
 
     @Schema(description = "批次ID")
     private String batchId;

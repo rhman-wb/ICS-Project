@@ -18,6 +18,11 @@ import lombok.Getter;
 public enum RuleEffectiveStatus implements IEnum<String> {
 
     /**
+     * 激活/生效
+     */
+    ACTIVE("ACTIVE", "激活"),
+
+    /**
      * 有效
      */
     EFFECTIVE("EFFECTIVE", "有效"),
@@ -40,7 +45,17 @@ public enum RuleEffectiveStatus implements IEnum<String> {
     /**
      * 测试中
      */
-    TESTING("TESTING", "测试中");
+    TESTING("TESTING", "测试中"),
+
+    /**
+     * 暂停状态
+     */
+    SUSPENDED("SUSPENDED", "暂停"),
+
+    /**
+     * 过期状态
+     */
+    EXPIRED("EXPIRED", "过期");
 
     @EnumValue
     @JsonValue

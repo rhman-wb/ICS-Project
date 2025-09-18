@@ -31,6 +31,9 @@ public class SubmitOARequest {
     @Schema(description = "提交说明", example = "批量提交规则进行OA审核")
     private String submitComments;
 
+    @Schema(description = "提交原因", example = "规则需要进行OA审核")
+    private String submitReason;
+
     @Schema(description = "优先级", example = "NORMAL")
     private String priority = "NORMAL";
 

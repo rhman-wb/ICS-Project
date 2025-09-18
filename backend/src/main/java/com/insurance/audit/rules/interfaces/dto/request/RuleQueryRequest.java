@@ -77,5 +77,27 @@ public class RuleQueryRequest extends PageRequest {
 
     @EnumValid(enumClass = SortDirection.class, message = "排序方向必须是: ASC, DESC")
     @Schema(description = "排序方向", example = "DESC", allowableValues = {"ASC", "DESC"})
-    private SortDirection sortDirection;
+    private SortDirection sortDirectionEnum;
+
+    /**
+     * 重写父类方法，返回排序方向的字符串值
+     */
+    @Override
+    public String getSortDirection() {
+        return sortDirectionEnum != null ? sortDirectionEnum.getCode() : super.getSortDirection();
+    }
+
+    /**
+     * 获取排序方向枚举
+     */
+    public SortDirection getSortDirectionEnum() {
+        return sortDirectionEnum;
+    }
+
+    /**
+     * 设置排序方向枚举
+     */
+    public void setSortDirectionEnum(SortDirection sortDirectionEnum) {
+        this.sortDirectionEnum = sortDirectionEnum;
+    }
 }

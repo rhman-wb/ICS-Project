@@ -52,4 +52,25 @@ public class PageResponse<T> {
      */
     @Schema(description = "总页数", example = "5")
     private Integer pages;
+
+    /**
+     * 静态工厂方法，创建分页响应对象
+     *
+     * @param records 数据列表
+     * @param total   总记录数
+     * @param current 当前页码
+     * @param size    每页大小
+     * @param <T>     数据类型
+     * @return 分页响应对象
+     */
+    public static <T> PageResponse<T> of(List<T> records, long total, long current, long size) {
+        int totalPages = size > 0 ? (int) Math.ceil((double) total / size) : 0;
+        return PageResponse.<T>builder()
+                .records(records)
+                .total(total)
+                .current((int) current)
+                .size((int) size)
+                .pages(totalPages)
+                .build();
+    }
 }

@@ -31,11 +31,35 @@ public class ImportResultResponse {
     @Schema(description = "成功行数")
     private Integer successRows;
 
+    @Schema(description = "有效行数（别名）")
+    private Integer validRows;
+
     @Schema(description = "失败行数")
     private Integer failureRows;
 
+    @Schema(description = "失败行数（别名）")
+    private Integer failedRows;
+
+    @Schema(description = "无效行数（别名）")
+    private Integer invalidRows;
+
     @Schema(description = "跳过行数")
     private Integer skippedRows;
+
+    @Schema(description = "预览行数")
+    private Integer previewRows;
+
+    @Schema(description = "验证状态")
+    private String validationStatus;
+
+    @Schema(description = "导入状态（别名）")
+    private String importStatus;
+
+    @Schema(description = "回滚状态")
+    private String rollbackStatus;
+
+    @Schema(description = "回滚原因")
+    private String rollbackReason;
 
     @Schema(description = "处理时间（毫秒）")
     private Long processingTimeMs;
@@ -72,6 +96,9 @@ public class ImportResultResponse {
     @Schema(description = "数据预览")
     private List<Map<String, Object>> dataPreview;
 
+    @Schema(description = "预览数据（别名）")
+    private List<Object> previewData;
+
     @Schema(description = "结果摘要")
     private String resultSummary;
 
@@ -98,6 +125,16 @@ public class ImportResultResponse {
 
         @Schema(description = "建议值")
         private String suggestedValue;
+
+        // 无参构造函数
+        public ImportError() {}
+
+        // 三参数构造函数
+        public ImportError(Integer rowNumber, String errorType, String errorMessage) {
+            this.rowNumber = rowNumber;
+            this.errorType = errorType;
+            this.errorMessage = errorMessage;
+        }
     }
 
     @Data

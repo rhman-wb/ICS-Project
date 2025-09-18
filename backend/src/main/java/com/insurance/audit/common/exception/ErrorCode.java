@@ -20,6 +20,8 @@ public enum ErrorCode {
     UNAUTHORIZED(401, "未授权"),
     FORBIDDEN(403, "禁止访问"),
     NOT_FOUND(404, "资源不存在"),
+    RESOURCE_NOT_FOUND(404, "资源不存在"),
+    OPERATION_FAILED(500, "操作失败"),
     INTERNAL_ERROR(500, "系统内部错误"),
     
     // 用户认证相关错误码 (1000-1999)

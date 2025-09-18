@@ -18,6 +18,36 @@ import lombok.Getter;
 public enum RuleAuditStatus implements IEnum<String> {
 
     /**
+     * 草稿状态
+     */
+    DRAFT("DRAFT", "草稿"),
+
+    /**
+     * 待审核状态
+     */
+    PENDING("PENDING", "待审核"),
+
+    /**
+     * 已通过状态
+     */
+    APPROVED("APPROVED", "已通过"),
+
+    /**
+     * 已驳回状态
+     */
+    REJECTED("REJECTED", "已驳回"),
+
+    /**
+     * 生效状态
+     */
+    EFFECTIVE("EFFECTIVE", "生效"),
+
+    /**
+     * 已取消状态
+     */
+    CANCELLED("CANCELLED", "已取消"),
+
+    /**
      * 待技术评估
      */
     PENDING_TECH_EVALUATION("PENDING_TECH_EVALUATION", "待技术评估"),

@@ -26,9 +26,16 @@ public class UpdateAuditStatusRequest {
     @Schema(description = "目标审核状态", example = "OA_APPROVED", required = true)
     private RuleAuditStatus targetStatus;
 
+    @NotNull(message = "审核状态不能为空")
+    @Schema(description = "审核状态", example = "OA_APPROVED", required = true)
+    private RuleAuditStatus auditStatus;
+
     @Size(max = 500, message = "审核意见长度不能超过500字符")
     @Schema(description = "审核意见", example = "规则设计合理，建议通过")
     private String auditComments;
+
+    @Schema(description = "备注", example = "审核通过")
+    private String remark;
 
     @NotBlank(message = "审核人不能为空")
     @Schema(description = "审核人ID", required = true)
