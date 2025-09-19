@@ -94,7 +94,33 @@ const handleSelectProduct = (product: ProductInfo) => {
 }
 
 const handleBatchOperation = (operation: string, products: string[]) => {
-  message.info(`批量操作: ${operation}, 产品数量: ${products.length}`)
+  switch (operation) {
+    case 'audit':
+      if (products.length === 0) {
+        message.warning('请先选择要检核的产品')
+        return
+      }
+      // 导航到检核规则选择页面，传递选中的产品ID
+      router.push({
+        path: '/audit/rule-selection',
+        query: {
+          productIds: products.join(','),
+          fromPage: 'product-management'
+        }
+      })
+      break
+    case 'export':
+      message.info(`导出 ${products.length} 个产品的数据`)
+      break
+    case 'download':
+      message.info(`下载 ${products.length} 个产品的文档`)
+      break
+    case 'delete':
+      message.warning(`确认删除 ${products.length} 个产品？`)
+      break
+    default:
+      message.info(`批量操作: ${operation}, 产品数量: ${products.length}`)
+  }
 }
 
 const handleImportComplete = (result: any) => {

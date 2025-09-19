@@ -259,7 +259,7 @@ export function useAuditRules(options: UseAuditRulesOptions = {}) {
    * 全选当前页规则
    */
   const selectAllCurrentPage = (): void => {
-    const currentPageRuleIds = state.rules.map(rule => rule.id)
+    const currentPageRuleIds = state.rules.map((rule: any) => rule.id)
     selectRules(currentPageRuleIds)
   }
 
@@ -267,7 +267,7 @@ export function useAuditRules(options: UseAuditRulesOptions = {}) {
    * 取消全选当前页
    */
   const deselectAllCurrentPage = (): void => {
-    const currentPageRuleIds = state.rules.map(rule => rule.id)
+    const currentPageRuleIds = state.rules.map((rule: any) => rule.id)
     state.selectedRules = state.selectedRules.filter(id => !currentPageRuleIds.includes(id))
   }
 
@@ -290,7 +290,7 @@ export function useAuditRules(options: UseAuditRulesOptions = {}) {
    */
   const isCurrentPageAllSelected = computed((): boolean => {
     if (state.rules.length === 0) return false
-    return state.rules.every(rule => state.selectedRules.includes(rule.id))
+    return state.rules.every((rule: any) => state.selectedRules.includes(rule.id))
   })
 
   /**
@@ -298,7 +298,7 @@ export function useAuditRules(options: UseAuditRulesOptions = {}) {
    */
   const isCurrentPageIndeterminate = computed((): boolean => {
     if (state.rules.length === 0) return false
-    const selectedInCurrentPage = state.rules.filter(rule => state.selectedRules.includes(rule.id))
+    const selectedInCurrentPage = state.rules.filter((rule: any) => state.selectedRules.includes(rule.id))
     return selectedInCurrentPage.length > 0 && selectedInCurrentPage.length < state.rules.length
   })
 
@@ -324,7 +324,7 @@ export function useAuditRules(options: UseAuditRulesOptions = {}) {
    * 根据规则ID获取规则详情
    */
   const getRuleById = (ruleId: string): AuditRule | undefined => {
-    return state.rules.find(rule => rule.id === ruleId)
+    return state.rules.find((rule: any) => rule.id === ruleId)
   }
 
   /**

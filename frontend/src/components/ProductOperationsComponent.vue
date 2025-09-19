@@ -528,9 +528,9 @@ const handleExportAll = () => {
 // Mock操作方法
 const handleBatchAudit = () => {
   if (hasSelectedProducts.value) {
-    message.info(`对选中的 ${selectedCount.value} 个产品执行智能检核`)
+    emit('batchOperation', 'audit', props.selectedProducts)
   } else {
-    message.info('批量智能检核功能（使用mock数据演示）')
+    emit('batchOperation', 'audit', [])
   }
 }
 

@@ -112,7 +112,7 @@ export function useAuditResults(options: UseAuditResultsOptions) {
 
   // 按文档类型分组的统计表格数据
   const statisticsTableData = computed(() => {
-    return state.statistics.map((stat: AuditStatistics) => ({
+    return state.statistics.map(stat => ({
       documentType: stat.documentType,
       documentTypeName: getDocumentTypeName(stat.documentType),
       singleRules: stat.ruleTypeStats.single,
@@ -309,7 +309,7 @@ export function useAuditResults(options: UseAuditResultsOptions) {
   /**
    * 导出检核结果
    */
-  const exportResults = async (format: 'excel' | 'pdf' = 'excel'): Promise<string | void> => {
+  const exportResults = async (format: 'excel' | 'pdf' = 'excel'): Promise<void> => {
     try {
       exporting.value = true
       exportProgress.value = 0

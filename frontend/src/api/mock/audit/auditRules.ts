@@ -319,7 +319,8 @@ export class AuditRulesMockService {
           records: paginatedRules,
           total: rules.length,
           current: page,
-          size: size
+          size: size,
+          pages: Math.ceil(rules.length / size)
         })
       }, 300) // 模拟网络延迟
     })
