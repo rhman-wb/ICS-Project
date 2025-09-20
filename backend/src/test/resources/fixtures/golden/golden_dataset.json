@@ -1,0 +1,320 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "created": "2024-01-01T00:00:00Z",
+    "description": "黄金数据集 - 智能检核引擎测试",
+    "categories": ["文本匹配", "格式校验", "语义匹配", "LLM高级规则", "性能测试"]
+  },
+  "testCases": [
+    {
+      "id": "text_match_001",
+      "category": "文本匹配",
+      "description": "关键词精确匹配测试",
+      "documentId": "doc_insurance_policy_001",
+      "ruleSetId": "ruleset_keyword_exact",
+      "inputText": "本保险合同承保范围包括意外伤害、医疗费用报销和住院津贴。保险金额为100万元。",
+      "rules": [
+        {
+          "type": "keyword",
+          "pattern": "保险金额",
+          "operator": "EXISTS"
+        }
+      ],
+      "expectedResults": [
+        {
+          "ruleId": "rule_001",
+          "matched": true,
+          "evidence": "保险金额为100万元",
+          "position": {
+            "start": 28,
+            "end": 32
+          },
+          "confidence": 1.0
+        }
+      ]
+    },
+    {
+      "id": "text_match_002",
+      "category": "文本匹配",
+      "description": "正则表达式匹配测试",
+      "documentId": "doc_insurance_policy_002",
+      "ruleSetId": "ruleset_regex_pattern",
+      "inputText": "被保险人身份证号码：310101199001011234，联系电话：13812345678",
+      "rules": [
+        {
+          "type": "regex",
+          "pattern": "\\d{18}",
+          "operator": "EXISTS"
+        }
+      ],
+      "expectedResults": [
+        {
+          "ruleId": "rule_002",
+          "matched": true,
+          "evidence": "310101199001011234",
+          "position": {
+            "start": 11,
+            "end": 29
+          },
+          "confidence": 1.0
+        }
+      ]
+    },
+    {
+      "id": "format_val_001",
+      "category": "格式校验",
+      "description": "身份证号格式校验",
+      "documentId": "doc_id_validation_001",
+      "ruleSetId": "ruleset_id_format",
+      "inputText": "申请人身份证号：310101199001011234",
+      "rules": [
+        {
+          "type": "format",
+          "formatType": "ID_CARD",
+          "required": true
+        }
+      ],
+      "expectedResults": [
+        {
+          "ruleId": "rule_003",
+          "matched": true,
+          "evidence": "310101199001011234",
+          "position": {
+            "start": 8,
+            "end": 26
+          },
+          "confidence": 1.0
+        }
+      ]
+    },
+    {
+      "id": "format_val_002",
+      "category": "格式校验",
+      "description": "手机号格式校验",
+      "documentId": "doc_phone_validation_001",
+      "ruleSetId": "ruleset_phone_format",
+      "inputText": "联系方式：手机13812345678，座机021-12345678",
+      "rules": [
+        {
+          "type": "format",
+          "formatType": "PHONE",
+          "required": true
+        }
+      ],
+      "expectedResults": [
+        {
+          "ruleId": "rule_004",
+          "matched": true,
+          "evidence": "13812345678",
+          "position": {
+            "start": 7,
+            "end": 18
+          },
+          "confidence": 1.0
+        }
+      ]
+    },
+    {
+      "id": "semantic_001",
+      "category": "语义匹配",
+      "description": "语义相似度匹配测试",
+      "documentId": "doc_semantic_001",
+      "ruleSetId": "ruleset_semantic_similarity",
+      "inputText": "车辆发生碰撞事故时，保险公司承担维修费用。",
+      "rules": [
+        {
+          "type": "semantic",
+          "query": "交通事故赔偿",
+          "threshold": 0.7
+        }
+      ],
+      "expectedResults": [
+        {
+          "ruleId": "rule_005",
+          "matched": true,
+          "evidence": "车辆发生碰撞事故时，保险公司承担维修费用。",
+          "position": {
+            "start": 0,
+            "end": 21
+          },
+          "confidence": 0.85,
+          "similarity": 0.82
+        }
+      ]
+    },
+    {
+      "id": "semantic_002",
+      "category": "语义匹配",
+      "description": "跨段落语义匹配",
+      "documentId": "doc_semantic_002",
+      "ruleSetId": "ruleset_cross_paragraph",
+      "inputText": "第一条 保险责任。第二条 当被保险人遭受意外伤害事故时，保险人按照本合同约定给付保险金。",
+      "rules": [
+        {
+          "type": "semantic",
+          "query": "意外事故保障",
+          "threshold": 0.6,
+          "scope": "cross_paragraph"
+        }
+      ],
+      "expectedResults": [
+        {
+          "ruleId": "rule_006",
+          "matched": true,
+          "evidence": "当被保险人遭受意外伤害事故时，保险人按照本合同约定给付保险金",
+          "position": {
+            "start": 14,
+            "end": 48
+          },
+          "confidence": 0.78,
+          "similarity": 0.75
+        }
+      ]
+    },
+    {
+      "id": "llm_advanced_001",
+      "category": "LLM高级规则",
+      "description": "复杂逻辑推理测试",
+      "documentId": "doc_llm_001",
+      "ruleSetId": "ruleset_llm_reasoning",
+      "inputText": "保险期间内，被保险人因疾病住院治疗超过3天的，每天给付住院津贴100元，最高给付90天。但等待期内发生的疾病不予赔付。",
+      "rules": [
+        {
+          "type": "llm",
+          "mode": "chain_of_thought",
+          "query": "如果被保险人在等待期后因疾病住院7天，应该赔付多少住院津贴？",
+          "expectedLogic": "住院超过3天 AND 非等待期疾病 THEN 给付(住院天数 * 100元)"
+        }
+      ],
+      "expectedResults": [
+        {
+          "ruleId": "rule_007",
+          "matched": true,
+          "evidence": "住院7天，超过3天，非等待期，应给付700元",
+          "reasoning": "根据条款，住院超过3天每天给付100元，7天应给付7*100=700元",
+          "confidence": 0.92,
+          "calculatedAmount": 700
+        }
+      ]
+    },
+    {
+      "id": "llm_advanced_002",
+      "category": "LLM高级规则",
+      "description": "多条件判断测试",
+      "documentId": "doc_llm_002",
+      "ruleSetId": "ruleset_multi_condition",
+      "inputText": "年龄在18-65周岁之间，身体健康，无既往重大疾病史的人员可以投保。保费根据年龄和职业类别确定。",
+      "rules": [
+        {
+          "type": "llm",
+          "mode": "direct_prompt",
+          "query": "一个30岁的办公室白领，无疾病史，是否符合投保条件？",
+          "expectedConditions": ["年龄符合", "身体健康", "无重大疾病史"]
+        }
+      ],
+      "expectedResults": [
+        {
+          "ruleId": "rule_008",
+          "matched": true,
+          "evidence": "30岁在18-65周岁范围内，办公室白领身体健康，无疾病史",
+          "reasoning": "满足所有投保条件：年龄、健康状况、疾病史",
+          "confidence": 0.95,
+          "conditionsMet": ["年龄符合", "身体健康", "无重大疾病史"]
+        }
+      ]
+    },
+    {
+      "id": "perf_test_001",
+      "category": "性能测试",
+      "description": "大文档处理性能测试",
+      "documentId": "doc_large_001",
+      "ruleSetId": "ruleset_performance",
+      "inputText": "这是一个包含大量文本的保险合同文档...",
+      "documentSize": "50KB",
+      "rules": [
+        {
+          "type": "mixed",
+          "count": 20,
+          "complexity": "medium"
+        }
+      ],
+      "expectedResults": [
+        {
+          "processingTime": "<2000ms",
+          "memoryUsage": "<100MB",
+          "successRate": ">95%"
+        }
+      ]
+    },
+    {
+      "id": "workflow_complete_001",
+      "category": "完整工作流",
+      "description": "端到端完整流程测试",
+      "documentId": "doc_complete_workflow",
+      "ruleSetId": "ruleset_comprehensive",
+      "inputText": "某保险产品说明书完整内容...",
+      "rules": [
+        {
+          "type": "comprehensive",
+          "includeKeyword": true,
+          "includeFormat": true,
+          "includeSemantic": true,
+          "includeLLM": true
+        }
+      ],
+      "expectedResults": [
+        {
+          "totalMatches": 15,
+          "accuracy": ">90%",
+          "processingTime": "<30000ms",
+          "reportGenerated": true
+        }
+      ]
+    }
+  ],
+  "performanceBenchmarks": {
+    "textMatching": {
+      "p95ResponseTime": 2000,
+      "throughput": 100,
+      "accuracyThreshold": 0.95
+    },
+    "formatValidation": {
+      "p95ResponseTime": 1000,
+      "throughput": 200,
+      "accuracyThreshold": 0.98
+    },
+    "semanticMatching": {
+      "p95ResponseTime": 3000,
+      "throughput": 50,
+      "accuracyThreshold": 0.85
+    },
+    "llmAdvanced": {
+      "p95ResponseTime": 5000,
+      "throughput": 20,
+      "accuracyThreshold": 0.90
+    }
+  },
+  "qualityMetrics": {
+    "overallPrecision": 0.90,
+    "overallRecall": 0.85,
+    "f1Score": 0.875,
+    "categoryBreakdown": {
+      "textMatching": {
+        "precision": 0.95,
+        "recall": 0.90
+      },
+      "formatValidation": {
+        "precision": 0.98,
+        "recall": 0.95
+      },
+      "semanticMatching": {
+        "precision": 0.85,
+        "recall": 0.80
+      },
+      "llmAdvanced": {
+        "precision": 0.90,
+        "recall": 0.85
+      }
+    }
+  }
+}
