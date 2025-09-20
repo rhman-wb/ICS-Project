@@ -6,6 +6,9 @@ import com.insurance.audit.rules.enums.RuleType;
 import com.insurance.audit.rules.enums.RuleSource;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -18,6 +21,9 @@ import java.time.LocalDateTime;
  * @since 2024-09-16
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Schema(description = "更新规则请求")
 public class UpdateRuleRequest {
 

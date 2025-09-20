@@ -7,6 +7,8 @@ import com.insurance.audit.integration.BaseIntegrationTest;
 import com.insurance.audit.rules.interfaces.dto.request.CreateRuleRequest;
 import com.insurance.audit.rules.interfaces.dto.request.RuleQueryRequest;
 import com.insurance.audit.rules.interfaces.dto.request.UpdateRuleRequest;
+import com.insurance.audit.rules.enums.RuleSource;
+import com.insurance.audit.rules.enums.RuleType;
 import com.insurance.audit.rules.interfaces.dto.response.BatchOperationResponse;
 import com.insurance.audit.rules.interfaces.dto.response.RuleResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -57,10 +59,10 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
 
         PageResponse<RuleResponse> pageData = response.getBody().getData();
         assertThat(pageData).isNotNull();
-        assertThat(pageData.getPage()).isEqualTo(1);
+        assertThat(pageData.getCurrent()).isEqualTo(1);
         assertThat(pageData.getSize()).isEqualTo(10);
         assertThat(pageData.getTotal()).isGreaterThanOrEqualTo(0);
-        assertThat(pageData.getData()).isNotNull();
+        assertThat(pageData.getRecords()).isNotNull();
     }
 
     @Test
@@ -165,10 +167,11 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
         HttpEntity<CreateRuleRequest> entity = new HttpEntity<>(request, getAuthHeaders(token.replace("Bearer ", "")));
 
         // When
-        ResponseEntity<ApiResponse<RuleResponse>> response = restTemplate.postForEntity(
+        ResponseEntity<ApiResponse<RuleResponse>> response = restTemplate.exchange(
                 getV1ApiUrl("/rules"),
+                HttpMethod.POST,
                 entity,
-                new ParameterizedTypeReference<ApiResponse<RuleResponse>>() {}.getClass()
+                new ParameterizedTypeReference<ApiResponse<RuleResponse>>() {}
         );
 
         // Then
@@ -182,11 +185,11 @@ class RuleControllerIntegrationTest extends BaseIntegrationTest {
     @DisplayName("创建规则 - 参数验证失败")
     void createRule_ValidationFailure() {
         // Given
-        CreateRuleRequest request = CreateRuleRequest.builder()
-                .ruleName("") // 空规则名称
-                .ruleType("SINGLE")
-                .description("测试规则描述")
-                .build();
+        CreateRuleRequest request = new CreateRuleRequest();
+        request.setRuleName(""); // 空规则名
+        request.setRuleType(RuleType.SINGLE);
+        request.setRuleDescription("测试规则描述");
+        request.setRuleSource(RuleSource.SYSTEM);
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
         HttpEntity<CreateRuleRequest> entity = new HttpEntity<>(request, getAuthHeaders(token.replace("Bearer ", "")));
 

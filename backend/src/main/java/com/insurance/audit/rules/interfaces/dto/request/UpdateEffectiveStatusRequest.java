@@ -3,6 +3,9 @@ package com.insurance.audit.rules.interfaces.dto.request;
 import com.insurance.audit.rules.enums.RuleEffectiveStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,6 +20,9 @@ import java.time.LocalDateTime;
  * @since 2024-09-16
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Schema(description = "更新有效状态请求")
 public class UpdateEffectiveStatusRequest {
 

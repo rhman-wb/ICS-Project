@@ -5,6 +5,8 @@ import com.insurance.audit.common.dto.ApiResponse;
 import com.insurance.audit.integration.BaseIntegrationTest;
 import com.insurance.audit.rules.interfaces.dto.request.UpdateAuditStatusRequest;
 import com.insurance.audit.rules.interfaces.dto.request.UpdateEffectiveStatusRequest;
+import com.insurance.audit.rules.enums.RuleAuditStatus;
+import com.insurance.audit.rules.enums.RuleEffectiveStatus;
 import com.insurance.audit.rules.interfaces.dto.request.SubmitOARequest;
 import com.insurance.audit.rules.interfaces.dto.response.BatchOperationResponse;
 import com.insurance.audit.rules.interfaces.dto.response.RuleResponse;
@@ -60,8 +62,7 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
         // Given
         String ruleId = "test-rule-id-001";
         UpdateAuditStatusRequest request = UpdateAuditStatusRequest.builder()
-                .auditStatus("INVALID_STATUS")
-                .comments("测试无效状态")
+                .auditComments("测试无效状态")
                 .build();
         String token = TestDataFactory.createTestJwtToken(TestDataFactory.DEFAULT_USERNAME);
         HttpEntity<UpdateAuditStatusRequest> entity = new HttpEntity<>(request, getAuthHeaders(token.replace("Bearer ", "")));
@@ -344,8 +345,9 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
 
         // Step 1: 提交审核
         UpdateAuditStatusRequest submitRequest = UpdateAuditStatusRequest.builder()
-                .auditStatus("PENDING")
-                .comments("提交审核")
+                .auditStatus(RuleAuditStatus.PENDING)
+                .auditComments("提交审核")
+                .auditedBy(TestDataFactory.DEFAULT_USERNAME)
                 .build();
         HttpEntity<UpdateAuditStatusRequest> submitEntity = new HttpEntity<>(submitRequest, getAuthHeaders(token.replace("Bearer ", "")));
 
@@ -358,8 +360,9 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
 
         // Step 2: 审核通过
         UpdateAuditStatusRequest approveRequest = UpdateAuditStatusRequest.builder()
-                .auditStatus("APPROVED")
-                .comments("审核通过")
+                .auditStatus(RuleAuditStatus.APPROVED)
+                .auditComments("审核通过")
+                .auditedBy(TestDataFactory.DEFAULT_USERNAME)
                 .build();
         HttpEntity<UpdateAuditStatusRequest> approveEntity = new HttpEntity<>(approveRequest, getAuthHeaders(token.replace("Bearer ", "")));
 
@@ -372,9 +375,10 @@ class RuleStatusControllerIntegrationTest extends BaseIntegrationTest {
 
         // Step 3: 设置有效
         UpdateEffectiveStatusRequest effectiveRequest = UpdateEffectiveStatusRequest.builder()
-                .effectiveStatus("EFFECTIVE")
-                .effectiveDate(java.time.LocalDateTime.now())
-                .comments("设置有效")
+                .effectiveStatus(RuleEffectiveStatus.EFFECTIVE)
+                .effectiveTime(java.time.LocalDateTime.now())
+                .changeReason("设置有效")
+                .operatorId(TestDataFactory.DEFAULT_USERNAME)
                 .build();
         HttpEntity<UpdateEffectiveStatusRequest> effectiveEntity = new HttpEntity<>(effectiveRequest, getAuthHeaders(token.replace("Bearer ", "")));
 

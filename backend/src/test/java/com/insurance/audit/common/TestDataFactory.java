@@ -26,6 +26,15 @@ import com.insurance.audit.product.interfaces.dto.request.UpdateProductRequest;
 import com.insurance.audit.product.interfaces.dto.request.ProductQueryRequest;
 import com.insurance.audit.product.interfaces.dto.response.ProductResponse;
 import com.insurance.audit.product.interfaces.dto.response.DocumentValidationResult;
+import com.insurance.audit.rules.enums.RuleAuditStatus;
+import com.insurance.audit.rules.enums.RuleEffectiveStatus;
+import com.insurance.audit.rules.enums.RuleSource;
+import com.insurance.audit.rules.enums.RuleType;
+import com.insurance.audit.rules.interfaces.dto.request.CreateRuleRequest;
+import com.insurance.audit.rules.interfaces.dto.request.SubmitOARequest;
+import com.insurance.audit.rules.interfaces.dto.request.UpdateAuditStatusRequest;
+import com.insurance.audit.rules.interfaces.dto.request.UpdateEffectiveStatusRequest;
+import com.insurance.audit.rules.interfaces.dto.request.UpdateRuleRequest;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -917,112 +926,152 @@ public class TestDataFactory {
     /**
      * 创建默认创建规则请求
      */
-    public static com.insurance.audit.rules.interfaces.dto.request.CreateRuleRequest createDefaultCreateRuleRequest() {
-        return com.insurance.audit.rules.interfaces.dto.request.CreateRuleRequest.builder()
-                .ruleName(DEFAULT_RULE_NAME)
-                .ruleType("SINGLE")
-                .description(DEFAULT_RULE_DESCRIPTION)
-                .expression("测试表达式")
-                .errorMessage("规则验证失败")
-                .isActive(true)
-                .build();
+    public static CreateRuleRequest createDefaultCreateRuleRequest() {
+        CreateRuleRequest request = new CreateRuleRequest();
+        request.setRuleName(DEFAULT_RULE_NAME);
+        request.setRuleDescription(DEFAULT_RULE_DESCRIPTION);
+        request.setRuleType(RuleType.SINGLE);
+        request.setRuleSource(RuleSource.SYSTEM);
+        request.setAuditStatus(RuleAuditStatus.DRAFT);
+        request.setEffectiveStatus(RuleEffectiveStatus.INACTIVE);
+        request.setRuleContent("{\"conditions\": [], \"actions\": []}");
+        request.setRuleConfig("{\"priority\":1,\"enabled\":true}");
+        request.setPriority(1);
+        request.setSortOrder(1);
+        request.setRemarks("Auto-created test rule");
+        return request;
     }
 
     /**
      * 创建创建规则请求（指定类型）
      */
-    public static com.insurance.audit.rules.interfaces.dto.request.CreateRuleRequest createCreateRuleRequest(String ruleType) {
-        return com.insurance.audit.rules.interfaces.dto.request.CreateRuleRequest.builder()
-                .ruleName("测试" + ruleType + "规则")
-                .ruleType(ruleType)
-                .description("测试" + ruleType + "规则描述")
-                .expression("测试表达式")
-                .errorMessage("规则验证失败")
-                .isActive(true)
-                .build();
+    public static CreateRuleRequest createCreateRuleRequest(String ruleType) {
+        CreateRuleRequest request = new CreateRuleRequest();
+        RuleType type = RuleType.fromCode(ruleType.toUpperCase());
+        request.setRuleName("测试" + ruleType + "规则");
+        request.setRuleDescription("测试" + ruleType + "规则描述");
+        request.setRuleType(type);
+        request.setRuleSource(RuleSource.CUSTOM);
+        request.setAuditStatus(RuleAuditStatus.DRAFT);
+        request.setEffectiveStatus(RuleEffectiveStatus.INACTIVE);
+        request.setRuleContent("{\"ruleType\":\"" + type.getCode() + "\"}");
+        request.setPriority(1);
+        request.setSortOrder(1);
+        request.setRemarks("Test request for " + type.getCode());
+        return request;
     }
 
     /**
      * 创建默认更新规则请求
      */
-    public static com.insurance.audit.rules.interfaces.dto.request.UpdateRuleRequest createDefaultUpdateRuleRequest() {
-        return com.insurance.audit.rules.interfaces.dto.request.UpdateRuleRequest.builder()
-                .ruleName("更新后的规则名称")
-                .description("更新后的规则描述")
-                .expression("更新后的表达式")
-                .errorMessage("更新后的错误消息")
-                .isActive(true)
-                .build();
+    public static UpdateRuleRequest createDefaultUpdateRuleRequest() {
+        UpdateRuleRequest request = new UpdateRuleRequest();
+        request.setRuleName("更新后的规则名称");
+        request.setRuleDescription("更新后的规则描述");
+        request.setRuleType(RuleType.DOUBLE);
+        request.setRuleSource(RuleSource.SYSTEM);
+        request.setAuditStatus(RuleAuditStatus.PENDING);
+        request.setEffectiveStatus(RuleEffectiveStatus.PENDING_DEPLOYMENT);
+        request.setRuleContent("{\"conditions\": [\"updated\"], \"actions\": [\"notify\"]}");
+        request.setRuleConfig("{\"priority\":2,\"enabled\":true}");
+        request.setPriority(2);
+        request.setSortOrder(2);
+        request.setRemarks("更新规则请求");
+        return request;
     }
 
     /**
      * 创建默认更新审核状态请求
      */
-    public static com.insurance.audit.rules.interfaces.dto.request.UpdateAuditStatusRequest createDefaultUpdateAuditStatusRequest() {
-        return com.insurance.audit.rules.interfaces.dto.request.UpdateAuditStatusRequest.builder()
-                .auditStatus("APPROVED")
-                .comments("审核通过")
-                .build();
+    public static UpdateAuditStatusRequest createDefaultUpdateAuditStatusRequest() {
+        UpdateAuditStatusRequest request = new UpdateAuditStatusRequest();
+        request.setRuleId(DEFAULT_RULE_ID);
+        request.setTargetStatus(RuleAuditStatus.OA_APPROVED);
+        request.setAuditStatus(RuleAuditStatus.SUBMITTED_TO_OA);
+        request.setAuditComments("审核通过");
+        request.setRemark("默认审核");
+        request.setAuditedBy(DEFAULT_USERNAME);
+        return request;
     }
 
     /**
      * 创建更新审核状态请求（指定状态）
      */
-    public static com.insurance.audit.rules.interfaces.dto.request.UpdateAuditStatusRequest createUpdateAuditStatusRequest(String ruleId, String status) {
-        return com.insurance.audit.rules.interfaces.dto.request.UpdateAuditStatusRequest.builder()
-                .ruleId(ruleId)
-                .auditStatus(status)
-                .comments("更新状态为: " + status)
-                .build();
+    public static UpdateAuditStatusRequest createUpdateAuditStatusRequest(String ruleId, String status) {
+        UpdateAuditStatusRequest request = new UpdateAuditStatusRequest();
+        RuleAuditStatus auditStatus = RuleAuditStatus.fromCode(status.toUpperCase());
+        request.setRuleId(ruleId);
+        request.setTargetStatus(auditStatus);
+        request.setAuditStatus(auditStatus);
+        request.setAuditComments("更新状态为: " + status);
+        request.setRemark("批量审核");
+        request.setAuditedBy(DEFAULT_USERNAME);
+        return request;
     }
 
     /**
      * 创建默认更新有效状态请求
      */
-    public static com.insurance.audit.rules.interfaces.dto.request.UpdateEffectiveStatusRequest createDefaultUpdateEffectiveStatusRequest() {
-        return com.insurance.audit.rules.interfaces.dto.request.UpdateEffectiveStatusRequest.builder()
-                .effectiveStatus("EFFECTIVE")
-                .effectiveDate(LocalDateTime.now())
-                .comments("设置为有效")
-                .build();
+    public static UpdateEffectiveStatusRequest createDefaultUpdateEffectiveStatusRequest() {
+        UpdateEffectiveStatusRequest request = new UpdateEffectiveStatusRequest();
+        request.setRuleId(DEFAULT_RULE_ID);
+        request.setTargetStatus(RuleEffectiveStatus.EFFECTIVE);
+        request.setEffectiveStatus(RuleEffectiveStatus.EFFECTIVE);
+        request.setEffectiveTime(LocalDateTime.now());
+        request.setChangeReason("设置为有效");
+        request.setRemark("默认设置");
+        request.setOperatorId(DEFAULT_USERNAME);
+        return request;
     }
 
     /**
      * 创建更新有效状态请求（指定状态）
      */
-    public static com.insurance.audit.rules.interfaces.dto.request.UpdateEffectiveStatusRequest createUpdateEffectiveStatusRequest(String ruleId, String status) {
-        return com.insurance.audit.rules.interfaces.dto.request.UpdateEffectiveStatusRequest.builder()
-                .ruleId(ruleId)
-                .effectiveStatus(status)
-                .effectiveDate(LocalDateTime.now())
-                .comments("更新状态为: " + status)
-                .build();
+    public static UpdateEffectiveStatusRequest createUpdateEffectiveStatusRequest(String ruleId, String status) {
+        UpdateEffectiveStatusRequest request = new UpdateEffectiveStatusRequest();
+        RuleEffectiveStatus effectiveStatus = RuleEffectiveStatus.fromCode(status.toUpperCase());
+        request.setRuleId(ruleId);
+        request.setTargetStatus(effectiveStatus);
+        request.setEffectiveStatus(effectiveStatus);
+        request.setEffectiveTime(LocalDateTime.now());
+        request.setChangeReason("更新状态为: " + status);
+        request.setRemark("批量设置");
+        request.setOperatorId(DEFAULT_USERNAME);
+        return request;
     }
 
     /**
      * 创建默认提交OA请求
      */
-    public static com.insurance.audit.rules.interfaces.dto.request.SubmitOARequest createDefaultSubmitOARequest() {
-        return com.insurance.audit.rules.interfaces.dto.request.SubmitOARequest.builder()
-                .ruleIds(Arrays.asList("rule-id-001", "rule-id-002"))
-                .submissionType("BATCH")
-                .urgencyLevel("NORMAL")
-                .comments("批量提交OA审核")
-                .build();
+    public static SubmitOARequest createDefaultSubmitOARequest() {
+        SubmitOARequest request = new SubmitOARequest();
+        request.setRuleIds(Arrays.asList("rule-id-001", "rule-id-002"));
+        request.setSubmittedBy(DEFAULT_USERNAME);
+        request.setSubmitComments("批量提交OA审核");
+        request.setSubmitReason("测试提交流程");
+        request.setExpectedReviewDate(LocalDateTime.now().plusDays(3).toString());
+        request.setAdditionalInfo("自动化测试");
+        return request;
     }
 
     /**
      * 创建提交OA请求（指定规则IDs）
      */
-    public static com.insurance.audit.rules.interfaces.dto.request.SubmitOARequest createSubmitOARequest(List<String> ruleIds) {
-        return com.insurance.audit.rules.interfaces.dto.request.SubmitOARequest.builder()
-                .ruleIds(ruleIds)
-                .submissionType("BATCH")
-                .urgencyLevel("NORMAL")
-                .comments("提交OA审核")
-                .build();
+    public static SubmitOARequest createSubmitOARequest(List<String> ruleIds) {
+        SubmitOARequest request = new SubmitOARequest();
+        request.setRuleIds(ruleIds);
+        request.setSubmittedBy(DEFAULT_USERNAME);
+        request.setSubmitComments("提交OA审核");
+        request.setSubmitReason("测试提交流程");
+        request.setExpectedReviewDate(LocalDateTime.now().plusDays(1).toString());
+        request.setAdditionalInfo("自动化测试");
+        return request;
     }
 
+
+    /**
+     * 创建模拟Excel内容
+     */
     /**
      * 创建模拟Excel内容
      */

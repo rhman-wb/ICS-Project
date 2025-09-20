@@ -2,6 +2,9 @@ package com.insurance.audit.rules.interfaces.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -16,6 +19,9 @@ import java.util.List;
  * @since 2024-09-16
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Schema(description = "提交OA审核请求")
 public class SubmitOARequest {
 

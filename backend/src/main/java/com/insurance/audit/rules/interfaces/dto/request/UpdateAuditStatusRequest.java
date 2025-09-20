@@ -3,6 +3,9 @@ package com.insurance.audit.rules.interfaces.dto.request;
 import com.insurance.audit.rules.enums.RuleAuditStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -16,6 +19,9 @@ import jakarta.validation.constraints.Size;
  * @since 2024-09-16
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Schema(description = "更新审核状态请求")
 public class UpdateAuditStatusRequest {
 
