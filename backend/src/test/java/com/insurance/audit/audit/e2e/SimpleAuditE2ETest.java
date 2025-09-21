@@ -1,6 +1,7 @@
 package com.insurance.audit.audit.e2e;
 
 import com.insurance.audit.audit.dto.AuditJobRequest;
+import com.insurance.audit.audit.dto.AuditJobResponse;
 import com.insurance.audit.audit.dto.AuditResultDto;
 import com.insurance.audit.audit.service.AuditOrchestrator;
 import com.insurance.audit.audit.service.PerformanceMonitor;
@@ -58,9 +59,11 @@ class SimpleAuditE2ETest {
                 .build();
 
         // 执行检核
-        String jobId = auditOrchestrator.createJob(request);
-        assertNotNull(jobId, "作业ID不能为空");
-        assertTrue(jobId.startsWith("audit_"), "作业ID格式不正确");
+        AuditJobResponse response = auditOrchestrator.createJob(request);
+        assertNotNull(response, "作业响应不能为空");
+        assertNotNull(response.getJobId(), "作业ID不能为空");
+        assertTrue(response.getJobId().startsWith("job-"), "作业ID格式不正确");
+        String jobId = response.getJobId();
 
         // 获取结果
         List<AuditResultDto> results = auditOrchestrator.getJobResults(jobId);
@@ -88,8 +91,10 @@ class SimpleAuditE2ETest {
         long startTime = System.currentTimeMillis();
 
         // 执行检核
-        String jobId = auditOrchestrator.createJob(request);
-        assertNotNull(jobId, "批量作业ID不能为空");
+        AuditJobResponse response = auditOrchestrator.createJob(request);
+        assertNotNull(response, "批量作业响应不能为空");
+        assertNotNull(response.getJobId(), "批量作业ID不能为空");
+        String jobId = response.getJobId();
 
         // 获取结果
         List<AuditResultDto> results = auditOrchestrator.getJobResults(jobId);
@@ -118,8 +123,10 @@ class SimpleAuditE2ETest {
                 .build();
 
         // 执行检核
-        String jobId = auditOrchestrator.createJob(request);
-        assertNotNull(jobId, "导出测试作业ID不能为空");
+        AuditJobResponse response = auditOrchestrator.createJob(request);
+        assertNotNull(response, "导出测试作业响应不能为空");
+        assertNotNull(response.getJobId(), "导出测试作业ID不能为空");
+        String jobId = response.getJobId();
 
         // 测试不同格式的导出
         String jsonExport = auditOrchestrator.exportJobResults(jobId, "JSON");
@@ -151,7 +158,8 @@ class SimpleAuditE2ETest {
                     .async(false)
                     .build();
 
-            String jobId = auditOrchestrator.createJob(request);
+            AuditJobResponse response = auditOrchestrator.createJob(request);
+            String jobId = response.getJobId();
             auditOrchestrator.getJobResults(jobId);
         }
 
@@ -185,8 +193,10 @@ class SimpleAuditE2ETest {
 
         // 这个操作可能会成功创建作业，但在执行时可能会失败
         // 我们主要测试系统不会崩溃
-        String jobId = auditOrchestrator.createJob(invalidRequest);
-        assertNotNull(jobId, "即使是无效请求，也应该返回作业ID");
+        AuditJobResponse response = auditOrchestrator.createJob(invalidRequest);
+        assertNotNull(response, "即使是无效请求，也应该返回作业响应");
+        assertNotNull(response.getJobId(), "即使是无效请求，也应该返回作业ID");
+        String jobId = response.getJobId();
 
         // 尝试获取结果（可能为空或包含错误信息）
         List<AuditResultDto> results = auditOrchestrator.getJobResults(jobId);
@@ -221,7 +231,8 @@ class SimpleAuditE2ETest {
                         .async(false)
                         .build();
 
-                String jobId = auditOrchestrator.createJob(request);
+                AuditJobResponse response = auditOrchestrator.createJob(request);
+                String jobId = response.getJobId();
                 List<AuditResultDto> results = auditOrchestrator.getJobResults(jobId);
 
                 if (results != null) {
@@ -265,8 +276,10 @@ class SimpleAuditE2ETest {
                 .build();
 
         // 执行检核
-        String jobId = auditOrchestrator.createJob(comprehensiveRequest);
-        assertNotNull(jobId, "综合测试作业ID不能为空");
+        AuditJobResponse response = auditOrchestrator.createJob(comprehensiveRequest);
+        assertNotNull(response, "综合测试作业响应不能为空");
+        assertNotNull(response.getJobId(), "综合测试作业ID不能为空");
+        String jobId = response.getJobId();
 
         // 获取结果
         List<AuditResultDto> results = auditOrchestrator.getJobResults(jobId);

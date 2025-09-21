@@ -6,10 +6,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 并发控制器
  * 管理检核任务的并发执行、队列处理和资源限制
+ * 增强版：支持熔断机制、性能监控、动态调整
  *
  * @author System
  * @version 1.0.0
@@ -28,9 +30,29 @@ public class ConcurrencyController {
     @Value("${audit.concurrency.keep-alive-seconds:60}")
     private long keepAliveSeconds;
 
+    @Value("${audit.concurrency.circuit-breaker.failure-threshold:5}")
+    private int failureThreshold;
+
+    @Value("${audit.concurrency.circuit-breaker.recovery-timeout:30000}")
+    private long recoveryTimeoutMs;
+
+    @Value("${audit.concurrency.performance.slow-task-threshold:5000}")
+    private long slowTaskThresholdMs;
+
     private final ThreadPoolExecutor executor;
     private final Semaphore resourceSemaphore;
     private final AtomicInteger activeJobs = new AtomicInteger(0);
+
+    // 熔断器状态
+    private volatile CircuitBreakerState circuitBreakerState = CircuitBreakerState.CLOSED;
+    private final AtomicInteger failureCount = new AtomicInteger(0);
+    private volatile long lastFailureTime = 0;
+
+    // 性能监控
+    private final AtomicLong totalExecutedTasks = new AtomicLong(0);
+    private final AtomicLong totalFailedTasks = new AtomicLong(0);
+    private final AtomicLong totalExecutionTime = new AtomicLong(0);
+    private final AtomicLong slowTaskCount = new AtomicLong(0);
 
     public ConcurrencyController() {
         // 创建线程池
@@ -46,14 +68,24 @@ public class ConcurrencyController {
 
         // 资源信号量，控制同时访问外部服务的数量
         this.resourceSemaphore = new Semaphore(5);
+
+        log.info("并发控制器初始化完成: maxThreads={}, queueCapacity={}, failureThreshold={}",
+                maxThreads, queueCapacity, failureThreshold);
     }
 
     /**
-     * 提交任务执行
+     * 提交任务执行（带熔断机制）
      */
     public <T> CompletableFuture<T> submitTask(Callable<T> task, String taskId) {
-        log.debug("提交任务: taskId={}, activeJobs={}, queueSize={}",
-                taskId, activeJobs.get(), executor.getQueue().size());
+        // 检查熔断器状态
+        if (!isCircuitBreakerClosed()) {
+            CompletableFuture<T> future = new CompletableFuture<>();
+            future.completeExceptionally(new RuntimeException("熔断器开启，拒绝执行任务: " + taskId));
+            return future;
+        }
+
+        log.debug("提交任务: taskId={}, activeJobs={}, queueSize={}, circuitState={}",
+                taskId, activeJobs.get(), executor.getQueue().size(), circuitBreakerState);
 
         // 检查队列是否已满
         if (executor.getQueue().size() >= queueCapacity * 0.9) {
@@ -64,23 +96,90 @@ public class ConcurrencyController {
 
         executor.submit(() -> {
             activeJobs.incrementAndGet();
+            totalExecutedTasks.incrementAndGet();
+            long startTime = System.currentTimeMillis();
+
             try {
-                long startTime = System.currentTimeMillis();
                 T result = task.call();
                 long duration = System.currentTimeMillis() - startTime;
+                totalExecutionTime.addAndGet(duration);
+
+                // 检查是否为慢任务
+                if (duration > slowTaskThresholdMs) {
+                    slowTaskCount.incrementAndGet();
+                    log.warn("检测到慢任务: taskId={}, duration={}ms", taskId, duration);
+                }
 
                 log.debug("任务完成: taskId={}, duration={}ms", taskId, duration);
                 future.complete(result);
 
+                // 成功执行，尝试重置熔断器
+                onTaskSuccess();
+
             } catch (Exception e) {
-                log.error("任务执行失败: taskId={}, error={}", taskId, e.getMessage(), e);
+                long duration = System.currentTimeMillis() - startTime;
+                totalFailedTasks.incrementAndGet();
+
+                log.error("任务执行失败: taskId={}, duration={}ms, error={}", taskId, duration, e.getMessage(), e);
                 future.completeExceptionally(e);
+
+                // 任务失败，更新熔断器状态
+                onTaskFailure();
             } finally {
                 activeJobs.decrementAndGet();
             }
         });
 
         return future;
+    }
+
+    /**
+     * 检查熔断器是否关闭
+     */
+    private boolean isCircuitBreakerClosed() {
+        switch (circuitBreakerState) {
+            case CLOSED:
+                return true;
+            case OPEN:
+                // 检查是否可以尝试恢复
+                if (System.currentTimeMillis() - lastFailureTime > recoveryTimeoutMs) {
+                    circuitBreakerState = CircuitBreakerState.HALF_OPEN;
+                    log.info("熔断器状态变更: OPEN -> HALF_OPEN，尝试恢复");
+                    return true;
+                }
+                return false;
+            case HALF_OPEN:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * 任务成功回调
+     */
+    private void onTaskSuccess() {
+        if (circuitBreakerState == CircuitBreakerState.HALF_OPEN) {
+            circuitBreakerState = CircuitBreakerState.CLOSED;
+            failureCount.set(0);
+            log.info("熔断器状态变更: HALF_OPEN -> CLOSED，恢复正常");
+        }
+    }
+
+    /**
+     * 任务失败回调
+     */
+    private void onTaskFailure() {
+        int currentFailures = failureCount.incrementAndGet();
+        lastFailureTime = System.currentTimeMillis();
+
+        if (currentFailures >= failureThreshold) {
+            if (circuitBreakerState != CircuitBreakerState.OPEN) {
+                circuitBreakerState = CircuitBreakerState.OPEN;
+                log.warn("熔断器状态变更: {} -> OPEN，失败次数达到阈值: {}/{}",
+                        circuitBreakerState, currentFailures, failureThreshold);
+            }
+        }
     }
 
     /**
@@ -121,9 +220,14 @@ public class ConcurrencyController {
     }
 
     /**
-     * 获取执行器状态
+     * 获取执行器状态（增强版）
      */
     public ExecutorStatus getExecutorStatus() {
+        long executedTasks = totalExecutedTasks.get();
+        long totalTime = totalExecutionTime.get();
+        double avgExecutionTime = executedTasks > 0 ? (double) totalTime / executedTasks : 0.0;
+        double failureRate = executedTasks > 0 ? (double) totalFailedTasks.get() / executedTasks : 0.0;
+
         return ExecutorStatus.builder()
                 .activeThreads(executor.getActiveCount())
                 .poolSize(executor.getPoolSize())
@@ -133,7 +237,61 @@ public class ConcurrencyController {
                 .completedTasks(executor.getCompletedTaskCount())
                 .activeJobs(activeJobs.get())
                 .availableResourcePermits(resourceSemaphore.availablePermits())
+                // 新增性能指标
+                .circuitBreakerState(circuitBreakerState.name())
+                .failureCount(failureCount.get())
+                .totalExecutedTasks(executedTasks)
+                .totalFailedTasks(totalFailedTasks.get())
+                .avgExecutionTimeMs(avgExecutionTime)
+                .failureRate(failureRate)
+                .slowTaskCount(slowTaskCount.get())
                 .build();
+    }
+
+    /**
+     * 获取性能统计信息
+     */
+    public PerformanceMetrics getPerformanceMetrics() {
+        long executedTasks = totalExecutedTasks.get();
+        long totalTime = totalExecutionTime.get();
+        double avgExecutionTime = executedTasks > 0 ? (double) totalTime / executedTasks : 0.0;
+        double failureRate = executedTasks > 0 ? (double) totalFailedTasks.get() / executedTasks : 0.0;
+        double slowTaskRate = executedTasks > 0 ? (double) slowTaskCount.get() / executedTasks : 0.0;
+
+        return PerformanceMetrics.builder()
+                .totalExecutedTasks(executedTasks)
+                .totalFailedTasks(totalFailedTasks.get())
+                .totalExecutionTimeMs(totalTime)
+                .avgExecutionTimeMs(avgExecutionTime)
+                .failureRate(failureRate)
+                .slowTaskCount(slowTaskCount.get())
+                .slowTaskRate(slowTaskRate)
+                .circuitBreakerState(circuitBreakerState.name())
+                .failureThreshold(failureThreshold)
+                .currentFailureCount(failureCount.get())
+                .build();
+    }
+
+    /**
+     * 重置性能统计
+     */
+    public void resetPerformanceMetrics() {
+        totalExecutedTasks.set(0);
+        totalFailedTasks.set(0);
+        totalExecutionTime.set(0);
+        slowTaskCount.set(0);
+        failureCount.set(0);
+        circuitBreakerState = CircuitBreakerState.CLOSED;
+        log.info("性能统计已重置");
+    }
+
+    /**
+     * 手动重置熔断器
+     */
+    public void resetCircuitBreaker() {
+        circuitBreakerState = CircuitBreakerState.CLOSED;
+        failureCount.set(0);
+        log.info("熔断器手动重置为CLOSED状态");
     }
 
     /**
@@ -203,5 +361,42 @@ public class ConcurrencyController {
         private Long completedTasks;
         private Integer activeJobs;
         private Integer availableResourcePermits;
+        // 新增性能指标
+        private String circuitBreakerState;
+        private Integer failureCount;
+        private Long totalExecutedTasks;
+        private Long totalFailedTasks;
+        private Double avgExecutionTimeMs;
+        private Double failureRate;
+        private Long slowTaskCount;
+    }
+
+    /**
+     * 性能指标
+     */
+    @lombok.Data
+    @lombok.Builder
+    @lombok.NoArgsConstructor
+    @lombok.AllArgsConstructor
+    public static class PerformanceMetrics {
+        private Long totalExecutedTasks;
+        private Long totalFailedTasks;
+        private Long totalExecutionTimeMs;
+        private Double avgExecutionTimeMs;
+        private Double failureRate;
+        private Long slowTaskCount;
+        private Double slowTaskRate;
+        private String circuitBreakerState;
+        private Integer failureThreshold;
+        private Integer currentFailureCount;
+    }
+
+    /**
+     * 熔断器状态枚举
+     */
+    public enum CircuitBreakerState {
+        CLOSED,   // 关闭状态，正常工作
+        OPEN,     // 开启状态，拒绝所有请求
+        HALF_OPEN // 半开状态，允许部分请求通过以测试服务恢复
     }
 }

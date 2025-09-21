@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/audit/jobs")
+@RequestMapping("/v1/audit/jobs")
 @Tag(name = "检核作业管理", description = "智能检核引擎作业管理API")
 public class AuditJobController {
 
@@ -36,6 +37,7 @@ public class AuditJobController {
      */
     @PostMapping
     @Operation(summary = "创建检核作业", description = "创建新的产品文档检核作业")
+    @PreAuthorize("hasRole('AUDIT_USER') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<AuditJobResponse>> createJob(
             @RequestBody AuditJobRequest request) {
 
@@ -59,6 +61,7 @@ public class AuditJobController {
      */
     @GetMapping("/{jobId}")
     @Operation(summary = "查询作业状态", description = "根据作业ID查询检核作业的执行状态")
+    @PreAuthorize("hasRole('AUDIT_USER') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<AuditJobResponse>> getJobStatus(
             @Parameter(description = "作业ID", example = "job-12345678")
             @PathVariable String jobId) {
@@ -84,6 +87,7 @@ public class AuditJobController {
      */
     @GetMapping("/{jobId}/results")
     @Operation(summary = "获取作业结果", description = "获取检核作业的详细结果列表")
+    @PreAuthorize("hasRole('AUDIT_USER') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<AuditResultDto>>> getJobResults(
             @Parameter(description = "作业ID", example = "job-12345678")
             @PathVariable String jobId) {
@@ -111,6 +115,7 @@ public class AuditJobController {
      */
     @PostMapping("/{jobId}/export")
     @Operation(summary = "导出作业结果", description = "将检核结果导出为指定格式的文件")
+    @PreAuthorize("hasRole('AUDIT_USER') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<String>> exportJobResults(
             @Parameter(description = "作业ID", example = "job-12345678")
             @PathVariable String jobId,
