@@ -151,7 +151,7 @@ public interface UserMapper extends BaseMapper<User> {
      * 查询用户权限列表（保持不变）
      */
     @Select("""
-        SELECT DISTINCT p.permission_name
+        SELECT DISTINCT p.name
         FROM user_roles ur
         INNER JOIN role_permissions rp ON ur.role_id = rp.role_id
         INNER JOIN permissions p ON rp.permission_id = p.id
@@ -276,7 +276,7 @@ public interface UserMapper extends BaseMapper<User> {
         FROM user_roles ur
         INNER JOIN role_permissions rp ON ur.role_id = rp.role_id
         INNER JOIN permissions p ON rp.permission_id = p.id
-        WHERE ur.user_id = #{userId} AND p.permission_name = #{permissionName} AND p.is_deleted = 0
+        WHERE ur.user_id = #{userId} AND p.name = #{permissionName} AND p.is_deleted = 0
         """)
     boolean hasPermission(@Param("userId") String userId, @Param("permissionName") String permissionName);
     

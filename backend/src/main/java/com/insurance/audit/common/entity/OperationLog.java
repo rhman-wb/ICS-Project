@@ -86,7 +86,7 @@ public class OperationLog extends BaseEntity {
     /**
      * 请求方法
      */
-    @TableField("request_method")
+    @TableField(value = "request_method", exist = false)
     @Size(max = 10, message = "请求方法长度不能超过10字符")
     @Schema(description = "请求方法", example = "POST")
     private String requestMethod;
@@ -124,7 +124,7 @@ public class OperationLog extends BaseEntity {
     /**
      * 客户端IP地址
      */
-    @TableField("client_ip")
+    @TableField(value = "client_ip", exist = false)
     @Size(max = 45, message = "IP地址长度不能超过45字符")
     @Schema(description = "客户端IP地址", example = "192.168.1.100")
     private String clientIp;

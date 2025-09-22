@@ -57,11 +57,8 @@ public interface RoleMapper extends BaseMapper<Role> {
      * 查询角色及其权限信息
      */
     @Select("""
-        SELECT r.*, p.id as permission_id, p.permission_name, p.description as permission_description, p.resource_path
-        FROM roles r
-        LEFT JOIN role_permissions rp ON r.id = rp.role_id
-        LEFT JOIN permissions p ON rp.permission_id = p.id
-        WHERE r.id = #{roleId} AND r.is_deleted = 0
+        SELECT r.*`r`n        FROM roles r
+                WHERE r.id = #{roleId} AND r.is_deleted = 0
         """)
     Role findRoleWithPermissionsById(@Param("roleId") String roleId);
     

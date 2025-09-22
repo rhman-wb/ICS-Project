@@ -26,7 +26,7 @@ public interface PermissionMapper extends BaseMapper<Permission> {
      */
     @Select("""
         SELECT * FROM permissions
-        WHERE permission_name = #{name} AND is_deleted = 0
+        WHERE name = #{name} AND is_deleted = 0
         """)
     Permission findByName(@Param("name") String name);
     
@@ -34,8 +34,8 @@ public interface PermissionMapper extends BaseMapper<Permission> {
      * 检查权限名称是否存在
      */
     @Select("""
-        SELECT COUNT(*) FROM permissions
-        WHERE permission_name = #{name} AND is_deleted = 0
+        SELECT COUNT(*) > 0 FROM permissions
+        WHERE name = #{name} AND is_deleted = 0
         """)
     boolean existsByName(@Param("name") String name);
     
@@ -47,7 +47,7 @@ public interface PermissionMapper extends BaseMapper<Permission> {
         FROM permissions p
         INNER JOIN role_permissions rp ON p.id = rp.permission_id
         WHERE rp.role_id = #{roleId} AND p.is_deleted = 0
-        ORDER BY p.permission_name
+        ORDER BY p.name
         """)
     List<Permission> findByRoleId(@Param("roleId") String roleId);
     
@@ -60,7 +60,7 @@ public interface PermissionMapper extends BaseMapper<Permission> {
         INNER JOIN role_permissions rp ON p.id = rp.permission_id
         INNER JOIN user_roles ur ON rp.role_id = ur.role_id
         WHERE ur.user_id = #{userId} AND p.is_deleted = 0
-        ORDER BY p.permission_name
+        ORDER BY p.name
         """)
     List<Permission> findByUserId(@Param("userId") String userId);
     
@@ -70,7 +70,7 @@ public interface PermissionMapper extends BaseMapper<Permission> {
     @Select("""
         SELECT * FROM permissions
         WHERE is_deleted = 0
-        ORDER BY permission_name
+        ORDER BY name
         """)
     List<Permission> findAllAvailable();
     
@@ -104,3 +104,4 @@ public interface PermissionMapper extends BaseMapper<Permission> {
         """)
     long countRolesByPermissionId(@Param("permissionId") String permissionId);
 }
+

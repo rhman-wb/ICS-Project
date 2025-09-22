@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  * @since 2024-01-01
  */
 @Slf4j
-@Service
+@Service("securityComplianceManager")
 public class SecurityComplianceService {
 
     @Autowired
