@@ -22,10 +22,6 @@ import java.util.stream.Collectors;
 
 /**
  * 自定义用户详情服务
- * 
- * @author System
- * @version 1.0.0
- * @since 2024-01-01
  */
 @Service
 @RequiredArgsConstructor
@@ -62,12 +58,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         // 查询用户权限
         List<Permission> permissions = permissionMapper.findByUserId(user.getId());
 
-        // 构建权限列表：包含角色权限(ROLE_前缀)和细粒度权限码
+        // 构建权限列表：包含角色权限（ROLE_前缀）和细粒度权限码
         List<GrantedAuthority> authorities = roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getCode()))
                 .collect(Collectors.toList());
 
-        // 添加权限码到authorities（支持@PreAuthorize("hasAuthority('RULE_VIEW')")）
+        // 添加权限码到authorities（支持 @PreAuthorize("hasAuthority('RULE_VIEW')")）
         List<GrantedAuthority> permissionAuthorities = permissions.stream()
                 .map(permission -> new SimpleGrantedAuthority(permission.getCode()))
                 .collect(Collectors.toList());

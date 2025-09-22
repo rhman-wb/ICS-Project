@@ -50,11 +50,11 @@ public class ProductController {
     private final ProductService productService;
     private final ProductConverter productConverter;
 
-    // ==================== 产品列表和查询功能 ====================
+    // ==================== 产品列表和查询功能====================
 
     @GetMapping
     @Operation(summary = "获取产品列表", description = "根据条件分页查询产品列表")
-    @PreAuthorize("hasAuthority('product:view')")
+    @PreAuthorize("hasAnyAuthority('PRODUCT_VIEW','product:view') or hasRole('ADMIN')")
     public ApiResponse<PageResponse<ProductResponse>> getProductList(
             @Parameter(description = "页码", example = "1")
             @RequestParam(value = "page", defaultValue = "1") Integer page,
@@ -62,13 +62,13 @@ public class ProductController {
             @RequestParam(value = "size", defaultValue = "10") Integer size,
             @Parameter(description = "文件名关键字")
             @RequestParam(value = "fileName", required = false) String fileName,
-            @Parameter(description = "报送类型")
+            @Parameter(description = "报送类型)
             @RequestParam(value = "reportType", required = false) String reportType,
-            @Parameter(description = "开发类型")
+            @Parameter(description = "开发类型)
             @RequestParam(value = "developmentType", required = false) String developmentType,
             @Parameter(description = "产品类别")
             @RequestParam(value = "productCategory", required = false) String productCategory,
-            @Parameter(description = "主附险")
+            @Parameter(description = "主附险)
             @RequestParam(value = "primaryAdditional", required = false) String primaryAdditional,
             @Parameter(description = "修订类型")
             @RequestParam(value = "revisionType", required = false) String revisionType,
@@ -78,7 +78,7 @@ public class ProductController {
             @RequestParam(value = "year", required = false) Integer year,
             @Parameter(description = "产品类型")
             @RequestParam(value = "productType", required = false) String productType,
-            @Parameter(description = "产品状态")
+            @Parameter(description = "产品状态)
             @RequestParam(value = "status", required = false) String status,
             @Parameter(description = "排序字段")
             @RequestParam(value = "sortField", required = false) String sortField,
@@ -133,7 +133,7 @@ public class ProductController {
 
     @PostMapping
     @Operation(summary = "创建产品", description = "创建新的产品记录")
-    @PreAuthorize("hasAuthority('product:create')")
+    @PreAuthorize("hasAnyAuthority('PRODUCT_CREATE','product:create') or hasRole('ADMIN')")
     public ApiResponse<ProductResponse> createProduct(
             @Valid @RequestBody CreateProductRequest request) {
 
@@ -160,8 +160,8 @@ public class ProductController {
     // ==================== 产品提交功能 ====================
 
     @PutMapping("/{productId}/submit")
-    @Operation(summary = "提交产品", description = "将产品提交进行审核")
-    @PreAuthorize("hasAuthority('product:submit')")
+    @Operation(summary = "提交产品", description = "将产品提交进行审核)
+    @PreAuthorize("hasAnyAuthority('PRODUCT_SUBMIT','product:submit') or hasRole('ADMIN')")
     public ApiResponse<ProductResponse> submitProduct(
             @Parameter(description = "产品ID", required = true)
             @PathVariable("productId") String productId) {
@@ -185,7 +185,7 @@ public class ProductController {
 
     @GetMapping("/{productId}")
     @Operation(summary = "获取产品详情", description = "根据ID获取产品详细信息")
-    @PreAuthorize("hasAuthority('product:view')")
+    @PreAuthorize("hasAnyAuthority('PRODUCT_VIEW','product:view') or hasRole('ADMIN')")
     public ApiResponse<ProductResponse> getProductDetail(
             @Parameter(description = "产品ID", required = true)
             @PathVariable("productId") String productId) {
@@ -197,7 +197,7 @@ public class ProductController {
             Product product = productService.getProductById(productId);
 
             if (product == null) {
-                return ApiResponse.error("产品不存在");
+                return ApiResponse.error("产品不存在);
             }
 
             // 转换为响应DTO

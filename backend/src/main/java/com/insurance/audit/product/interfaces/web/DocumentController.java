@@ -69,7 +69,7 @@ public class DocumentController {
 
     @GetMapping
     @Operation(summary = "查询产品文档列表", description = "根据产品ID查询已上传的文档列表")
-    @PreAuthorize("hasAuthority('document:view') or hasAuthority('product:view')")
+    @PreAuthorize("hasAuthority('DOCUMENT_VIEW') or hasAuthority('PRODUCT_VIEW')")
     public ApiResponse<List<DocumentResponse>> listDocuments(
             @Parameter(description = "产品ID", required = true)
             @RequestParam("productId") String productId) {
@@ -86,7 +86,7 @@ public class DocumentController {
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "上传文档", description = "上传产品要件文档，支持条款、可行性报告、精算报告、费率表等")
-    @PreAuthorize("hasAuthority('document:upload')")
+    @PreAuthorize("hasAuthority('DOCUMENT_UPLOAD')")
     public ApiResponse<DocumentResponse> uploadDocument(
             @Parameter(description = "文档文件", required = true)
             @RequestParam("file") MultipartFile file,
@@ -182,7 +182,7 @@ public class DocumentController {
 
     @PostMapping(value = "/batch-upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "批量上传文档", description = "批量上传多个文档文件")
-    @PreAuthorize("hasAuthority('document:upload')")
+    @PreAuthorize("hasAuthority('DOCUMENT_UPLOAD')")
     public ApiResponse<List<DocumentResponse>> batchUploadDocuments(
             @Parameter(description = "文档文件数组", required = true)
             @RequestParam("files") MultipartFile[] files,
