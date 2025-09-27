@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="product-list-component">
     <!-- 筛选查询模块 -->
     <ProductFilter
@@ -64,6 +64,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { message, Modal } from 'ant-design-vue'
+import { useRouter } from 'vue-router'
 import type { TableColumnsType } from 'ant-design-vue'
 import ProductFilter from './product/ProductFilter.vue'
 import TableToolbar from './product/TableToolbar.vue'
@@ -71,6 +72,8 @@ import BatchOperations from './product/BatchOperations.vue'
 import ProductTable from './product/ProductTable.vue'
 import ColumnSettings from './product/ColumnSettings.vue'
 import { productApi, type ProductInfo, type ProductQueryParams } from '@/api/modules/product'
+import { getToken, isTokenExpired } from '@/utils/auth'
+import { useAuthStore } from '@/stores/modules/auth'
 
 // 组件名称
 defineOptions({
@@ -94,6 +97,10 @@ const emit = defineEmits<{
   viewDetail: [product: ProductInfo]
   refresh: []
 }>()
+
+// 路由和认证
+const router = useRouter()
+const authStore = useAuthStore()
 
 // 响应式数据
 const tableLoading = ref(false)
@@ -373,25 +380,73 @@ const handleColumnSettingsConfirm = (keys: string[]) => {
 const loadProductList = async () => {
   try {
     tableLoading.value = true
-    
+
+    // 检查认证状态
+    const token = getToken()
+    if (!token) {
+      message.error('登录状态已失效，请重新登录')
+      setTimeout(() => {
+        router.push('/login')
+      }, 1500)
+      return
+    }
+
+    // 检查token是否过期
+    if (isTokenExpired(token)) {
+      console.log('Token expired, attempting refresh...')
+      const refreshSuccess = await authStore.refreshTokenAction()
+
+      if (!refreshSuccess) {
+        message.error('登录已过期，请重新登录')
+        setTimeout(() => {
+          router.push('/login')
+        }, 1500)
+        return
+      }
+    }
+
     const params = {
       ...filterForm,
       ...sortConfig,
       page: pagination.current,
       size: pagination.pageSize
     }
-    
+
     const response = await productApi.getProductList(params)
-    
+
     if (response.success) {
       productList.value = response.data.records
       pagination.total = response.data.total
+
+      // 如果成功获取到数据，清除之前的错误状态
+      if (response.data.records.length > 0) {
+        console.log(`Successfully loaded ${response.data.records.length} products`)
+      } else {
+        message.info('当前没有符合条件的产品数据')
+      }
     } else {
       message.error(response.message || '获取产品列表失败')
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Load product list error:', error)
-    message.error('获取产品列表失败')
+
+    // 处理不同类型的错误
+    if (error?.response?.status === 401) {
+      message.error('身份验证失败，请重新登录')
+      setTimeout(() => {
+        router.push('/login')
+      }, 1500)
+    } else if (error?.response?.status === 403) {
+      message.error('没有权限访问产品管理功能，请联系管理员')
+    } else if (error?.response?.status === 404) {
+      message.error('产品管理服务暂时不可用，请稍后重试')
+    } else if (error?.code === 'NETWORK_ERROR' || !error?.response) {
+      message.error('网络连接失败，请检查网络后重试')
+    } else {
+      // 通用错误处理
+      const errorMessage = error?.response?.data?.message || error?.message || '获取产品列表失败'
+      message.error(errorMessage)
+    }
   } finally {
     tableLoading.value = false
   }
