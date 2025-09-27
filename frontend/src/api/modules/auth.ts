@@ -1,4 +1,4 @@
-import request from '@/api'
+﻿import request from '@/api'
 import axios from 'axios'
 import type { ApiResponse } from '@/api/types/common'
 import type { 
@@ -44,7 +44,7 @@ export const authApi = {
     return withLoading('login', async () => {
       try {
         const response = await request.post('/v1/auth/login', data)
-        const resp = response.data
+        const resp = response
 
         // 兼容后端 LoginResponse 字段（accessToken/refreshToken 等）
         if (resp?.success && resp?.data) {
@@ -125,7 +125,7 @@ export const authApi = {
           timestamp: new Date().toISOString()
         })
         
-        return response.data
+        return response
       } catch (error: any) {
         // 登出失败不影响客户端清理
         console.warn('Logout API failed, but continuing with local cleanup:', error.message)
@@ -151,7 +151,7 @@ export const authApi = {
         
         console.log('Token refresh successful')
         
-        return response.data
+        return response
       } catch (error: any) {
         console.error('Token refresh failed:', error.message)
         
@@ -171,7 +171,7 @@ export const authApi = {
       try {
         // 后端当前实现为 `/v1/users/profile` 获取当前用户信息（axios baseURL 为 /api）
         const response = await request.get('/v1/users/profile')
-        return response.data
+        return response
       } catch (error: any) {
         console.error('Get user info failed:', error.message)
         
@@ -190,7 +190,7 @@ export const authApi = {
       try {
         // 与后端统一：权限通常在用户信息中返回，若单独获取可按需要调整
         const response = await request.get('/v1/users/profile')
-        const resp = response.data as any
+        const resp = response as any
         if (resp?.success && resp?.data) {
           return {
             code: 200,
@@ -200,7 +200,7 @@ export const authApi = {
             data: resp.data.permissions || []
           } as ApiResponse<string[]>
         }
-        return response.data
+        return response
       } catch (error: any) {
         console.error('Get user permissions failed:', error.message)
         
@@ -224,7 +224,7 @@ export const authApi = {
         
         console.log('Password change successful')
         
-        return response.data
+        return response
       } catch (error: any) {
         if (error.response?.status === 400) {
           throw new Error('原密码不正确')
@@ -242,7 +242,7 @@ export const authApi = {
     return withLoading('checkLoginStatus', async () => {
       try {
         const response = await request.get('/v1/auth/check')
-        return response.data
+        return response
       } catch (error: any) {
         // 检查失败认为登录状态无效
         return {
