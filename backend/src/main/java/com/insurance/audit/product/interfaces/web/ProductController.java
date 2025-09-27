@@ -62,13 +62,13 @@ public class ProductController {
             @RequestParam(value = "size", defaultValue = "10") Integer size,
             @Parameter(description = "文件名关键字")
             @RequestParam(value = "fileName", required = false) String fileName,
-            @Parameter(description = "报送类型)
+            @Parameter(description = "报送类型")
             @RequestParam(value = "reportType", required = false) String reportType,
-            @Parameter(description = "开发类型)
+            @Parameter(description = "开发类型")
             @RequestParam(value = "developmentType", required = false) String developmentType,
             @Parameter(description = "产品类别")
             @RequestParam(value = "productCategory", required = false) String productCategory,
-            @Parameter(description = "主附险)
+            @Parameter(description = "主附险")
             @RequestParam(value = "primaryAdditional", required = false) String primaryAdditional,
             @Parameter(description = "修订类型")
             @RequestParam(value = "revisionType", required = false) String revisionType,
@@ -78,7 +78,7 @@ public class ProductController {
             @RequestParam(value = "year", required = false) Integer year,
             @Parameter(description = "产品类型")
             @RequestParam(value = "productType", required = false) String productType,
-            @Parameter(description = "产品状态)
+            @Parameter(description = "产品状态")
             @RequestParam(value = "status", required = false) String status,
             @Parameter(description = "排序字段")
             @RequestParam(value = "sortField", required = false) String sortField,
@@ -160,7 +160,7 @@ public class ProductController {
     // ==================== 产品提交功能 ====================
 
     @PutMapping("/{productId}/submit")
-    @Operation(summary = "提交产品", description = "将产品提交进行审核)
+    @Operation(summary = "提交产品", description = "将产品提交进行审核")
     @PreAuthorize("hasAnyAuthority('PRODUCT_SUBMIT','product:submit') or hasRole('ADMIN')")
     public ApiResponse<ProductResponse> submitProduct(
             @Parameter(description = "产品ID", required = true)
@@ -197,7 +197,7 @@ public class ProductController {
             Product product = productService.getProductById(productId);
 
             if (product == null) {
-                return ApiResponse.error("产品不存在);
+                return ApiResponse.error("产品不存在");
             }
 
             // 转换为响应DTO
