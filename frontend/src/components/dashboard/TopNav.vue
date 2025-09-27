@@ -8,8 +8,8 @@
 
       <!-- 中间菜单 -->
       <div class="nav-menu">
-        <div 
-          v-for="menu in menus" 
+        <div
+          v-for="menu in menus"
           :key="menu"
           :class="['menu-item', { active: active === menu }]"
           @click="handleMenuClick(menu)"
@@ -20,14 +20,36 @@
 
       <!-- 右侧用户信息 -->
       <div class="nav-user">
-        <i class="fa fa-user user-icon"></i>
-        <span class="username">{{ username }}</span>
+        <a-dropdown>
+          <span class="user-info">
+            <UserOutlined />
+            <span class="username">{{ username }}</span>
+            <DownOutlined />
+          </span>
+          <template #overlay>
+            <a-menu @click="handleUserMenuClick">
+              <a-menu-item key="profile">
+                <UserOutlined />
+                个人设置
+              </a-menu-item>
+              <a-menu-divider />
+              <a-menu-item key="logout">
+                <LogoutOutlined />
+                退出登录
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
       </div>
     </div>
   </nav>
 </template>
 
 <script setup lang="ts">
+import { UserOutlined, DownOutlined, LogoutOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+import { useAuthStore } from '@/stores/modules/auth'
+
 // 定义组件属性
 interface Props {
   brand: string
@@ -39,16 +61,42 @@ interface Props {
 // 定义组件事件
 interface Emits {
   (e: 'navigate', menuKey: string): void
+  (e: 'userAction', action: string): void
 }
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
+
+const authStore = useAuthStore()
 
 // 处理菜单点击
 const handleMenuClick = (menuKey: string) => {
   // 规整菜单键，避免尾随空格或不可见字符导致匹配失败
   const normalized = (menuKey || '').trim()
   emit('navigate', normalized)
+}
+
+// 处理用户菜单点击
+const handleUserMenuClick = async ({ key }: { key: string }) => {
+  switch (key) {
+    case 'profile':
+      // 发出用户动作事件，父组件处理
+      emit('userAction', 'profile')
+      message.info('个人设置功能正在开发中')
+      break
+    case 'logout':
+      try {
+        await authStore.logout()
+        message.success('退出登录成功')
+        emit('userAction', 'logout')
+      } catch (error) {
+        console.error('Logout error:', error)
+        message.error('退出登录失败')
+      }
+      break
+    default:
+      break
+  }
 }
 </script>
 
@@ -123,19 +171,31 @@ const handleMenuClick = (menuKey: string) => {
 .nav-user {
   display: flex;
   align-items: center;
-  gap: 8px;
   flex-shrink: 0;
-  
-  .user-icon {
-    color: rgba(255, 255, 255, 0.65);
-    font-size: 16px;
-  }
-  
-  .username {
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     color: #ffffff;
-    font-size: 14px;
-    font-family: 'Microsoft YaHei', sans-serif;
-    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .username {
+      font-size: 14px;
+      font-family: 'Microsoft YaHei', sans-serif;
+      font-weight: 500;
+    }
+
+    .anticon {
+      font-size: 14px;
+    }
   }
 }
 

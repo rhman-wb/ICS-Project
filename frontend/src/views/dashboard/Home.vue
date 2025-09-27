@@ -1,12 +1,13 @@
 <template>
   <div class="dashboard-home">
     <!-- 顶部导航 -->
-    <TopNav 
+    <TopNav
       :brand="homeData.topNav.brand"
       :menus="homeData.topNav.menus"
       :active="homeData.topNav.active"
-      :username="homeData.topNav.username"
+      :username="currentUser?.realName || currentUser?.username || '用户'"
       @navigate="onNavigate"
+      @userAction="handleUserAction"
     />
     
     <!-- 主容器：1440px 固定宽度，左右两栏布局 -->
@@ -82,6 +83,8 @@
 // 导入数据和组件
 import { useHomeMock } from '@/composables/useHomeMock'
 import { useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { useAuthStore } from '@/stores/modules/auth'
 
 // 导入组件
 import TopNav from '@/components/dashboard/TopNav.vue'
@@ -96,6 +99,26 @@ import SummaryTotals from '@/components/dashboard/SummaryTotals.vue'
 
 const homeData = useHomeMock()
 const router = useRouter()
+const authStore = useAuthStore()
+
+// 获取当前用户信息
+const currentUser = computed(() => authStore.userInfo)
+
+// 处理用户动作事件
+const handleUserAction = (action: string) => {
+  switch (action) {
+    case 'profile':
+      // 跳转到个人设置页面（暂时跳转到用户管理页面）
+      router.push('/user/profile')
+      break
+    case 'logout':
+      // 登出已在TopNav组件中处理，这里仅做日志记录
+      console.log('User logged out')
+      break
+    default:
+      console.log('Unknown user action:', action)
+  }
+}
 
 // 顶部菜单点击处理（健壮匹配）
 const onNavigate = (menu: string) => {
