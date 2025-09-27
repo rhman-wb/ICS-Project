@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 检核模块API接口
  * 集成Mock数据，预留真实API接口
  */
@@ -71,7 +71,7 @@ export const auditApi = {
         }
       } else {
         const response = await request.post('/v1/audit/tasks', data)
-        return response.data
+        return response
       }
     })
   },
@@ -92,7 +92,7 @@ export const auditApi = {
         }
       } else {
         const response = await request.get(`/v1/audit/tasks/${taskId}/progress`)
-        return response.data
+        return response
       }
     })
   },
@@ -113,7 +113,7 @@ export const auditApi = {
         }
       } else {
         const response = await request.post(`/v1/audit/tasks/${taskId}/start`)
-        return response.data
+        return response
       }
     })
   },
@@ -134,7 +134,7 @@ export const auditApi = {
         }
       } else {
         const response = await request.post(`/v1/audit/tasks/${taskId}/stop`)
-        return response.data
+        return response
       }
     })
   },
@@ -155,7 +155,7 @@ export const auditApi = {
         }
       } else {
         const response = await request.post(`/v1/audit/tasks/${taskId}/restart`)
-        return response.data
+        return response
       }
     })
   },
@@ -194,7 +194,7 @@ export const auditApi = {
         }
       } else {
         const response = await request.get('/v1/audit/rules', { params })
-        return response.data
+        return response
       }
     })
   },
@@ -222,7 +222,7 @@ export const auditApi = {
         }
       } else {
         const response = await request.get('/v1/audit/rules/filter-options')
-        return response.data
+        return response
       }
     })
   },
@@ -243,7 +243,7 @@ export const auditApi = {
         }
       } else {
         const response = await request.get(`/v1/audit/rules/${ruleId}`)
-        return response.data
+        return response
       }
     })
   },
@@ -264,7 +264,7 @@ export const auditApi = {
         }
       } else {
         const response = await request.post('/v1/audit/rules/batch', { ruleIds })
-        return response.data
+        return response
       }
     })
   },
@@ -299,7 +299,7 @@ export const auditApi = {
         const response = await request.get(`/v1/audit/results/${params.taskId}`, {
           params: { ...params, taskId: undefined }
         })
-        return response.data
+        return response
       }
     })
   },
@@ -338,7 +338,7 @@ export const auditApi = {
         }
       } else {
         const response = await request.get(`/v1/audit/results/${taskId}/statistics`)
-        return response.data
+        return response
       }
     })
   },
@@ -359,7 +359,7 @@ export const auditApi = {
         }
       } else {
         const response = await request.get(`/v1/audit/results/detail/${resultId}`)
-        return response.data
+        return response
       }
     })
   },
@@ -388,7 +388,7 @@ export const auditApi = {
         }
       } else {
         const response = await request.get(`/v1/audit/results/${resultId}/content`)
-        return response.data
+        return response
       }
     })
   },
@@ -414,7 +414,7 @@ export const auditApi = {
         }
       } else {
         const response = await request.post(`/v1/audit/results/${taskId}/export`, { format })
-        return response.data
+        return response
       }
     })
   },
@@ -482,7 +482,7 @@ export const auditApi = {
         }
       } else {
         const response = await request.get('/v1/audit/history', { params })
-        return response.data
+        return response
       }
     })
   }

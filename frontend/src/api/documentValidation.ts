@@ -1,6 +1,6 @@
-import request from '@/api/index'
+﻿import request from '@/api/index'
 
-// 文档校验结果类型定义
+// 鏂囨。鏍￠獙缁撴灉绫诲瀷瀹氫箟
 export interface ValidationError {
   errorType: string
   errorCode: string
@@ -46,48 +46,48 @@ export interface ApiResponse<T> {
 }
 
 /**
- * 文档校验API服务
+ * 鏂囨。鏍￠獙API鏈嶅姟
  */
 export class DocumentValidationService {
 
   /**
-   * 校验产品的所有文档
+   * 鏍￠獙浜у搧鐨勬墍鏈夋枃妗?
    */
   static async validateProductDocuments(productId: string): Promise<ApiResponse<DocumentValidationResult>> {
     return request.get(`/v1/documents/validate/${productId}`)
-      .then(response => response.data)
+      
   }
 
   /**
-   * 校验单个文档
+   * 鏍￠獙鍗曚釜鏂囨。
    */
   static async validateSingleDocument(documentId: string): Promise<ApiResponse<DocumentValidationResult>> {
     return request.get(`/v1/documents/validate-single/${documentId}`)
-      .then(response => response.data)
+      
   }
 
   /**
-   * 校验文档完整性
+   * 鏍￠獙鏂囨。瀹屾暣鎬?
    */
   static async validateDocumentCompleteness(productId: string): Promise<ApiResponse<DocumentValidationResult>> {
     return request.get(`/v1/documents/validate-completeness/${productId}`)
-      .then(response => response.data)
+      
   }
 
   /**
-   * 校验文档名称一致性
+   * 鏍￠獙鏂囨。鍚嶇О涓€鑷存€?
    */
   static async validateDocumentNameConsistency(productId: string): Promise<ApiResponse<DocumentValidationResult>> {
     return request.get(`/v1/documents/validate-consistency/${productId}`)
-      .then(response => response.data)
+      
   }
 
   /**
-   * 校验文档格式
+   * 鏍￠獙鏂囨。鏍煎紡
    */
   static async validateDocumentFormat(productId: string): Promise<ApiResponse<DocumentValidationResult>> {
     return request.get(`/v1/documents/validate-format/${productId}`)
-      .then(response => response.data)
+      
   }
 }
 
