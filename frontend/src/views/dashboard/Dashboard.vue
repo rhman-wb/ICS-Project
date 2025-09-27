@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <a-layout class="dashboard-layout">
     <!-- 顶部导航栏 -->
     <a-layout-header class="dashboard-header">
@@ -207,19 +207,8 @@ const handleMenuClick = ({ key }: { key: string }) => {
 
 const handleUserMenuClick = async ({ key }: { key: string }) => {
   switch (key) {
-    case 'profile':
-      // 暂时显示提示，后续实现个人设置页面
-      message.info('个人设置功能正在开发中')
-      break
-    case 'logout':
-      try {
-        await authStore.logout()
-        message.success('退出登录成功')
-      } catch (error) {
-        console.error('Logout error:', error)
-        message.error('退出登录失败')
-      }
-      break
+    case 'profile':\n      router.push('/user/profile')\n      break
+    case 'logout':\n      await authStore.logout()\n      message.success('退出登录成功')\n      break
     default:
       break
   }

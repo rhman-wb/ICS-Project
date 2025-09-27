@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="user-profile">
     <div class="profile-container">
       <!-- 页面标题 -->
@@ -188,47 +188,7 @@ const securityActions = computed(() => [
 
 // 处理保存
 const handleSave = async () => {
-  try {
-    saving.value = true
-
-    // 这里应该调用API更新用户信息
-    // 暂时直接更新本地store
-    const updates: Partial<User> = {
-      realName: profileForm.realName,
-      email: profileForm.email,
-      phone: profileForm.phone
-    }
-
-    authStore.updateUserInfo(updates)
-
-    message.success('个人信息更新成功')
-    editMode.value = false
-
-  } catch (error) {
-    console.error('Update profile error:', error)
-    message.error('个人信息更新失败')
-  } finally {
-    saving.value = false
-  }
-}
-
-// 处理取消
-const handleCancel = () => {
-  editMode.value = false
-  // 重置表单数据
-  initFormData()
-}
-
-// 处理退出登录
-async function handleLogout() {
-  try {
-    await authStore.logout()
-    message.success('退出登录成功')
-    router.push('/login')
-  } catch (error) {
-    console.error('Logout error:', error)
-    message.error('退出登录失败')
-  }
+  await authStore.logout()\n  message.success('退出登录成功')\n  router.push('/login')
 }
 </script>
 

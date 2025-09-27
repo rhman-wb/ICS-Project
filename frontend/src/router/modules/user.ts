@@ -1,4 +1,4 @@
-import type { RouteRecordRaw } from 'vue-router'
+﻿import type { RouteRecordRaw } from 'vue-router'
 
 const userRoutes: RouteRecordRaw[] = [
   {
@@ -18,7 +18,7 @@ const userRoutes: RouteRecordRaw[] = [
         meta: {
           title: '个人资料',
           requiresAuth: true,
-          permissions: ['user:profile:view']
+          
         }
       },
       {

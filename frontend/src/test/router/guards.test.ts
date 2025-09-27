@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+﻿import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { createRouter, createWebHistory } from 'vue-router'
 import { createPinia, setActivePinia } from 'pinia'
 import { useAuthStore } from '@/stores/modules/auth'
@@ -51,7 +51,7 @@ describe('Router Guards', () => {
           path: '/user/profile',
           name: 'UserProfile',
           component: () => Promise.resolve({ default: {} }),
-          meta: { requiresAuth: true, permissions: ['user:profile:view'] }
+          meta: { requiresAuth: true }
         }
       ]
     })

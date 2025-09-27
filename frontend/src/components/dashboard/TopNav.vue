@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <nav class="top-nav" :style="{ backgroundColor: '#001529' }">
     <div class="nav-container">
       <!-- 左侧品牌 -->
@@ -82,17 +82,10 @@ const handleUserMenuClick = async ({ key }: { key: string }) => {
     case 'profile':
       // 发出用户动作事件，父组件处理
       emit('userAction', 'profile')
-      message.info('个人设置功能正在开发中')
+      
       break
     case 'logout':
-      try {
-        await authStore.logout()
-        message.success('退出登录成功')
-        emit('userAction', 'logout')
-      } catch (error) {
-        console.error('Logout error:', error)
-        message.error('退出登录失败')
-      }
+      await authStore.logout(); message.success('退出登录成功'); emit('userAction', 'logout')
       break
     default:
       break
@@ -229,3 +222,4 @@ const handleUserMenuClick = async ({ key }: { key: string }) => {
   }
 }
 </style>
+
