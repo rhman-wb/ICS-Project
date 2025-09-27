@@ -1,4 +1,4 @@
-﻿import request from '@/api/index'
+import request from '@/api/index'
 
 // 鏂囨。鏍￠獙缁撴灉绫诲瀷瀹氫箟
 export interface ValidationError {
