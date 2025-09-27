@@ -1,6 +1,6 @@
-﻿import request from './index'
+import request from './index'
 
-// 浜у搧鐩稿叧鐨勬帴鍙ｇ被鍨嬪畾涔?
+// 产品相关的接口类型定义
 export interface ProductCreateRequest {
   productName: string
   productType: string
@@ -55,31 +55,28 @@ export interface ApiResponse<T> {
 }
 
 /**
- * 鍒涘缓浜у搧
+ * 创建产品
  */
 export const createProduct = (data: ProductCreateRequest): Promise<ApiResponse<ProductResponse>> => {
   return request.post('/v1/products', data)
-    
 }
 
 /**
- * 鑾峰彇浜у搧璇︽儏
+ * 获取产品详情
  */
 export const getProduct = (productId: string): Promise<ApiResponse<ProductResponse>> => {
   return request.get(`/v1/products/${productId}`)
-    
 }
 
 /**
- * 鎻愪氦浜у搧
+ * 提交产品
  */
 export const submitProduct = (productId: string): Promise<ApiResponse<ProductResponse>> => {
   return request.put(`/v1/products/${productId}/submit`)
-    
 }
 
 /**
- * 鑾峰彇浜у搧鍒楄〃
+ * 获取产品列表
  */
 export const getProductList = (params?: {
   page?: number
@@ -95,21 +92,18 @@ export const getProductList = (params?: {
   number: number
 }>> => {
   return request.get('/v1/products', { params })
-    
 }
 
 /**
- * 鏇存柊浜у搧淇℃伅
+ * 更新产品信息
  */
 export const updateProduct = (productId: string, data: Partial<ProductCreateRequest>): Promise<ApiResponse<ProductResponse>> => {
   return request.put(`/v1/products/${productId}`, data)
-    
 }
 
 /**
- * 鍒犻櫎浜у搧
+ * 删除产品
  */
 export const deleteProduct = (productId: string): Promise<ApiResponse<void>> => {
   return request.delete(`/v1/products/${productId}`)
-    
 }
