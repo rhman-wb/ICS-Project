@@ -1,4 +1,4 @@
-import axios, { type AxiosInstance, type AxiosResponse } from 'axios'
+﻿import axios, { type AxiosInstance, type AxiosResponse } from 'axios'
 import { message } from 'ant-design-vue'
 import { getToken } from '@/utils/auth'
 import router from '@/router'
@@ -79,7 +79,7 @@ request.interceptors.response.use(
       return Promise.reject(businessError)
     }
     
-    return response
+    return data
   },
   async (error) => {
     const originalRequest = error.config
