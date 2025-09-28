@@ -24,11 +24,11 @@
           class="profile-form"
         >
           <a-form-item label="用户ID">
-            <a-input v-model:value="userInfo?.id" disabled />
+            <a-input :value="userInfo?.id" disabled />
           </a-form-item>
 
           <a-form-item label="用户名">
-            <a-input v-model:value="userInfo?.username" disabled />
+            <a-input :value="userInfo?.username" disabled />
           </a-form-item>
 
           <a-form-item label="真实姓名">
@@ -188,7 +188,34 @@ const securityActions = computed(() => [
 
 // 处理保存
 const handleSave = async () => {
-  await authStore.logout()\n  message.success('退出登录成功')\n  router.push('/login')
+  try {
+    saving.value = true
+    // TODO: 实现保存用户信息的API调用
+    // await updateUserProfile(profileForm)
+    message.success('保存成功')
+    editMode.value = false
+  } catch (error) {
+    message.error('保存失败，请重试')
+  } finally {
+    saving.value = false
+  }
+}
+
+// 处理取消编辑
+const handleCancel = () => {
+  editMode.value = false
+  initFormData() // 重置表单数据
+}
+
+// 处理退出登录
+const handleLogout = async () => {
+  try {
+    await authStore.logout()
+    message.success('退出登录成功')
+    router.push('/login')
+  } catch (error) {
+    message.error('退出登录失败')
+  }
 }
 </script>
 
