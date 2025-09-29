@@ -1,0 +1,22 @@
+{
+  "filePath": ".spec-workflow/specs/product-template-enhancement/requirements.md",
+  "currentVersion": 2,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-09-28T15:43:56.586Z",
+      "trigger": "initial",
+      "approvalId": "approval_1759074236557_vhek876w7",
+      "approvalTitle": "Product Template Enhancement Requirements"
+    },
+    {
+      "version": 2,
+      "filename": "snapshot-002.json",
+      "timestamp": "2025-09-29T03:56:42.807Z",
+      "trigger": "approved",
+      "approvalId": "approval_1759117701455_ropidp9fm",
+      "approvalTitle": "Product Template Enhancement Requirements Document"
+    }
+  ]
+}

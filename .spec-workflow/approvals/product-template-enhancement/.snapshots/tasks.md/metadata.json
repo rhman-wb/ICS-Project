@@ -1,0 +1,22 @@
+{
+  "filePath": ".spec-workflow/specs/product-template-enhancement/tasks.md",
+  "currentVersion": 2,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-09-29T04:07:10.871Z",
+      "trigger": "initial",
+      "approvalId": "approval_1759118830850_5m1vgv83x",
+      "approvalTitle": "Product Template Enhancement Tasks Document"
+    },
+    {
+      "version": 2,
+      "filename": "snapshot-002.json",
+      "timestamp": "2025-09-29T04:07:21.924Z",
+      "trigger": "approved",
+      "approvalId": "approval_1759118830850_5m1vgv83x",
+      "approvalTitle": "Product Template Enhancement Tasks Document"
+    }
+  ]
+}

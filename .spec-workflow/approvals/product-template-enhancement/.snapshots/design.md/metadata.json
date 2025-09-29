@@ -1,0 +1,22 @@
+{
+  "filePath": ".spec-workflow/specs/product-template-enhancement/design.md",
+  "currentVersion": 2,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-09-29T04:02:03.440Z",
+      "trigger": "initial",
+      "approvalId": "approval_1759118523416_0udmmmvji",
+      "approvalTitle": "Product Template Enhancement Design Document"
+    },
+    {
+      "version": 2,
+      "filename": "snapshot-002.json",
+      "timestamp": "2025-09-29T04:02:27.887Z",
+      "trigger": "approved",
+      "approvalId": "approval_1759118523416_0udmmmvji",
+      "approvalTitle": "Product Template Enhancement Design Document"
+    }
+  ]
+}
