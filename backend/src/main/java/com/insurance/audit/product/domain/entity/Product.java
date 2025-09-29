@@ -168,6 +168,221 @@ public class Product extends BaseEntity {
     @Schema(description = "文档数量", example = "4")
     private Integer documentCount;
 
+    // ===============================
+    // 备案产品模板新增字段
+    // ===============================
+
+    /**
+     * 开发类型（备案产品）
+     */
+    @TableField("development_type")
+    @Schema(description = "开发类型", example = "自主开发", allowableValues = {"自主开发", "使用示范条款及参考纯风险损失率", "仅使用示范条款", "联合开发"})
+    private String developmentType;
+
+    /**
+     * 示范条款名称（备案产品）
+     */
+    @TableField("demonstration_clause")
+    @Schema(description = "示范条款名称")
+    private String demonstrationClause;
+
+    /**
+     * 经营范围（备案产品）
+     */
+    @TableField("business_scope")
+    @Schema(description = "经营范围", example = "法人团体", allowableValues = {"法人团体", "机关团体", "个人", "个人/法人团体"})
+    private String businessScope;
+
+    /**
+     * 经营区域1（备案产品）
+     */
+    @TableField("business_area1")
+    @Schema(description = "经营区域1", example = "全国（不含港澳台）", allowableValues = {"全国（不含港澳台）", "全国（含港澳台）", "总公司", "省级分公司"})
+    private String businessArea1;
+
+    /**
+     * 经营区域2（备案产品）
+     */
+    @TableField("business_area2")
+    @Schema(description = "经营区域2")
+    private String businessArea2;
+
+    /**
+     * 产品属性（备案产品）
+     */
+    @TableField("product_property")
+    @Schema(description = "产品属性", example = "中长期产品", allowableValues = {"中长期产品", "一年期及一年期以下产品"})
+    private String productProperty;
+
+    /**
+     * 基础费率（备案产品）
+     */
+    @TableField("basic_rate")
+    @Schema(description = "基础费率（%）", example = "0.5")
+    private String basicRate;
+
+    /**
+     * 基础费率表（备案产品）
+     */
+    @TableField("basic_rate_table")
+    @Schema(description = "基础费率表")
+    private String basicRateTable;
+
+    /**
+     * 是否有电子保单（备案产品）
+     */
+    @TableField("has_electronic_policy")
+    @Schema(description = "是否有电子保单", example = "是", allowableValues = {"是", "否"})
+    private String hasElectronicPolicy;
+
+    /**
+     * 是否是国产加密算法（备案产品）
+     */
+    @TableField("has_national_encryption")
+    @Schema(description = "是否是国产加密算法", example = "是", allowableValues = {"是", "否"})
+    private String hasNationalEncryption;
+
+    /**
+     * 保险期间（备案产品）
+     */
+    @TableField("insurance_period")
+    @Schema(description = "保险期间", maxLength = 2000)
+    private String insurancePeriod;
+
+    /**
+     * 保险责任（备案产品）
+     */
+    @TableField("insurance_responsibility")
+    @Schema(description = "保险责任", maxLength = 2000)
+    private String insuranceResponsibility;
+
+    /**
+     * 销售区域（备案产品）
+     */
+    @TableField("sales_area")
+    @Schema(description = "销售区域")
+    private String salesArea;
+
+    /**
+     * 销售渠道（备案产品）
+     */
+    @TableField("sales_channel")
+    @Schema(description = "销售渠道")
+    private String salesChannel;
+
+    // ===============================
+    // 农险产品模板新增字段
+    // ===============================
+
+    /**
+     * 修订次数（农险产品）
+     */
+    @TableField("revision_count")
+    @Schema(description = "修订次数", example = "1")
+    private Integer revisionCount;
+
+    /**
+     * 保险标的（农险产品）
+     */
+    @TableField("insurance_target")
+    @Schema(description = "保险标的", example = "羊")
+    private String insuranceTarget;
+
+    /**
+     * 是否开办（农险产品）
+     */
+    @TableField("is_operated")
+    @Schema(description = "是否开办", example = "是", allowableValues = {"是", "否"})
+    private String isOperated;
+
+    /**
+     * 开办日期（农险产品）
+     */
+    @TableField("operation_date")
+    @Schema(description = "开办日期", example = "2024-01-01")
+    private String operationDate;
+
+    /**
+     * 费率浮动区间（农险产品）
+     */
+    @TableField("rate_floating_range")
+    @Schema(description = "费率浮动区间", example = "±20%")
+    private String rateFloatingRange;
+
+    /**
+     * 费率浮动系数（农险产品）
+     */
+    @TableField("rate_floating_coefficient")
+    @Schema(description = "费率浮动系数", example = "0.8-1.2")
+    private String rateFloatingCoefficient;
+
+    /**
+     * 绝对免赔率（额）（农险产品）
+     */
+    @TableField("absolute_deductible")
+    @Schema(description = "绝对免赔率（额）", example = "100元/亩")
+    private String absoluteDeductible;
+
+    /**
+     * 相对免赔率（额）（农险产品）
+     */
+    @TableField("relative_deductible")
+    @Schema(description = "相对免赔率（额）", example = "5%")
+    private String relativeDeductible;
+
+    /**
+     * 备注栏（农险产品）
+     */
+    @TableField("remarks")
+    @Schema(description = "备注栏", maxLength = 2000)
+    private String remarks;
+
+    // ===============================
+    // 通用模板字段
+    // ===============================
+
+    /**
+     * 模板类型标识
+     */
+    @TableField("template_type")
+    @Schema(description = "模板类型", example = "FILING", allowableValues = {"FILING", "AGRICULTURAL"})
+    private String templateType;
+
+    /**
+     * 原产品名称和编号/备案编号（修订产品）
+     */
+    @TableField("original_product_code")
+    @Schema(description = "原产品名称和编号/备案编号")
+    private String originalProductCode;
+
+    /**
+     * 是否使用示范条款
+     */
+    @TableField("uses_demonstration_clause")
+    @Schema(description = "是否使用示范条款", example = "false")
+    private Boolean usesDemonstrationClause;
+
+    /**
+     * 是否为政策性保险
+     */
+    @TableField("is_policy_insurance")
+    @Schema(description = "是否为政策性保险", example = "true")
+    private Boolean isPolicyInsurance;
+
+    /**
+     * 承保方式
+     */
+    @TableField("underwriting_method")
+    @Schema(description = "承保方式", example = "个险")
+    private String underwritingMethod;
+
+    /**
+     * 赔付方式
+     */
+    @TableField("claim_method")
+    @Schema(description = "赔付方式", example = "定额赔付")
+    private String claimMethod;
+
     /**
      * 产品类型枚举
      */

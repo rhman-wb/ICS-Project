@@ -2,7 +2,7 @@
 
 ## 阶段1：数据库扩展与模板管理
 
-- [ ] 1. 扩展Product实体以支持新模板字段
+- [x] 1. 扩展Product实体以支持新模板字段
   - File: backend/src/main/java/com/insurance/audit/product/domain/entity/Product.java
   - 为Product实体添加30个新字段以支持备案产品和农险产品模板
   - 添加字段注解和验证规则，保持与现有字段一致的风格
@@ -11,7 +11,7 @@
   - _Requirements: Requirement 2, Requirement 3, Requirement 7_
   - _Prompt: Implement the task for spec product-template-enhancement, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Java Backend Developer specializing in JPA entities and database design | Task: Extend the existing Product entity in backend/src/main/java/com/insurance/audit/product/domain/entity/Product.java to include all 30 new fields from both backup product template (备案产品自主注册信息登记表) and agricultural insurance template (农险产品信息登记表), following requirements for field completeness and data storage optimization. Add proper JPA annotations, validation annotations, and Swagger documentation. | Restrictions: Do not modify existing fields, maintain backward compatibility, follow existing naming conventions and annotation patterns, ensure proper database column mappings | _Leverage: Existing Product.java entity structure, BaseEntity class, existing annotation patterns | _Requirements: Requirements 2 (backup product fields), 3 (agricultural insurance fields), 7 (data storage model) | Success: All new fields are properly defined with correct types and annotations, backward compatibility is maintained, entity compiles without errors, proper Swagger documentation is added | Instructions: Set this task to in_progress in tasks.md before starting, and mark as completed when finished._
 
-- [ ] 2. 创建ProductTemplate实体用于模板配置管理
+- [x] 2. 创建ProductTemplate实体用于模板配置管理
   - File: backend/src/main/java/com/insurance/audit/product/domain/entity/ProductTemplate.java
   - 创建新的ProductTemplate实体，继承BaseEntity
   - 包含模板类型、配置、验证规则等字段
@@ -20,7 +20,7 @@
   - _Requirements: Requirement 7_
   - _Prompt: Implement the task for spec product-template-enhancement, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Java Backend Developer with expertise in JPA entity design and database modeling | Task: Create a new ProductTemplate entity in backend/src/main/java/com/insurance/audit/product/domain/entity/ProductTemplate.java to manage template configurations and metadata. Include fields for template type, name, file path, field configuration JSON, validation rules JSON, enabled status, and version. | Restrictions: Must extend BaseEntity, follow existing entity patterns, use proper JPA annotations, ensure JSON fields can handle complex configurations | _Leverage: Existing BaseEntity class, entity annotation patterns from other entities | _Requirements: Requirement 7 (data storage model optimization) | Success: Entity is properly structured with all required fields, extends BaseEntity correctly, includes proper validation and documentation annotations | Instructions: Set this task to in_progress in tasks.md before starting, and mark as completed when finished._
 
-- [ ] 3. 创建数据库迁移脚本
+- [x] 3. 创建数据库迁移脚本
   - File: backend/src/main/resources/db/migration/V2.0__Add_Template_Support.sql
   - 创建ALTER TABLE语句为products表添加新字段
   - 创建product_templates表和相关索引
@@ -29,7 +29,7 @@
   - _Requirements: Requirement 7, Requirement 8_
   - _Prompt: Implement the task for spec product-template-enhancement, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Database Developer with expertise in MySQL and Flyway migrations | Task: Create database migration script to add all new template fields to products table and create product_templates table. Ensure backward compatibility and data integrity. | Restrictions: Must use proper SQL syntax for MySQL 8.x, ensure all new fields are nullable for backward compatibility, add appropriate indexes for performance | _Leverage: Existing migration patterns in db/migration directory | _Requirements: Requirement 7 (data storage), Requirement 8 (backward compatibility) | Success: Migration script executes successfully, all new fields are added without data loss, indexes improve query performance | Instructions: Set this task to in_progress in tasks.md before starting, and mark as completed when finished._
 
-- [ ] 4. 创建ProductTemplateMapper数据访问层
+- [x] 4. 创建ProductTemplateMapper数据访问层
   - File: backend/src/main/java/com/insurance/audit/product/infrastructure/mapper/ProductTemplateMapper.java
   - 实现ProductTemplate的CRUD操作
   - 扩展MyBatis Plus BaseMapper接口
