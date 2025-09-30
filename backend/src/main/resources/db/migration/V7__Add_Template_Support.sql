@@ -7,6 +7,7 @@
 -- 设置字符集和排序规则
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+SET SQL_SAFE_UPDATES = 0;
 
 -- =====================================================
 -- 1. 扩展产品表字段以支持新模板
@@ -138,63 +139,37 @@ AND COLUMN_NAME IN ('development_type', 'template_type', 'document_count');
 SELECT COUNT(*) as template_records FROM `product_templates` WHERE `is_deleted` = 0;
 
 -- =====================================================
--- 7. 创建触发器维护数据一致性
+-- 7. 创建文档计数同步存储过程
 -- =====================================================
 
--- 创建触发器：当documents表有变更时自动更新products表的document_count
+-- 由于权限限制无法创建触发器，改为提供手动同步存储过程
+-- 注意：document_count 字段的维护已移至应用层实现
+-- 在文档增删改时，应用代码会自动更新对应产品的 document_count
+-- 如需手动同步全部产品的文档计数，可执行 CALL sync_document_count()
+
 DELIMITER $$
 
-DROP TRIGGER IF EXISTS `tr_documents_update_count_insert`$$
-CREATE TRIGGER `tr_documents_update_count_insert`
-AFTER INSERT ON `documents`
-FOR EACH ROW
+CREATE PROCEDURE sync_document_count()
+MODIFIES SQL DATA
+SQL SECURITY INVOKER
+COMMENT '手动同步产品文档计数'
 BEGIN
-    UPDATE `products` SET `document_count` = (
-        SELECT COUNT(*) FROM `documents`
-        WHERE `product_id` = NEW.`product_id` AND `is_deleted` = 0
-    ) WHERE `id` = NEW.`product_id`;
-END$$
-
-DROP TRIGGER IF EXISTS `tr_documents_update_count_update`$$
-CREATE TRIGGER `tr_documents_update_count_update`
-AFTER UPDATE ON `documents`
-FOR EACH ROW
-BEGIN
-    -- 更新旧产品的文档计数
-    IF OLD.`product_id` IS NOT NULL THEN
-        UPDATE `products` SET `document_count` = (
-            SELECT COUNT(*) FROM `documents`
-            WHERE `product_id` = OLD.`product_id` AND `is_deleted` = 0
-        ) WHERE `id` = OLD.`product_id`;
-    END IF;
-
-    -- 更新新产品的文档计数(如果product_id发生变化或is_deleted状态变化)
-    IF NEW.`product_id` IS NOT NULL AND
-       (NEW.`product_id` != OLD.`product_id` OR NEW.`is_deleted` != OLD.`is_deleted`) THEN
-        UPDATE `products` SET `document_count` = (
-            SELECT COUNT(*) FROM `documents`
-            WHERE `product_id` = NEW.`product_id` AND `is_deleted` = 0
-        ) WHERE `id` = NEW.`product_id`;
-    END IF;
-END$$
-
-DROP TRIGGER IF EXISTS `tr_documents_update_count_delete`$$
-CREATE TRIGGER `tr_documents_update_count_delete`
-AFTER DELETE ON `documents`
-FOR EACH ROW
-BEGIN
-    UPDATE `products` SET `document_count` = (
-        SELECT COUNT(*) FROM `documents`
-        WHERE `product_id` = OLD.`product_id` AND `is_deleted` = 0
-    ) WHERE `id` = OLD.`product_id`;
+    UPDATE `products` p SET `document_count` = (
+        SELECT COUNT(*) FROM `documents` d
+        WHERE d.`product_id` = p.`id` AND d.`is_deleted` = 0
+    );
 END$$
 
 DELIMITER ;
 
+-- 执行一次初始同步
+CALL sync_document_count();
+
 -- =====================================================
--- 8. 恢复外键检查
+-- 8. 恢复设置
 -- =====================================================
 SET FOREIGN_KEY_CHECKS = 1;
+SET SQL_SAFE_UPDATES = 1;
 
 -- =====================================================
 -- 脚本执行完成
