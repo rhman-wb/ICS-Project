@@ -6,7 +6,9 @@ import com.insurance.audit.common.exception.BusinessException;
 import com.insurance.audit.common.exception.ErrorCode;
 import com.insurance.audit.product.application.service.DocumentValidationService;
 import com.insurance.audit.product.application.service.ProductService;
+import com.insurance.audit.product.application.service.TemplateService;
 import com.insurance.audit.product.domain.entity.Product;
+import com.insurance.audit.product.domain.entity.ProductTemplate;
 import com.insurance.audit.product.infrastructure.mapper.ProductMapper;
 import com.insurance.audit.product.interfaces.dto.request.ProductQueryRequest;
 import com.insurance.audit.product.interfaces.dto.response.DocumentValidationResult;
@@ -29,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductMapper productMapper;
     private final DocumentValidationService documentValidationService;
+    private final TemplateService templateService;
 
     @Override
     public IPage<Product> getProductPage(ProductQueryRequest queryRequest) {
@@ -66,6 +69,12 @@ public class ProductServiceImpl implements ProductService {
     public Product createProduct(Product product) {
         log.info("创建产品: {}", product.getProductName());
 
+        // 验证产品模板类型
+        validateProductTemplate(product);
+
+        // 验证模板特定字段
+        validateTemplateFields(product);
+
         // 设置初始状态
         product.setStatus(Product.ProductStatus.DRAFT);
 
@@ -86,6 +95,18 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(rollbackFor = Exception.class)
     public Product updateProduct(Product product) {
         log.info("更新产品: {}", product.getId());
+
+        // 验证产品是否存在
+        Product existingProduct = getProductById(product.getId());
+        if (existingProduct == null) {
+            throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, "产品不存在: " + product.getId());
+        }
+
+        // 验证产品模板类型
+        validateProductTemplate(product);
+
+        // 验证模板特定字段
+        validateTemplateFields(product);
 
         // 更新数据库
         int result = productMapper.updateById(product);
@@ -169,5 +190,111 @@ public class ProductServiceImpl implements ProductService {
 
         log.info("产品提交成功: {}", productId);
         return product;
+    }
+
+    /**
+     * 验证产品模板类型
+     *
+     * @param product 产品实体
+     */
+    private void validateProductTemplate(Product product) {
+        // 检查产品类型是否有效
+        if (product.getProductType() == null) {
+            throw new BusinessException(ErrorCode.INVALID_PARAMETER, "产品类型不能为空");
+        }
+
+        // 检查模板类型字段
+        if (product.getTemplateType() != null) {
+            String templateType = product.getTemplateType().toUpperCase();
+
+            // 验证模板类型是否有效
+            if (!templateService.isValidTemplateType(templateType)) {
+                throw new BusinessException(ErrorCode.INVALID_PARAMETER, "无效的模板类型: " + templateType);
+            }
+
+            // 检查模板配置是否存在且启用
+            ProductTemplate template = templateService.getTemplateConfig(templateType);
+            if (template == null) {
+                throw new BusinessException(ErrorCode.TEMPLATE_NOT_FOUND, "未找到模板配置: " + templateType);
+            }
+
+            if (!template.getEnabled()) {
+                throw new BusinessException(ErrorCode.TEMPLATE_DISABLED, "模板已禁用: " + templateType);
+            }
+
+            log.debug("产品模板类型验证通过: {}", templateType);
+        }
+    }
+
+    /**
+     * 验证模板特定字段
+     *
+     * @param product 产品实体
+     */
+    private void validateTemplateFields(Product product) {
+        if (product.getProductType() == null) {
+            return;
+        }
+
+        switch (product.getProductType()) {
+            case FILING:
+                validateFilingProductFields(product);
+                break;
+            case AGRICULTURAL:
+                validateAgriculturalProductFields(product);
+                break;
+            default:
+                log.warn("未知的产品类型: {}", product.getProductType());
+        }
+    }
+
+    /**
+     * 验证备案产品特定字段
+     *
+     * @param product 产品实体
+     */
+    private void validateFilingProductFields(Product product) {
+        log.debug("验证备案产品字段: {}", product.getProductName());
+
+        // 必填字段验证
+        if (product.getSalesPromotionName() == null || product.getSalesPromotionName().trim().isEmpty()) {
+            log.warn("备案产品缺少销售推广名称");
+        }
+
+        // 备案产品特定字段逻辑验证
+        if (product.getUsesDemonstrationClause() != null && product.getUsesDemonstrationClause()) {
+            if (product.getDemonstrationClause() == null || product.getDemonstrationClause().trim().isEmpty()) {
+                throw new BusinessException(ErrorCode.INVALID_PARAMETER, "使用示范条款时必须填写示范条款名称");
+            }
+        }
+
+        log.debug("备案产品字段验证通过");
+    }
+
+    /**
+     * 验证农险产品特定字段
+     *
+     * @param product 产品实体
+     */
+    private void validateAgriculturalProductFields(Product product) {
+        log.debug("验证农险产品字段: {}", product.getProductName());
+
+        // 必填字段验证
+        if (product.getOperatingRegion() == null || product.getOperatingRegion().trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.INVALID_PARAMETER, "农险产品必须填写经营区域");
+        }
+
+        if (product.getProductCategory() == null || product.getProductCategory().trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.INVALID_PARAMETER, "农险产品必须填写产品类别");
+        }
+
+        // 农险产品特定字段逻辑验证
+        if (product.getIsOperated() != null && product.getIsOperated()) {
+            if (product.getOperationDate() == null) {
+                throw new BusinessException(ErrorCode.INVALID_PARAMETER, "已经营的产品必须填写经营日期");
+            }
+        }
+
+        log.debug("农险产品字段验证通过");
     }
 }

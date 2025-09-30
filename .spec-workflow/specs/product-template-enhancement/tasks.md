@@ -40,7 +40,7 @@
 
 ## 阶段2：模板服务层实现
 
-- [ ] 5. 实现TemplateService模板管理服务
+- [x] 5. 实现TemplateService模板管理服务
   - File: backend/src/main/java/com/insurance/audit/product/application/service/TemplateService.java, TemplateServiceImpl.java
   - 实现模板下载、配置管理、元数据查询功能
   - 集成文件存储服务和缓存机制
@@ -49,7 +49,7 @@
   - _Requirements: Requirement 1_
   - _Prompt: Implement the task for spec product-template-enhancement, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Java Spring Boot Developer with expertise in service layer architecture and file management | Task: Create TemplateService interface and implementation for managing product templates, including download functionality, configuration management, and metadata queries. Integrate with existing FileStorageService and Redis caching. | Restrictions: Must follow existing service patterns, use proper error handling, implement caching for performance, ensure thread safety | _Leverage: Existing FileStorageService, Redis configuration, service layer patterns | _Requirements: Requirement 1 (dual template download support) | Success: Service provides all required template management operations, integrates properly with file storage and caching, follows project architecture patterns | Instructions: Set this task to in_progress in tasks.md before starting, and mark as completed when finished._
 
-- [ ] 6. 增强ProductService以支持新模板字段
+- [x] 6. 增强ProductService以支持新模板字段
   - File: backend/src/main/java/com/insurance/audit/product/application/service/impl/ProductServiceImpl.java
   - 扩展现有ProductService以处理新增字段
   - 添加模板类型验证和字段映射逻辑
@@ -58,7 +58,7 @@
   - _Requirements: Requirement 2, Requirement 3, Requirement 8_
   - _Prompt: Implement the task for spec product-template-enhancement, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Java Backend Developer with expertise in service layer enhancement and business logic | Task: Enhance the existing ProductServiceImpl to support new template fields for both backup product and agricultural insurance templates. Add template type validation, field mapping logic, and ensure backward compatibility. | Restrictions: Must not break existing functionality, maintain method signatures, ensure proper validation of new fields | _Leverage: Existing ProductServiceImpl code, validation patterns, business logic structure | _Requirements: Requirements 2-3 (field completeness), Requirement 8 (backward compatibility) | Success: Service handles all new template fields correctly, validation works properly, existing functionality remains unaffected | Instructions: Set this task to in_progress in tasks.md before starting, and mark as completed when finished._
 
-- [ ] 7. 实现FieldValidationService字段验证服务
+- [x] 7. 实现FieldValidationService字段验证服务
   - File: backend/src/main/java/com/insurance/audit/product/application/service/FieldValidationService.java, FieldValidationServiceImpl.java
   - 实现基于模板规则的字段验证逻辑
   - 支持动态验证规则和依赖字段检查
@@ -67,7 +67,7 @@
   - _Requirements: Requirement 4, Requirement 6_
   - _Prompt: Implement the task for spec product-template-enhancement, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Java Backend Developer with expertise in validation frameworks and business rules | Task: Create FieldValidationService for template-based field validation, supporting dynamic validation rules, dependency checks, and template-specific validation logic based on the filling rules from template documents. | Restrictions: Must handle all validation scenarios described in requirements, support both template types, provide clear error messages in Chinese | _Leverage: Existing DocumentValidationService patterns, validation utilities | _Requirements: Requirement 4 (dynamic form logic), Requirement 6 (enhanced field validation) | Success: Validation service handles all template rules correctly, provides appropriate error messages, supports dynamic field dependencies | Instructions: Set this task to in_progress in tasks.md before starting, and mark as completed when finished._
 
-- [ ] 8. 扩展DocumentParsingService支持新模板解析
+- [x] 8. 扩展DocumentParsingService支持新模板解析
   - File: backend/src/main/java/com/insurance/audit/product/application/service/impl/DocumentParsingServiceImpl.java
   - 增强Excel解析功能以支持两种新模板格式
   - 添加字段映射和数据验证逻辑

@@ -43,10 +43,10 @@ public class ProductConverter {
                 .primarySituation(request.getPrimarySituation())
                 .productCategory(request.getProductCategory())
                 .operatingRegion(request.getOperatingRegion())
-                .operatingScope(request.getOperatingScope())
-                .demonstrationClauseName(request.getDemonstrationClauseName())
-                .operatingRegion1(request.getOperatingRegion1())
-                .operatingRegion2(request.getOperatingRegion2())
+                .businessScope(request.getOperatingScope())
+                .demonstrationClause(request.getDemonstrationClauseName())
+                .businessArea1(request.getOperatingRegion1())
+                .businessArea2(request.getOperatingRegion2())
                 .salesPromotionName(request.getSalesPromotionName())
                 .productType(Product.ProductType.valueOf(request.getProductType()))
                 .status(Product.ProductStatus.DRAFT)
@@ -101,16 +101,16 @@ public class ProductConverter {
             builder.operatingRegion(request.getOperatingRegion());
         }
         if (request.getOperatingScope() != null) {
-            builder.operatingScope(request.getOperatingScope());
+            builder.businessScope(request.getOperatingScope());
         }
         if (request.getDemonstrationClauseName() != null) {
-            builder.demonstrationClauseName(request.getDemonstrationClauseName());
+            builder.demonstrationClause(request.getDemonstrationClauseName());
         }
         if (request.getOperatingRegion1() != null) {
-            builder.operatingRegion1(request.getOperatingRegion1());
+            builder.businessArea1(request.getOperatingRegion1());
         }
         if (request.getOperatingRegion2() != null) {
-            builder.operatingRegion2(request.getOperatingRegion2());
+            builder.businessArea2(request.getOperatingRegion2());
         }
         if (request.getSalesPromotionName() != null) {
             builder.salesPromotionName(request.getSalesPromotionName());
@@ -146,10 +146,10 @@ public class ProductConverter {
                 .primarySituation(entity.getPrimarySituation())
                 .productCategory(entity.getProductCategory())
                 .operatingRegion(entity.getOperatingRegion())
-                .operatingScope(entity.getOperatingScope())
-                .demonstrationClauseName(entity.getDemonstrationClauseName())
-                .operatingRegion1(entity.getOperatingRegion1())
-                .operatingRegion2(entity.getOperatingRegion2())
+                .operatingScope(entity.getBusinessScope())
+                .demonstrationClauseName(entity.getDemonstrationClause())
+                .operatingRegion1(entity.getBusinessArea1())
+                .operatingRegion2(entity.getBusinessArea2())
                 .salesPromotionName(entity.getSalesPromotionName())
                 .createdBy(entity.getCreatedBy())
                 .createdAt(entity.getCreatedAt())

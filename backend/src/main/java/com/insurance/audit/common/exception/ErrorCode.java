@@ -52,12 +52,20 @@ public enum ErrorCode {
     PRODUCT_DELETE_FAILED(2005, "删除产品失败"),
     PRODUCT_QUERY_FAILED(2006, "查询产品失败"),
     
-    // 文档管理相关错误码 (2100-2199)  
+    // 文档管理相关错误码 (2100-2199)
     DOCUMENT_NOT_FOUND(2101, "文档不存在"),
     DOCUMENT_UPLOAD_FAILED(2102, "文档上传失败"),
     DOCUMENT_PARSE_FAILED(2103, "文档解析失败"),
-    DOCUMENT_VALIDATION_FAILED(2104, "文档校验失败");
-    
+    DOCUMENT_VALIDATION_FAILED(2104, "文档校验失败"),
+    FILE_NOT_FOUND(2105, "文件不存在"),
+
+    // 模板管理相关错误码 (2200-2299)
+    TEMPLATE_NOT_FOUND(2201, "模板不存在"),
+    TEMPLATE_DISABLED(2202, "模板已禁用"),
+    TEMPLATE_CREATE_FAILED(2203, "创建模板失败"),
+    TEMPLATE_UPDATE_FAILED(2204, "更新模板失败"),
+    TEMPLATE_DELETE_FAILED(2205, "删除模板失败");
+
     private final Integer code;
     private final String message;
 }

@@ -1,7 +1,11 @@
 package com.insurance.audit.product.application.service.impl;
 
 import com.insurance.audit.product.application.service.DocumentParsingService;
+import com.insurance.audit.product.application.service.TemplateService;
+import com.insurance.audit.product.domain.entity.ProductTemplate;
+import com.insurance.audit.product.interfaces.dto.TemplateFieldConfig;
 import com.insurance.audit.product.interfaces.dto.response.DocumentParseResult;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
@@ -25,7 +29,10 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class DocumentParsingServiceImpl implements DocumentParsingService {
+
+    private final TemplateService templateService;
 
     // 支持的文件格式
     private static final String[] SUPPORTED_FORMATS = {
@@ -52,9 +59,25 @@ public class DocumentParsingServiceImpl implements DocumentParsingService {
         FIELD_MAPPING.put("修订类型", "revisionType");
         FIELD_MAPPING.put("原产品名称", "originalProductName");
         FIELD_MAPPING.put("原产品名称和编号", "originalProductName");
-        FIELD_MAPPING.put("示范条款名称", "demonstrationClauseName");
-        FIELD_MAPPING.put("经营范围", "operatingScope");
+        FIELD_MAPPING.put("示范条款名称", "demonstrationClause");
+        FIELD_MAPPING.put("经营范围", "businessScope");
         FIELD_MAPPING.put("销售推广名称", "salesPromotionName");
+        FIELD_MAPPING.put("经营地域1", "businessArea1");
+        FIELD_MAPPING.put("经营地域2", "businessArea2");
+        FIELD_MAPPING.put("产品属性", "productProperty");
+        FIELD_MAPPING.put("基准费率", "basicRate");
+        FIELD_MAPPING.put("保险期限", "insurancePeriod");
+        FIELD_MAPPING.put("保险责任", "insuranceResponsibility");
+        FIELD_MAPPING.put("销售区域", "salesArea");
+        FIELD_MAPPING.put("销售渠道", "salesChannel");
+        FIELD_MAPPING.put("保险标的", "insuranceTarget");
+        FIELD_MAPPING.put("是否经营", "isOperated");
+        FIELD_MAPPING.put("经营日期", "operationDate");
+        FIELD_MAPPING.put("费率浮动范围", "rateFloatingRange");
+        FIELD_MAPPING.put("费率浮动系数", "rateFloatingCoefficient");
+        FIELD_MAPPING.put("绝对免赔", "absoluteDeductible");
+        FIELD_MAPPING.put("相对免赔", "relativeDeductible");
+        FIELD_MAPPING.put("备注", "remarks");
     }
 
     @Override
@@ -71,25 +94,16 @@ public class DocumentParsingServiceImpl implements DocumentParsingService {
                         .build();
             }
 
-            // 解析Excel文件
-            Workbook workbook = createWorkbook(file);
-            DocumentParseResult.FileInfo fileInfo = extractFileInfo(file, workbook);
+            // 尝试从文件名判断模板类型
+            String templateType = detectTemplateType(file.getOriginalFilename());
 
-            // 解析产品信息
-            Map<String, Object> rawData = new HashMap<>();
-            List<String> warnings = new ArrayList<>();
-            DocumentParseResult.ProductBasicInfo productInfo = parseProductInfo(workbook, rawData, warnings);
+            // 如果能识别模板类型，使用模板配置解析
+            if (templateType != null) {
+                return parseWithTemplate(file, templateType);
+            }
 
-            workbook.close();
-
-            return DocumentParseResult.builder()
-                    .success(true)
-                    .parseTime(LocalDateTime.now())
-                    .fileInfo(fileInfo)
-                    .productInfo(productInfo)
-                    .rawData(rawData)
-                    .warnings(warnings)
-                    .build();
+            // 否则使用通用解析
+            return parseGeneric(file);
 
         } catch (Exception e) {
             log.error("解析产品信息登记表失败: {}", e.getMessage(), e);
@@ -98,6 +112,251 @@ public class DocumentParsingServiceImpl implements DocumentParsingService {
                     .errorMessage("文件解析失败: " + e.getMessage())
                     .parseTime(LocalDateTime.now())
                     .build();
+        }
+    }
+
+    /**
+     * 使用模板配置解析文件
+     */
+    private DocumentParseResult parseWithTemplate(MultipartFile file, String templateType) throws IOException {
+        log.info("使用模板配置解析文件, 模板类型: {}", templateType);
+
+        Workbook workbook = createWorkbook(file);
+        DocumentParseResult.FileInfo fileInfo = extractFileInfo(file, workbook);
+
+        // 获取模板字段配置
+        List<TemplateFieldConfig> fieldConfigs = templateService.getTemplateFields(templateType);
+
+        // 使用模板配置解析
+        Map<String, Object> rawData = new HashMap<>();
+        List<String> warnings = new ArrayList<>();
+        DocumentParseResult.ProductBasicInfo productInfo = parseWithFieldConfigs(
+                workbook, fieldConfigs, rawData, warnings);
+
+        workbook.close();
+
+        return DocumentParseResult.builder()
+                .success(true)
+                .parseTime(LocalDateTime.now())
+                .fileInfo(fileInfo)
+                .productInfo(productInfo)
+                .rawData(rawData)
+                .warnings(warnings)
+                .build();
+    }
+
+    /**
+     * 通用解析（原有逻辑）
+     */
+    private DocumentParseResult parseGeneric(MultipartFile file) throws IOException {
+        log.info("使用通用方式解析文件");
+
+        // 解析Excel文件
+        Workbook workbook = createWorkbook(file);
+        DocumentParseResult.FileInfo fileInfo = extractFileInfo(file, workbook);
+
+        // 解析产品信息
+        Map<String, Object> rawData = new HashMap<>();
+        List<String> warnings = new ArrayList<>();
+        DocumentParseResult.ProductBasicInfo productInfo = parseProductInfo(workbook, rawData, warnings);
+
+        workbook.close();
+
+        return DocumentParseResult.builder()
+                .success(true)
+                .parseTime(LocalDateTime.now())
+                .fileInfo(fileInfo)
+                .productInfo(productInfo)
+                .rawData(rawData)
+                .warnings(warnings)
+                .build();
+    }
+
+    /**
+     * 从文件名检测模板类型
+     */
+    private String detectTemplateType(String fileName) {
+        if (fileName == null) {
+            return null;
+        }
+
+        String lowerFileName = fileName.toLowerCase();
+
+        if (lowerFileName.contains("备案") || lowerFileName.contains("自主注册")) {
+            return ProductTemplate.TemplateType.FILING.name();
+        } else if (lowerFileName.contains("农险") || lowerFileName.contains("农业保险")) {
+            return ProductTemplate.TemplateType.AGRICULTURAL.name();
+        }
+
+        return null;
+    }
+
+    /**
+     * 使用字段配置解析
+     */
+    private DocumentParseResult.ProductBasicInfo parseWithFieldConfigs(
+            Workbook workbook,
+            List<TemplateFieldConfig> fieldConfigs,
+            Map<String, Object> rawData,
+            List<String> warnings) {
+
+        DocumentParseResult.ProductBasicInfo.ProductBasicInfoBuilder builder =
+                DocumentParseResult.ProductBasicInfo.builder();
+
+        // 创建字段名到配置的映射
+        Map<String, TemplateFieldConfig> configMap = new HashMap<>();
+        if (fieldConfigs != null) {
+            for (TemplateFieldConfig config : fieldConfigs) {
+                configMap.put(config.getFieldName(), config);
+                if (config.getFieldLabel() != null) {
+                    configMap.put(config.getFieldLabel(), config);
+                }
+            }
+        }
+
+        // 遍历所有工作表
+        for (int sheetIndex = 0; sheetIndex < workbook.getNumberOfSheets(); sheetIndex++) {
+            Sheet sheet = workbook.getSheetAt(sheetIndex);
+            log.debug("解析工作表: {}", sheet.getSheetName());
+
+            // 解析工作表
+            parseSheetWithConfig(sheet, configMap, builder, rawData, warnings);
+        }
+
+        return builder.build();
+    }
+
+    /**
+     * 使用配置解析工作表
+     */
+    private void parseSheetWithConfig(
+            Sheet sheet,
+            Map<String, TemplateFieldConfig> configMap,
+            DocumentParseResult.ProductBasicInfo.ProductBasicInfoBuilder builder,
+            Map<String, Object> rawData,
+            List<String> warnings) {
+
+        for (Row row : sheet) {
+            if (row == null) {
+                continue;
+            }
+
+            // 遍历行中的每个单元格
+            for (Cell cell : row) {
+                if (cell == null) {
+                    continue;
+                }
+
+                // 尝试识别字段并提取值
+                parseCell(cell, row, configMap, builder, rawData, warnings);
+            }
+        }
+    }
+
+    /**
+     * 解析单元格
+     */
+    private void parseCell(
+            Cell cell,
+            Row row,
+            Map<String, TemplateFieldConfig> configMap,
+            DocumentParseResult.ProductBasicInfo.ProductBasicInfoBuilder builder,
+            Map<String, Object> rawData,
+            List<String> warnings) {
+
+        String cellValue = getCellValueAsString(cell);
+        if (StringUtils.isBlank(cellValue)) {
+            return;
+        }
+
+        // 检查是否为字段标签
+        TemplateFieldConfig config = configMap.get(cellValue.trim());
+        if (config == null) {
+            // 尝试从FIELD_MAPPING查找
+            String fieldName = FIELD_MAPPING.get(cellValue.trim());
+            if (fieldName != null) {
+                config = configMap.get(fieldName);
+            }
+        }
+
+        if (config != null) {
+            // 提取字段值（通常在标签的下一个单元格或下一行）
+            String fieldValue = extractFieldValue(cell, row);
+            if (fieldValue != null) {
+                rawData.put(config.getFieldName(), fieldValue);
+                setFieldValue(builder, config.getFieldName(), fieldValue);
+                log.debug("解析字段: {} = {}", config.getFieldName(), fieldValue);
+            }
+        }
+    }
+
+    /**
+     * 提取字段值
+     */
+    private String extractFieldValue(Cell labelCell, Row row) {
+        // 尝试从右侧单元格获取值
+        int nextColumnIndex = labelCell.getColumnIndex() + 1;
+        if (nextColumnIndex < row.getLastCellNum()) {
+            Cell valueCell = row.getCell(nextColumnIndex);
+            if (valueCell != null) {
+                String value = getCellValueAsString(valueCell);
+                if (StringUtils.isNotBlank(value)) {
+                    return value.trim();
+                }
+            }
+        }
+
+        // 尝试从下一行同列获取值
+        Sheet sheet = row.getSheet();
+        int nextRowIndex = row.getRowNum() + 1;
+        if (nextRowIndex <= sheet.getLastRowNum()) {
+            Row nextRow = sheet.getRow(nextRowIndex);
+            if (nextRow != null) {
+                Cell valueCell = nextRow.getCell(labelCell.getColumnIndex());
+                if (valueCell != null) {
+                    String value = getCellValueAsString(valueCell);
+                    if (StringUtils.isNotBlank(value)) {
+                        return value.trim();
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 设置字段值到builder
+     */
+    private void setFieldValue(DocumentParseResult.ProductBasicInfo.ProductBasicInfoBuilder builder,
+                              String fieldName,
+                              String fieldValue) {
+        // 这里简化处理，实际应该根据字段类型进行转换
+        switch (fieldName) {
+            case "productName":
+                builder.productName(fieldValue);
+                break;
+            case "reportType":
+                builder.reportType(fieldValue);
+                break;
+            case "productNature":
+                builder.productNature(fieldValue);
+                break;
+            case "year":
+                try {
+                    builder.year(Integer.parseInt(fieldValue));
+                } catch (NumberFormatException e) {
+                    log.warn("年度字段解析失败: {}", fieldValue);
+                }
+                break;
+            case "productCategory":
+                builder.productCategory(fieldValue);
+                break;
+            case "operatingRegion":
+                builder.operatingRegion(fieldValue);
+                break;
+            default:
+                log.debug("未映射的字段: {}", fieldName);
         }
     }
 
