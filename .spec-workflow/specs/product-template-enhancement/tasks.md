@@ -78,7 +78,7 @@
 
 ## 阶段3：API层扩展
 
-- [ ] 9. 扩展ProductController添加模板相关API
+- [x] 9. 扩展ProductController添加模板相关API
   - File: backend/src/main/java/com/insurance/audit/product/interfaces/web/ProductController.java
   - 添加模板下载、字段配置、模板解析等API端点
   - 确保API文档和错误处理的完整性
@@ -87,7 +87,7 @@
   - _Requirements: Requirement 1, Requirement 5_
   - _Prompt: Implement the task for spec product-template-enhancement, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Java Spring Boot Developer with expertise in REST API design and controller layer | Task: Extend ProductController to add template-related endpoints including template download, field configuration retrieval, and template parsing APIs. Ensure proper HTTP status codes, error handling, and OpenAPI documentation. | Restrictions: Must follow existing controller patterns, maintain consistent API design, ensure proper security and validation | _Leverage: Existing ProductController structure, REST API patterns, error handling mechanisms | _Requirements: Requirement 1 (dual template download), Requirement 5 (template parsing) | Success: All template-related APIs are properly implemented, documented, and tested | Instructions: Set this task to in_progress in tasks.md before starting, and mark as completed when finished._
 
-- [ ] 10. 创建模板相关的DTO类
+- [x] 10. 创建模板相关的DTO类
   - File: backend/src/main/java/com/insurance/audit/product/interfaces/dto/request/TemplateRequest.java, response/TemplateResponse.java
   - 创建模板下载、配置、验证相关的请求和响应DTO
   - 确保DTO包含所有必要的字段和验证注解
