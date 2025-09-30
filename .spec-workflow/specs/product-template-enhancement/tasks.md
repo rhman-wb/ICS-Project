@@ -98,7 +98,7 @@
 
 ## 阶段4：前端模板下载组件
 
-- [ ] 11. 创建TemplateDownload模板下载组件
+- [x] 11. 创建TemplateDownload模板下载组件
   - File: frontend/src/components/product/TemplateDownload.vue
   - 实现双模板选择和下载功能
   - 提供下载进度反馈和错误处理
@@ -107,7 +107,7 @@
   - _Requirements: Requirement 1_
   - _Prompt: Implement the task for spec product-template-enhancement, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Vue 3 Frontend Developer with expertise in component architecture and file download handling | Task: Create TemplateDownload component that allows users to select and download either backup product template (备案产品自主注册信息登记表) or agricultural insurance template (农险产品信息登记表). Include download progress feedback, error handling, and usage guidance. | Restrictions: Must use Vue 3 Composition API, follow existing component patterns, ensure responsive design, handle file download errors gracefully | _Leverage: Existing file download mechanisms, UI component styles, error handling patterns | _Requirements: Requirement 1 (dual template download support) | Success: Component provides clear template selection, download works reliably, proper error handling and user feedback | Instructions: Set this task to in_progress in tasks.md before starting, and mark as completed when finished._
 
-- [ ] 12. 创建模板API服务
+- [x] 12. 创建模板API服务
   - File: frontend/src/api/product/template.ts
   - 实现模板下载、配置获取等API调用
   - 添加错误处理和类型安全
@@ -116,7 +116,7 @@
   - _Requirements: Requirement 1, Requirement 5_
   - _Prompt: Implement the task for spec product-template-enhancement, first run spec-workflow-guide to get the workflow guide then implement the task: Role: TypeScript Frontend Developer with expertise in API service layer and HTTP client libraries | Task: Create template API service module with functions for template download, configuration retrieval, field validation, and template parsing. Ensure proper TypeScript typing, error handling, and integration with existing API patterns. | Restrictions: Must follow existing API service patterns, use proper TypeScript types, handle network errors appropriately | _Leverage: Existing API service patterns, HTTP client configuration, error handling utilities | _Requirements: Requirement 1 (template download), Requirement 5 (template parsing) | Success: API service provides all required template operations with proper typing and error handling | Instructions: Set this task to in_progress in tasks.md before starting, and mark as completed when finished._
 
-- [ ] 13. 创建模板相关TypeScript类型定义
+- [x] 13. 创建模板相关TypeScript类型定义
   - File: frontend/src/types/product/template.ts
   - 定义模板配置、字段验证、表单数据等类型
   - 确保与后端DTO保持一致
