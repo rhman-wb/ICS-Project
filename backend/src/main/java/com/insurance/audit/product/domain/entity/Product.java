@@ -99,39 +99,11 @@ public class Product extends BaseEntity {
     private String productCategory;
 
     /**
-     * 经营区域
+     * 经营区域(农险产品通用字段)
      */
     @TableField("operating_region")
     @Schema(description = "经营区域", example = "西藏自治区")
     private String operatingRegion;
-
-    /**
-     * 经营范围（备案产品）
-     */
-    @TableField("operating_scope")
-    @Schema(description = "经营范围（备案产品）")
-    private String operatingScope;
-
-    /**
-     * 示范条款名称（备案产品）
-     */
-    @TableField("demonstration_clause_name")
-    @Schema(description = "示范条款名称（备案产品）")
-    private String demonstrationClauseName;
-
-    /**
-     * 经营区域1（备案产品）
-     */
-    @TableField("operating_region1")
-    @Schema(description = "经营区域1（备案产品）")
-    private String operatingRegion1;
-
-    /**
-     * 经营区域2（备案产品）
-     */
-    @TableField("operating_region2")
-    @Schema(description = "经营区域2（备案产品）")
-    private String operatingRegion2;
 
     /**
      * 销售推广名称（备案产品）
@@ -232,15 +204,15 @@ public class Product extends BaseEntity {
      * 是否有电子保单（备案产品）
      */
     @TableField("has_electronic_policy")
-    @Schema(description = "是否有电子保单", example = "是", allowableValues = {"是", "否"})
-    private String hasElectronicPolicy;
+    @Schema(description = "是否有电子保单", example = "true")
+    private Boolean hasElectronicPolicy;
 
     /**
      * 是否是国产加密算法（备案产品）
      */
     @TableField("has_national_encryption")
-    @Schema(description = "是否是国产加密算法", example = "是", allowableValues = {"是", "否"})
-    private String hasNationalEncryption;
+    @Schema(description = "是否是国产加密算法", example = "true")
+    private Boolean hasNationalEncryption;
 
     /**
      * 保险期间（备案产品）
@@ -292,8 +264,8 @@ public class Product extends BaseEntity {
      * 是否开办（农险产品）
      */
     @TableField("is_operated")
-    @Schema(description = "是否开办", example = "是", allowableValues = {"是", "否"})
-    private String isOperated;
+    @Schema(description = "是否开办", example = "true")
+    private Boolean isOperated;
 
     /**
      * 开办日期（农险产品）

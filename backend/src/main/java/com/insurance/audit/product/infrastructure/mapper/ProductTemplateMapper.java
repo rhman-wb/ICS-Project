@@ -48,11 +48,12 @@ public interface ProductTemplateMapper extends BaseMapper<ProductTemplate> {
 
     /**
      * 根据模板类型查询最新版本的模板
+     * 使用创建时间降序排序以确保获取最新创建的模板
      *
      * @param templateType 模板类型
      * @return 模板对象
      */
-    @Select("SELECT * FROM product_templates WHERE template_type = #{templateType} AND enabled = 1 AND is_deleted = 0 ORDER BY template_version DESC LIMIT 1")
+    @Select("SELECT * FROM product_templates WHERE template_type = #{templateType} AND enabled = 1 AND is_deleted = 0 ORDER BY created_at DESC LIMIT 1")
     ProductTemplate selectLatestByType(@Param("templateType") String templateType);
 
     /**

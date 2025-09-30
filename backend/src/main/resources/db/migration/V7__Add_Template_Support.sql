@@ -168,8 +168,9 @@ BEGIN
         ) WHERE `id` = OLD.`product_id`;
     END IF;
 
-    -- 更新新产品的文档计数（如果product_id发生变化）
-    IF NEW.`product_id` IS NOT NULL AND NEW.`product_id` != OLD.`product_id` THEN
+    -- 更新新产品的文档计数(如果product_id发生变化或is_deleted状态变化)
+    IF NEW.`product_id` IS NOT NULL AND
+       (NEW.`product_id` != OLD.`product_id` OR NEW.`is_deleted` != OLD.`is_deleted`) THEN
         UPDATE `products` SET `document_count` = (
             SELECT COUNT(*) FROM `documents`
             WHERE `product_id` = NEW.`product_id` AND `is_deleted` = 0

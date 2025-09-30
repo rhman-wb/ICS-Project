@@ -3,12 +3,18 @@ package com.insurance.audit.product.domain.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.insurance.audit.common.base.BaseEntity;
+import com.insurance.audit.product.infrastructure.typehandler.TemplateFieldConfigTypeHandler;
+import com.insurance.audit.product.infrastructure.typehandler.ValidationRuleTypeHandler;
+import com.insurance.audit.product.interfaces.dto.TemplateFieldConfig;
+import com.insurance.audit.product.interfaces.dto.ValidationRule;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
+import java.util.List;
 
 /**
  * 产品模板实体
@@ -49,18 +55,18 @@ public class ProductTemplate extends BaseEntity {
     private String templateFilePath;
 
     /**
-     * 字段配置JSON
+     * 字段配置列表(强类型)
      */
-    @TableField("field_config")
-    @Schema(description = "字段配置JSON", example = "{\"fields\":[{\"name\":\"productName\",\"type\":\"input\",\"required\":true}]}")
-    private String fieldConfig;
+    @TableField(value = "field_config", typeHandler = TemplateFieldConfigTypeHandler.class)
+    @Schema(description = "字段配置列表")
+    private List<TemplateFieldConfig> fieldConfig;
 
     /**
-     * 验证规则JSON
+     * 验证规则列表(强类型)
      */
-    @TableField("validation_rules")
-    @Schema(description = "验证规则JSON", example = "{\"rules\":[{\"field\":\"productName\",\"rules\":[{\"type\":\"required\",\"message\":\"产品名称不能为空\"}]}]}")
-    private String validationRules;
+    @TableField(value = "validation_rules", typeHandler = ValidationRuleTypeHandler.class)
+    @Schema(description = "验证规则列表")
+    private List<ValidationRule> validationRules;
 
     /**
      * 是否启用

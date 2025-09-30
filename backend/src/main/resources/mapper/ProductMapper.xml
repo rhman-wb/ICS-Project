@@ -16,10 +16,6 @@
         <result column="primary_situation" property="primarySituation" jdbcType="VARCHAR"/>
         <result column="product_category" property="productCategory" jdbcType="VARCHAR"/>
         <result column="operating_region" property="operatingRegion" jdbcType="VARCHAR"/>
-        <result column="operating_scope" property="operatingScope" jdbcType="VARCHAR"/>
-        <result column="demonstration_clause_name" property="demonstrationClauseName" jdbcType="VARCHAR"/>
-        <result column="operating_region1" property="operatingRegion1" jdbcType="VARCHAR"/>
-        <result column="operating_region2" property="operatingRegion2" jdbcType="VARCHAR"/>
         <result column="sales_promotion_name" property="salesPromotionName" jdbcType="VARCHAR"/>
         <result column="product_type" property="productType" jdbcType="VARCHAR"
                 typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
@@ -36,8 +32,7 @@
     <sql id="Base_Column_List">
         id, product_name, report_type, product_nature, year, revision_type,
         original_product_name, development_method, primary_additional, primary_situation,
-        product_category, operating_region, operating_scope, demonstration_clause_name,
-        operating_region1, operating_region2, sales_promotion_name, product_type, status,
+        product_category, operating_region, sales_promotion_name, product_type, status,
         created_by, created_at, updated_by, updated_at
     </sql>
 
@@ -67,9 +62,7 @@
                 AND p.revision_type = #{query.revisionType}
             </if>
             <if test="query.operatingRegion != null and query.operatingRegion != ''">
-                AND (p.operating_region LIKE CONCAT('%', #{query.operatingRegion}, '%')
-                OR p.operating_region1 LIKE CONCAT('%', #{query.operatingRegion}, '%')
-                OR p.operating_region2 LIKE CONCAT('%', #{query.operatingRegion}, '%'))
+                AND p.operating_region LIKE CONCAT('%', #{query.operatingRegion}, '%')
             </if>
             <if test="query.year != null and query.year != ''">
                 AND p.year = #{query.year}
