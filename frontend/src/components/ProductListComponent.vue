@@ -149,6 +149,34 @@ const allColumns: TableColumnsType = [
     sorter: true
   },
   {
+    title: '模板类型',
+    dataIndex: 'templateType',
+    key: 'templateType',
+    width: 120,
+    align: 'center',
+    sorter: true,
+    customRender: ({ text }) => {
+      if (!text) return '-'
+      return text === 'backup' ? '备案产品' : text === 'agricultural' ? '农险产品' : text
+    }
+  },
+  {
+    title: '产品代码',
+    dataIndex: 'productCode',
+    key: 'productCode',
+    width: 150,
+    align: 'center',
+    ellipsis: true
+  },
+  {
+    title: '保险类别',
+    dataIndex: 'insuranceCategory',
+    key: 'insuranceCategory',
+    width: 120,
+    align: 'center',
+    ellipsis: true
+  },
+  {
     title: '报送类型',
     dataIndex: 'reportType',
     key: 'reportType',
@@ -193,6 +221,25 @@ const allColumns: TableColumnsType = [
     width: 120,
     align: 'center',
     ellipsis: true
+  },
+  {
+    title: '保险期限',
+    dataIndex: 'insurancePeriod',
+    key: 'insurancePeriod',
+    width: 120,
+    align: 'center',
+    ellipsis: true
+  },
+  {
+    title: '保险金额',
+    dataIndex: 'coverageAmount',
+    key: 'coverageAmount',
+    width: 120,
+    align: 'right',
+    customRender: ({ text }) => {
+      if (!text) return '-'
+      return typeof text === 'number' ? text.toLocaleString('zh-CN') : text
+    }
   },
   {
     title: '年度',
@@ -243,24 +290,32 @@ const allColumns: TableColumnsType = [
 // 列设置配置
 const columnConfigs = [
   { key: 'productName', title: '产品名称', required: true, group: 'basic' },
+  { key: 'templateType', title: '模板类型', group: 'basic' },
+  { key: 'productCode', title: '产品代码', group: 'basic' },
+  { key: 'insuranceCategory', title: '保险类别', group: 'basic' },
   { key: 'reportType', title: '报送类型', group: 'basic' },
   { key: 'developmentMethod', title: '开发方式', group: 'attribute' },
   { key: 'productCategory', title: '产品类别', group: 'attribute' },
   { key: 'primaryAdditional', title: '主附险', group: 'attribute' },
   { key: 'revisionType', title: '修订类型', group: 'attribute' },
   { key: 'operatingRegion', title: '经营区域', group: 'attribute' },
-  { key: 'year', title: '年度', group: 'attribute' },
+  { key: 'insurancePeriod', title: '保险期限', group: 'attribute' },
+  { key: 'coverageAmount', title: '保险金额', group: 'attribute' },
+  { key: 'year', title: '年度', group: 'time' },
   { key: 'status', title: '产品状态', group: 'status' },
   { key: 'auditStatus', title: '检核状态', group: 'status' },
-  { key: 'documentCount', title: '文档数', group: 'other' },
-  { key: 'updatedAt', title: '更新时间', group: 'other' },
+  { key: 'documentCount', title: '文档数', group: 'status' },
+  { key: 'updatedAt', title: '更新时间', group: 'time' },
   { key: 'operation', title: '操作', required: true, group: 'other' }
 ]
 
 // 默认显示的列
 const selectedColumns = ref([
   'productName',
-  'reportType', 
+  'templateType',
+  'productCode',
+  'insuranceCategory',
+  'reportType',
   'developmentMethod',
   'productCategory',
   'status',

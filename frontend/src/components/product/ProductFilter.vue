@@ -19,6 +19,19 @@
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="8" :md="12" :sm="24">
+            <a-form-item label="模板类型" name="templateType">
+              <a-select
+                v-model:value="formData.templateType"
+                placeholder="请选择模板类型"
+                allow-clear
+              >
+                <a-select-option value="">全部</a-select-option>
+                <a-select-option value="backup">备案产品</a-select-option>
+                <a-select-option value="agricultural">农险产品</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :xl="6" :lg="8" :md="12" :sm="24">
             <a-form-item label="报送类型" name="reportType">
               <a-select
                 v-model:value="formData.reportType"
@@ -44,6 +57,8 @@
               </a-select>
             </a-form-item>
           </a-col>
+        </a-row>
+        <a-row :gutter="16">
           <a-col :xl="6" :lg="8" :md="12" :sm="24">
             <a-form-item label="产品类别" name="productCategory">
               <a-select
@@ -58,8 +73,6 @@
               </a-select>
             </a-form-item>
           </a-col>
-        </a-row>
-        <a-row :gutter="16">
           <a-col :xl="6" :lg="8" :md="12" :sm="24">
             <a-form-item label="主附险" name="primaryAdditional">
               <a-select

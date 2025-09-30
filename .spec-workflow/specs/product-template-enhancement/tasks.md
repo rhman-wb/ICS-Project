@@ -165,7 +165,7 @@
 
 ## 阶段6：页面集成与优化
 
-- [ ] 18. 更新产品导入页面
+- [x] 18. 更新产品导入页面
   - File: frontend/src/views/product/Import.vue
   - 替换占位页面，集成完整的产品导入功能
   - 包含模板下载、表单填写、文件上传等完整流程
@@ -174,7 +174,7 @@
   - _Requirements: All requirements_
   - _Prompt: Implement the task for spec product-template-enhancement, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Vue 3 Frontend Developer with expertise in page-level integration and user experience design | Task: Replace the placeholder Import.vue page with a complete product import interface that integrates template download, enhanced product form, file upload, and validation functionality. Ensure smooth user workflow and proper error handling. | Restrictions: Must provide intuitive user experience, handle all error scenarios gracefully, ensure responsive design, maintain consistency with existing pages | _Leverage: All newly created components, existing page layout patterns, navigation structure | _Requirements: All requirements for complete product import functionality | Success: Page provides complete product import workflow, all components work together seamlessly, user experience is intuitive and error-free | Instructions: Set this task to in_progress in tasks.md before starting, and mark as completed when finished._
 
-- [ ] 19. 更新产品管理列表页面
+- [x] 19. 更新产品管理列表页面
   - File: frontend/src/views/ProductManagementView.vue, frontend/src/components/ProductListComponent.vue
   - 扩展产品列表以显示新增字段信息
   - 更新筛选和排序功能以支持新字段
@@ -183,7 +183,7 @@
   - _Requirements: Requirement 8_
   - _Prompt: Implement the task for spec product-template-enhancement, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Vue 3 Frontend Developer with expertise in data display and list management | Task: Update product management list page and components to display new template fields, enhance filtering and sorting capabilities, and ensure backward compatibility with existing product data. | Restrictions: Must maintain existing functionality, ensure performance with additional fields, provide clear data display, handle null values for legacy data | _Leverage: Existing ProductListComponent.vue, ProductManagementView.vue, data display patterns | _Requirements: Requirement 8 (backward compatibility and extended data display) | Success: List displays all new fields appropriately, filtering and sorting work with new fields, legacy data displays correctly | Instructions: Set this task to in_progress in tasks.md before starting, and mark as completed when finished._
 
-- [ ] 20. 添加路由和导航更新
+- [x] 20. 添加路由和导航更新
   - File: frontend/src/router/index.ts, navigation components
   - 确保所有新页面和功能可以正确访问
   - 更新导航菜单和面包屑路径
@@ -194,7 +194,7 @@
 
 ## 阶段7：测试与文档
 
-- [ ] 21. 创建后端单元测试
+- [x] 21. 创建后端单元测试
   - File: backend/src/test/java/com/insurance/audit/product/application/service/TemplateServiceTest.java, FieldValidationServiceTest.java
   - 为新增的服务类创建全面的单元测试
   - 确保85%以上的代码覆盖率
@@ -203,7 +203,7 @@
   - _Requirements: All backend requirements_
   - _Prompt: Implement the task for spec product-template-enhancement, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Java Backend Developer with expertise in unit testing and JUnit framework | Task: Create comprehensive unit tests for all new service classes including TemplateService, FieldValidationService, and enhanced ProductService methods. Ensure high code coverage (85%+) and test both success and error scenarios. | Restrictions: Must test business logic thoroughly, mock external dependencies properly, ensure tests are isolated and repeatable | _Leverage: Existing test utilities, JUnit configuration, MockMVC patterns | _Requirements: All backend-related requirements | Success: All new service methods are thoroughly tested, code coverage meets requirements, tests pass consistently | Instructions: Set this task to in_progress in tasks.md before starting, and mark as completed when finished._
 
-- [ ] 22. 创建前端组件测试
+- [x] 22. 创建前端组件测试
   - File: frontend/src/test/components/product/*.spec.ts
   - 为新增的Vue组件创建单元测试
   - 使用Vue Test Utils和Vitest进行测试
@@ -212,7 +212,7 @@
   - _Requirements: All frontend requirements_
   - _Prompt: Implement the task for spec product-template-enhancement, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Frontend Developer with expertise in Vue 3 testing and component testing frameworks | Task: Create comprehensive unit tests for all new Vue components including TemplateDownload, DynamicForm, FieldValidation, and EnhancedProductForm. Use Vue Test Utils and Vitest, ensure proper component behavior testing. | Restrictions: Must test component interactions, props/events, user interactions, ensure tests are maintainable and reliable | _Leverage: Existing Vue Test Utils configuration, Vitest setup, component testing patterns | _Requirements: All frontend component requirements | Success: All new components are thoroughly tested, user interactions work correctly, tests provide good coverage of component functionality | Instructions: Set this task to in_progress in tasks.md before starting, and mark as completed when finished._
 
-- [ ] 23. 创建集成测试
+- [x] 23. 创建集成测试
   - File: backend/src/test/java/com/insurance/audit/product/integration/TemplateIntegrationTest.java
   - 创建API端点的集成测试，包括完整的数据流测试
   - 使用TestContainers进行数据库集成测试
@@ -221,7 +221,7 @@
   - _Requirements: All requirements_
   - _Prompt: Implement the task for spec product-template-enhancement, first run spec-workflow-guide to get the workflow guide then implement the task: Role: QA Engineer with expertise in integration testing and TestContainers | Task: Create comprehensive integration tests for template functionality including API endpoints, database operations, and complete data flow testing. Use TestContainers for real database testing environment. | Restrictions: Must test complete user workflows, ensure data consistency, test error scenarios, maintain test isolation | _Leverage: Existing TestContainers configuration, integration test patterns, MockMVC setup | _Requirements: All requirements for complete system integration | Success: Integration tests cover all major workflows, database operations work correctly, tests run reliably in CI environment | Instructions: Set this task to in_progress in tasks.md before starting, and mark as completed when finished._
 
-- [ ] 24. 创建端到端测试
+- [x] 24. 创建端到端测试
   - File: frontend/tests/e2e/product-template-enhancement.spec.ts
   - 使用Playwright创建完整用户流程的E2E测试
   - 测试从模板下载到产品提交的完整流程
@@ -230,7 +230,7 @@
   - _Requirements: All requirements_
   - _Prompt: Implement the task for spec product-template-enhancement, first run spec-workflow-guide to get the workflow guide then implement the task: Role: QA Automation Engineer with expertise in Playwright and end-to-end testing | Task: Create comprehensive E2E tests using Playwright that cover the complete user journey from template download through form filling, file upload, validation, and product submission. Test both template types and error scenarios. | Restrictions: Must test real user workflows, ensure tests are stable and maintainable, cover both successful and error paths | _Leverage: Existing Playwright configuration, E2E test patterns, test data setup | _Requirements: All requirements for complete user workflow validation | Success: E2E tests cover all critical user journeys, tests run reliably, user experience is validated end-to-end | Instructions: Set this task to in_progress in tasks.md before starting, and mark as completed when finished._
 
-- [ ] 25. 更新API文档
+- [x] 25. 更新API文档
   - File: backend API documentation, OpenAPI specifications
   - 更新Swagger/OpenAPI文档以包含所有新增的API端点
   - 确保API文档的完整性和准确性
@@ -239,7 +239,7 @@
   - _Requirements: All API-related requirements_
   - _Prompt: Implement the task for spec product-template-enhancement, first run spec-workflow-guide to get the workflow guide then implement the task: Role: Technical Writer with expertise in API documentation and OpenAPI specifications | Task: Update all API documentation to include new template-related endpoints, ensure Swagger/OpenAPI specifications are complete and accurate, add examples and detailed descriptions for all new APIs. | Restrictions: Must document all new endpoints completely, provide clear examples, ensure documentation accuracy, follow existing documentation standards | _Leverage: Existing OpenAPI configuration, Swagger setup, documentation patterns | _Requirements: All API-related requirements | Success: API documentation is complete and accurate, all new endpoints are properly documented with examples | Instructions: Set this task to in_progress in tasks.md before starting, and mark as completed when finished._
 
-- [ ] 26. 最终集成测试和部署验证
+- [x] 26. 最终集成测试和部署验证
   - File: 部署脚本和验证测试
   - 执行完整的系统集成测试和部署验证
   - 确保所有功能在生产环境中正常工作

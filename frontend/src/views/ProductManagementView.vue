@@ -76,7 +76,7 @@ const handleBack = () => {
 }
 
 const handleImportProduct = () => {
-  productOperationsRef.value?.openImportDialog()
+  router.push('/product/import')
 }
 
 const handleViewDetail = (product: ProductInfo) => {
