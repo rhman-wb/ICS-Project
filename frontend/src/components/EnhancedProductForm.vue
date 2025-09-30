@@ -38,6 +38,7 @@
       <!-- 表单步骤指示器 -->
       <div class="form-steps" v-if="showSteps">
         <a-steps :current="currentStep" size="small" class="steps-nav">
+          <a-step title="模板选择" description="选择产品模板类型" />
           <a-step title="基本信息" description="产品基础信息" />
           <a-step title="文档上传" description="要件文档上传" />
           <a-step title="信息确认" description="信息核对确认" />
@@ -46,9 +47,103 @@
 
       <!-- 表单内容 -->
       <div class="form-content">
-        <!-- 步骤1: 基本信息 -->
+        <!-- 步骤0: 模板选择 -->
         <div v-show="currentStep === 0" class="form-step">
+          <div class="template-selection">
+            <a-alert
+              message="请选择产品模板类型"
+              description="根据您的产品类型选择相应的模板，不同模板具有不同的字段配置和验证规则。"
+              type="info"
+              show-icon
+              class="selection-alert"
+            />
+
+            <a-row :gutter="24" class="template-cards">
+              <a-col :xs="24" :sm="12">
+                <a-card
+                  hoverable
+                  class="template-option-card"
+                  :class="{ 'card-selected': selectedTemplateType === 'backup' }"
+                  @click="handleTemplateSelect('backup')"
+                >
+                  <template #cover>
+                    <div class="card-icon backup-icon">
+                      <FileTextOutlined />
+                    </div>
+                  </template>
+                  <a-card-meta
+                    title="备案产品模板"
+                    description="适用于一般财产险、责任险、信用保险等备案产品"
+                  >
+                    <template #avatar>
+                      <a-badge
+                        :count="30"
+                        :number-style="{ backgroundColor: '#52c41a' }"
+                        title="包含30个标准字段"
+                      />
+                    </template>
+                  </a-card-meta>
+                  <div class="card-features">
+                    <a-tag color="blue">基础费率</a-tag>
+                    <a-tag color="blue">免赔额（率）</a-tag>
+                    <a-tag color="blue">赔偿限额</a-tag>
+                    <a-tag color="blue">销售区域</a-tag>
+                  </div>
+                </a-card>
+              </a-col>
+
+              <a-col :xs="24" :sm="12">
+                <a-card
+                  hoverable
+                  class="template-option-card"
+                  :class="{ 'card-selected': selectedTemplateType === 'agricultural' }"
+                  @click="handleTemplateSelect('agricultural')"
+                >
+                  <template #cover>
+                    <div class="card-icon agricultural-icon">
+                      <FileTextOutlined />
+                    </div>
+                  </template>
+                  <a-card-meta
+                    title="农险产品模板"
+                    description="适用于种植险、养殖险等农业保险产品"
+                  >
+                    <template #avatar>
+                      <a-badge
+                        :count="25"
+                        :number-style="{ backgroundColor: '#1890ff' }"
+                        title="包含25个标准字段"
+                      />
+                    </template>
+                  </a-card-meta>
+                  <div class="card-features">
+                    <a-tag color="green">开发方式</a-tag>
+                    <a-tag color="green">产品性质</a-tag>
+                    <a-tag color="green">赔偿处理方式</a-tag>
+                    <a-tag color="green">是否开办</a-tag>
+                  </div>
+                </a-card>
+              </a-col>
+            </a-row>
+          </div>
+        </div>
+
+        <!-- 步骤1: 基本信息（使用动态表单） -->
+        <div v-show="currentStep === 1" class="form-step">
+          <DynamicForm
+            v-if="selectedTemplateType && templateConfig"
+            ref="dynamicFormRef"
+            :config="templateConfig"
+            v-model="formData"
+            :submitting="submitting"
+            :show-actions="false"
+            :enable-validation="true"
+            :show-validation-success="true"
+            @validate="handleFormValidation"
+            @field-change="handleFieldChange"
+          />
           <ProductFormTemplate
+            v-else
             ref="productFormRef"
             v-model:productType="formData.productType"
             v-model:formData="formData"
@@ -57,7 +152,7 @@
         </div>
 
         <!-- 步骤2: 文档上传 -->
-        <div v-show="currentStep === 1" class="form-step">
+        <div v-show="currentStep === 2" class="form-step">
           <DocumentUploadWithValidation
             ref="documentUploadRef"
             :productId="formData.productId || tempProductId"
@@ -68,9 +163,21 @@
         </div>
 
         <!-- 步骤3: 信息确认 -->
-        <div v-show="currentStep === 2" class="form-step">
+        <div v-show="currentStep === 3" class="form-step">
           <div class="form-review">
             <h3>请确认以下信息：</h3>
+
+            <!-- 模板类型确认 -->
+            <a-card title="模板信息" size="small" class="review-card">
+              <a-descriptions :column="2" bordered>
+                <a-descriptions-item label="模板类型">
+                  {{ getTemplateTypeText(selectedTemplateType) }}
+                </a-descriptions-item>
+                <a-descriptions-item label="字段数量">
+                  {{ selectedTemplateType === 'backup' ? '30个' : '25个' }}
+                </a-descriptions-item>
+              </a-descriptions>
+            </a-card>
 
             <!-- 产品信息确认 -->
             <a-card title="产品信息" size="small" class="review-card">
@@ -79,13 +186,13 @@
                   {{ formData.productName }}
                 </a-descriptions-item>
                 <a-descriptions-item label="产品类型">
-                  {{ getProductTypeText(formData.productType) }}
+                  {{ getTemplateTypeText(formData.templateType) }}
                 </a-descriptions-item>
                 <a-descriptions-item label="报送类型">
                   {{ formData.reportType }}
                 </a-descriptions-item>
                 <a-descriptions-item label="经营区域">
-                  {{ formData.operatingRegion }}
+                  {{ formData.operatingRegion || formData.operatingRegion1 }}
                 </a-descriptions-item>
               </a-descriptions>
             </a-card>
@@ -149,7 +256,7 @@
             </a-button>
 
             <a-button
-              v-if="currentStep < 2"
+              v-if="currentStep < 3"
               type="primary"
               @click="nextStep"
               :disabled="!canProceedToNext()"
@@ -177,46 +284,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, h } from 'vue'
+import { ref, reactive, computed, watch, h, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import {
   SaveOutlined,
   CheckOutlined,
   LeftOutlined,
-  RightOutlined
+  RightOutlined,
+  FileTextOutlined
 } from '@ant-design/icons-vue'
 import ProductFormTemplate from './ProductFormTemplate.vue'
 import DocumentUploadWithValidation from './DocumentUploadWithValidation.vue'
 import ProductFormReset from './ProductFormReset.vue'
+import DynamicForm from './product/DynamicForm.vue'
 import { createProduct, submitProduct, type ProductCreateRequest } from '@/api/product'
+import { templateApi } from '@/api/product/template'
+import type {
+  TemplateType,
+  TemplateConfig,
+  ProductFormData,
+  ValidationResult
+} from '@/types/product/template'
 
 interface Props {
   productId?: string
   showSteps?: boolean
   autoSave?: boolean
   autoSaveInterval?: number
-}
-
-interface FormData {
-  productId?: string
-  productName: string
-  productType: string
-  reportType: string
-  productNature: string
-  year: number | null
-  revisionType: string
-  originalProductName: string
-  developmentMethod: string
-  primaryAdditional: string
-  primarySituation: string
-  productCategory: string
-  operatingRegion: string
-  operatingScope: string
-  demonstrationClauseName: string
-  operatingRegion1: string
-  operatingRegion2: string
-  salesPromotionName: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -226,8 +321,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  formSubmit: [data: FormData]
-  formSave: [data: FormData]
+  formSubmit: [data: Partial<ProductFormData>]
+  formSave: [data: Partial<ProductFormData>]
   formReset: []
   stepChange: [step: number]
 }>()
@@ -238,32 +333,23 @@ const router = useRouter()
 const formResetRef = ref()
 const productFormRef = ref()
 const documentUploadRef = ref()
+const dynamicFormRef = ref()
 
 // 响应式数据
 const currentStep = ref(0)
 const saving = ref(false)
 const submitting = ref(false)
 const showResetFeedback = ref(false)
+const selectedTemplateType = ref<TemplateType | null>(null)
+const templateConfig = ref<TemplateConfig | null>(null)
+const loadingTemplateConfig = ref(false)
 
 // 表单数据
-const formData = reactive<FormData>({
+const formData = ref<Partial<ProductFormData>>({
   productName: '',
-  productType: '',
   reportType: '',
-  productNature: '',
-  year: null,
-  revisionType: '',
-  originalProductName: '',
-  developmentMethod: '',
-  primaryAdditional: '',
-  primarySituation: '',
-  productCategory: '',
-  operatingRegion: '',
-  operatingScope: '',
-  demonstrationClauseName: '',
-  operatingRegion1: '',
-  operatingRegion2: '',
-  salesPromotionName: ''
+  year: undefined,
+  templateType: undefined as any
 })
 
 // 表单状态
@@ -271,13 +357,58 @@ const isFormValid = ref(false)
 const validationResult = ref<any>(null)
 const tempProductId = ref(`temp_${Date.now()}`)
 const actualProductId = ref<string | null>(null) // 真实产品ID
+const fieldValidations = ref<Record<string, ValidationResult>>({})
+
+// Template selection handler
+const handleTemplateSelect = async (type: TemplateType) => {
+  selectedTemplateType.value = type
+  formData.value.templateType = type
+
+  // Load template configuration
+  await loadTemplateConfig(type)
+}
+
+// Load template configuration
+const loadTemplateConfig = async (type: TemplateType) => {
+  loadingTemplateConfig.value = true
+
+  try {
+    const response = await templateApi.getTemplateConfig(type)
+    if (response && response.config) {
+      templateConfig.value = response.config
+    }
+  } catch (error: any) {
+    console.error('Failed to load template config:', error)
+    message.error('加载模板配置失败')
+  } finally {
+    loadingTemplateConfig.value = false
+  }
+}
+
+// Form validation handlers
+const handleFormValidation = (validations: Record<string, ValidationResult>) => {
+  fieldValidations.value = validations
+
+  // Check if all fields are valid
+  const allValid = Object.values(validations).every(v => v.valid)
+  isFormValid.value = allValid
+}
+
+const handleFieldChange = (fieldName: string, value: any) => {
+  console.log('Field changed:', fieldName, value)
+}
 
 // 计算属性
 const canProceedToNext = () => {
   switch (currentStep.value) {
     case 0:
-      return isFormValid.value && formData.productName.trim() !== ''
+      // Step 0: Template selection
+      return selectedTemplateType.value !== null
     case 1:
+      // Step 1: Form validation
+      return isFormValid.value && formData.value.productName?.trim() !== ''
+    case 2:
+      // Step 2: Document upload
       return validationResult.value?.isValid || false
     default:
       return true
@@ -295,7 +426,7 @@ const getCompletenessStyle = () => {
 
 // 方法
 const nextStep = () => {
-  if (currentStep.value < 2) {
+  if (currentStep.value < 3) {
     currentStep.value++
     emit('stepChange', currentStep.value)
   }
@@ -308,12 +439,28 @@ const prevStep = () => {
   }
 }
 
-const handleFormValidChange = (valid: boolean) => {
-  isFormValid.value = valid
+const getTemplateTypeText = (type: TemplateType | undefined | null): string => {
+  const typeMap: Record<string, string> = {
+    'backup': '备案产品',
+    'agricultural': '农险产品'
+  }
+  return type ? typeMap[type] || type : '未选择'
+}
+
+const getProductTypeText = (productType: string): string => {
+  const typeMap: Record<string, string> = {
+    'AGRICULTURAL': '农险产品',
+    'FILING': '备案产品'
+  }
+  return typeMap[productType] || productType
 }
 
 const handleUploadComplete = (file: any, documentType: string) => {
   console.log('文档上传完成:', file, documentType)
+}
+
+const handleFormValidChange = (valid: boolean) => {
+  isFormValid.value = valid
 }
 
 const handleValidationComplete = (result: any) => {
@@ -418,18 +565,20 @@ const submitForm = async () => {
 }
 
 const resetFormData = () => {
-  Object.keys(formData).forEach(key => {
-    if (key === 'year') {
-      formData[key as keyof FormData] = null as any
-    } else {
-      formData[key as keyof FormData] = '' as any
-    }
-  })
+  formData.value = {
+    productName: '',
+    reportType: '',
+    year: undefined,
+    templateType: undefined as any
+  }
 
   currentStep.value = 0
   isFormValid.value = false
   validationResult.value = null
   actualProductId.value = null // 重置实际产品ID
+  selectedTemplateType.value = null
+  templateConfig.value = null
+  fieldValidations.value = {}
 }
 
 // 重置事件处理
@@ -444,6 +593,9 @@ const handleAfterReset = (resetData: any) => {
   resetFormData()
 
   // 重置子组件
+  if (dynamicFormRef.value?.resetFields) {
+    dynamicFormRef.value.resetFields()
+  }
   if (productFormRef.value?.reset) {
     productFormRef.value.reset()
   }
@@ -518,6 +670,69 @@ defineExpose({
   .form-content {
     .form-step {
       min-height: 400px;
+    }
+
+    // Template selection styles
+    .template-selection {
+      .selection-alert {
+        margin-bottom: 24px;
+      }
+
+      .template-cards {
+        margin-top: 24px;
+
+        .template-option-card {
+          transition: all 0.3s ease;
+          cursor: pointer;
+          height: 100%;
+
+          &:hover {
+            border-color: #1890ff;
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
+          }
+
+          &.card-selected {
+            border-color: #1890ff;
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.25);
+            background-color: #f0f8ff;
+          }
+
+          .card-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 120px;
+            font-size: 48px;
+            color: #fff;
+
+            &.backup-icon {
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            &.agricultural-icon {
+              background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            }
+          }
+
+          :deep(.ant-card-meta-title) {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+          }
+
+          :deep(.ant-card-meta-description) {
+            font-size: 14px;
+            color: #8c8c8c;
+          }
+
+          .card-features {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+          }
+        }
+      }
     }
 
     .form-review {
