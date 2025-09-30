@@ -1,11 +1,14 @@
 package com.insurance.audit.product.application.converter;
 
+import com.insurance.audit.common.exception.BusinessException;
+import com.insurance.audit.common.exception.ErrorCode;
 import com.insurance.audit.product.domain.entity.Product;
 import com.insurance.audit.product.interfaces.dto.request.CreateProductRequest;
 import com.insurance.audit.product.interfaces.dto.request.UpdateProductRequest;
 import com.insurance.audit.product.interfaces.dto.response.ProductResponse;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,8 +24,68 @@ import java.util.stream.Collectors;
 public class ProductConverter {
 
     /**
+     * 解析产品类型枚举，支持容错
+     *
+     * @param typeStr 产品类型字符串
+     * @return 产品类型枚举
+     * @throws BusinessException 如果类型无效
+     */
+    private Product.ProductType parseProductType(String typeStr) {
+        if (typeStr == null) {
+            throw new BusinessException(ErrorCode.INVALID_PARAMETER, "产品类型不能为空");
+        }
+
+        // 规范化: 去空格、转大写
+        String normalized = typeStr.trim().toUpperCase();
+
+        if (normalized.isEmpty()) {
+            throw new BusinessException(ErrorCode.INVALID_PARAMETER, "产品类型不能为空");
+        }
+
+        try {
+            return Product.ProductType.valueOf(normalized);
+        } catch (IllegalArgumentException e) {
+            String validTypes = Arrays.stream(Product.ProductType.values())
+                    .map(Enum::name)
+                    .collect(Collectors.joining(", "));
+            throw new BusinessException(ErrorCode.INVALID_PARAMETER,
+                    "无效的产品类型: " + typeStr + ", 支持的类型: " + validTypes);
+        }
+    }
+
+    /**
+     * 解析产品状态枚举，支持容错
+     *
+     * @param statusStr 产品状态字符串
+     * @return 产品状态枚举
+     * @throws BusinessException 如果状态无效
+     */
+    private Product.ProductStatus parseProductStatus(String statusStr) {
+        if (statusStr == null) {
+            throw new BusinessException(ErrorCode.INVALID_PARAMETER, "产品状态不能为空");
+        }
+
+        // 规范化: 去空格、转大写
+        String normalized = statusStr.trim().toUpperCase();
+
+        if (normalized.isEmpty()) {
+            throw new BusinessException(ErrorCode.INVALID_PARAMETER, "产品状态不能为空");
+        }
+
+        try {
+            return Product.ProductStatus.valueOf(normalized);
+        } catch (IllegalArgumentException e) {
+            String validStatuses = Arrays.stream(Product.ProductStatus.values())
+                    .map(Enum::name)
+                    .collect(Collectors.joining(", "));
+            throw new BusinessException(ErrorCode.INVALID_PARAMETER,
+                    "无效的产品状态: " + statusStr + ", 支持的状态: " + validStatuses);
+        }
+    }
+
+    /**
      * 将创建请求转换为实体
-     * 
+     *
      * @param request 创建请求
      * @return 产品实体
      */
@@ -48,7 +111,7 @@ public class ProductConverter {
                 .businessArea1(request.getOperatingRegion1())
                 .businessArea2(request.getOperatingRegion2())
                 .salesPromotionName(request.getSalesPromotionName())
-                .productType(Product.ProductType.valueOf(request.getProductType()))
+                .productType(parseProductType(request.getProductType()))  // 使用容错解析
                 .status(Product.ProductStatus.DRAFT)
                 .build();
     }
@@ -116,7 +179,7 @@ public class ProductConverter {
             builder.salesPromotionName(request.getSalesPromotionName());
         }
         if (request.getStatus() != null) {
-            builder.status(Product.ProductStatus.valueOf(request.getStatus()));
+            builder.status(parseProductStatus(request.getStatus()));  // 使用容错解析
         }
 
         return builder.build();

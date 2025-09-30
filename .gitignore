@@ -3,6 +3,11 @@
 # Ignore local Maven repository cache inside backend
 backend/.m2/
 
+# Environment variables (keep only .env.example)
+.env
+.env.local
+.env.*.local
+
 .claude/settings.local.json
 input.md
 review-verify-0919-1.md
@@ -11,3 +16,7 @@ review0919-1.md
 review-verify-0929.md
 review-0929.md
 review-0930.md
+IMPLEMENTATION-SUMMARY-0930.md
+IMPROVEMENT-PLAN-0930.md
+review-0930-2.md
+review-verify-0930.md

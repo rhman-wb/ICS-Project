@@ -203,27 +203,41 @@ public class ProductServiceImpl implements ProductService {
             throw new BusinessException(ErrorCode.INVALID_PARAMETER, "产品类型不能为空");
         }
 
-        // 检查模板类型字段
-        if (product.getTemplateType() != null) {
-            String templateType = product.getTemplateType().toUpperCase();
-
-            // 验证模板类型是否有效
-            if (!templateService.isValidTemplateType(templateType)) {
-                throw new BusinessException(ErrorCode.INVALID_PARAMETER, "无效的模板类型: " + templateType);
-            }
-
-            // 检查模板配置是否存在且启用
-            ProductTemplate template = templateService.getTemplateConfig(templateType);
-            if (template == null) {
-                throw new BusinessException(ErrorCode.TEMPLATE_NOT_FOUND, "未找到模板配置: " + templateType);
-            }
-
-            if (!template.getEnabled()) {
-                throw new BusinessException(ErrorCode.TEMPLATE_DISABLED, "模板已禁用: " + templateType);
-            }
-
-            log.debug("产品模板类型验证通过: {}", templateType);
+        // 检查模板类型字段 - 模板类型为必填项
+        if (product.getTemplateType() == null || product.getTemplateType().trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.INVALID_PARAMETER, "模板类型不能为空");
         }
+
+        String templateType = product.getTemplateType().toUpperCase();
+
+        // 验证模板类型是否有效
+        if (!templateService.isValidTemplateType(templateType)) {
+            throw new BusinessException(ErrorCode.INVALID_PARAMETER, "无效的模板类型: " + templateType);
+        }
+
+        // 检查模板配置是否存在且启用
+        ProductTemplate template = templateService.getTemplateConfig(templateType);
+        if (template == null) {
+            throw new BusinessException(ErrorCode.TEMPLATE_NOT_FOUND, "未找到模板配置: " + templateType);
+        }
+
+        if (!template.getEnabled()) {
+            throw new BusinessException(ErrorCode.TEMPLATE_DISABLED, "模板已禁用: " + templateType);
+        }
+
+        // 验证产品类型与模板类型的一致性
+        boolean isMatched = switch (product.getProductType()) {
+            case AGRICULTURAL -> "AGRICULTURAL".equals(templateType);
+            case FILING -> "FILING".equals(templateType);
+        };
+
+        if (!isMatched) {
+            throw new BusinessException(ErrorCode.INVALID_PARAMETER,
+                    String.format("产品类型(%s)与模板类型(%s)不匹配，AGRICULTURAL产品必须使用AGRICULTURAL模板，FILING产品必须使用FILING模板",
+                            product.getProductType(), templateType));
+        }
+
+        log.debug("产品模板类型验证通过: {}", templateType);
     }
 
     /**

@@ -1,7 +1,5 @@
 # 开发环境配置
-# 注意：`server.servlet.context-path` 必须在顶层 `server` 下声明，
-# 之前误写在 `spring.server` 下导致未生效，实际仍使用了 application.yml 的 `/api` 前缀。
-# 这里显式覆盖为根路径 `/`，避免出现 `/api/api/...` 的双前缀问题。
+# 注意: 开发环境与生产环境保持一致使用 /api 前缀，确保环境一致性
 server:
   servlet:
     context-path: /api
@@ -11,7 +9,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/insurance_audit?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: ${DB_USERNAME:insurance_user}
-    password: ${DB_PASSWORD:20150826}
+    password: ${DB_PASSWORD}  # 必须通过环境变量提供，不设置默认值
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2

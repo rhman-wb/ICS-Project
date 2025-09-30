@@ -59,8 +59,8 @@ public class DocumentParsingServiceImpl implements DocumentParsingService {
         FIELD_MAPPING.put("修订类型", "revisionType");
         FIELD_MAPPING.put("原产品名称", "originalProductName");
         FIELD_MAPPING.put("原产品名称和编号", "originalProductName");
-        FIELD_MAPPING.put("示范条款名称", "demonstrationClause");
-        FIELD_MAPPING.put("经营范围", "businessScope");
+        FIELD_MAPPING.put("示范条款名称", "demonstrationClauseName");  // 修正: 对齐实体字段名
+        FIELD_MAPPING.put("经营范围", "operatingScope");  // 修正: 对齐实体字段名
         FIELD_MAPPING.put("销售推广名称", "salesPromotionName");
         FIELD_MAPPING.put("经营地域1", "businessArea1");
         FIELD_MAPPING.put("经营地域2", "businessArea2");
