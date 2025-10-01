@@ -1,6 +1,6 @@
 /**
- * Template API Service
- * Handles all template-related API operations including download, configuration, validation, and parsing
+ * 模板 API 服务
+ * 处理所有模板相关的 API 操作，包括下载、配置、验证和解析
  */
 
 import request from '@/api'
@@ -22,7 +22,7 @@ import type {
 } from '@/types/product/template'
 
 /**
- * Template API endpoints
+ * 模板 API 端点
  */
 const TEMPLATE_API = {
   BASE: '/v1/products/templates',
@@ -35,12 +35,39 @@ const TEMPLATE_API = {
 }
 
 /**
- * Template API Service
+ * 模板常量配置
+ * 集中管理模板相关的常量，避免硬编码
+ */
+export const TEMPLATE_CONSTANTS = {
+  /** 字段数量 */
+  FIELD_COUNTS: {
+    backup: 30,
+    agricultural: 25
+  },
+  /** 文件名 */
+  FILE_NAMES: {
+    backup: '附件3_备案产品自主注册信息登记表.xlsx',
+    agricultural: '附件5_农险产品信息登记表.xls'
+  },
+  /** 显示名称 */
+  DISPLAY_NAMES: {
+    backup: '备案产品自主注册信息登记表',
+    agricultural: '农险产品信息登记表'
+  },
+  /** 文件扩展名 */
+  FILE_EXTENSIONS: {
+    backup: 'xlsx' as const,
+    agricultural: 'xls' as const
+  }
+}
+
+/**
+ * 模板 API 服务
  */
 export const templateApi = {
   /**
-   * Get list of available templates
-   * @returns Promise with list of available templates
+   * 获取可用模板列表
+   * @returns 返回可用模板列表的 Promise
    */
   getTemplateList(): Promise<ApiResponse<TemplateInfo[]>> {
     return request({
@@ -50,9 +77,9 @@ export const templateApi = {
   },
 
   /**
-   * Download template file
-   * @param templateType - Type of template to download ('backup' or 'agricultural')
-   * @returns Promise with file blob
+   * 下载模板文件
+   * @param templateType - 模板类型（'backup' 或 'agricultural'）
+   * @returns 返回文件 Blob 的 Promise
    */
   async downloadTemplate(templateType: TemplateType): Promise<Blob> {
     const response = await request({
@@ -62,19 +89,19 @@ export const templateApi = {
       responseType: 'blob'
     })
 
-    // For blob responses, return the blob directly
+    // 对于 blob 响应，直接返回 blob
     if (response instanceof Blob) {
       return response
     }
 
-    // If response is wrapped in ApiResponse, extract the blob
+    // 如果响应被包装在 ApiResponse 中，提取 blob
     return response
   },
 
   /**
-   * Get template configuration
-   * @param templateType - Type of template
-   * @returns Promise with template configuration
+   * 获取模板配置
+   * @param templateType - 模板类型
+   * @returns 返回模板配置的 Promise
    */
   getTemplateConfig(templateType: TemplateType): Promise<ApiResponse<TemplateConfig>> {
     return request({
@@ -85,10 +112,10 @@ export const templateApi = {
   },
 
   /**
-   * Update template configuration (admin only)
-   * @param templateType - Type of template
-   * @param config - Updated configuration
-   * @returns Promise with updated configuration
+   * 更新模板配置（仅管理员）
+   * @param templateType - 模板类型
+   * @param config - 更新的配置
+   * @returns 返回更新后的配置的 Promise
    */
   updateTemplateConfig(
     templateType: TemplateType,
@@ -103,9 +130,9 @@ export const templateApi = {
   },
 
   /**
-   * Validate a single field
-   * @param requestData - Field validation request
-   * @returns Promise with validation result
+   * 验证单个字段
+   * @param requestData - 字段验证请求
+   * @returns 返回验证结果的 Promise
    */
   validateField(
     requestData: FieldValidationRequest
@@ -118,9 +145,9 @@ export const templateApi = {
   },
 
   /**
-   * Validate entire form
-   * @param requestData - Form validation request
-   * @returns Promise with validation result
+   * 验证整个表单
+   * @param requestData - 表单验证请求
+   * @returns 返回验证结果的 Promise
    */
   validateForm(
     requestData: FormValidationRequest
@@ -133,10 +160,10 @@ export const templateApi = {
   },
 
   /**
-   * Parse template file and extract data
-   * @param file - Excel file to parse
-   * @param templateType - Expected template type
-   * @returns Promise with parsed data
+   * 解析模板文件并提取数据
+   * @param file - 要解析的 Excel 文件
+   * @param templateType - 预期的模板类型
+   * @returns 返回解析后的数据的 Promise
    */
   async parseTemplateFile(
     file: File,
@@ -153,14 +180,14 @@ export const templateApi = {
       headers: {
         'Content-Type': 'multipart/form-data'
       },
-      timeout: 60000 // 60 seconds for file upload and parsing
+      timeout: 60000 // 文件上传和解析 60 秒超时
     })
   },
 
   /**
-   * Submit product form data
-   * @param formData - Product form data
-   * @returns Promise with created product info
+   * 提交产品表单数据
+   * @param formData - 产品表单数据
+   * @returns 返回创建的产品信息的 Promise
    */
   submitProductForm(formData: ProductFormData): Promise<ApiResponse<any>> {
     return request({
@@ -171,10 +198,10 @@ export const templateApi = {
   },
 
   /**
-   * Update product form data
-   * @param productId - Product ID
-   * @param formData - Updated product form data
-   * @returns Promise with updated product info
+   * 更新产品表单数据
+   * @param productId - 产品 ID
+   * @param formData - 更新的产品表单数据
+   * @returns 返回更新后的产品信息的 Promise
    */
   updateProductForm(
     productId: string,
@@ -188,50 +215,55 @@ export const templateApi = {
   }
 }
 
+// 命名导出，用于向后兼容和更容易的 mock
+export const {
+  getTemplateList,
+  downloadTemplate,
+  getTemplateConfig,
+  updateTemplateConfig,
+  validateField,
+  validateForm,
+  parseTemplateFile,
+  submitProductForm,
+  updateProductForm
+} = templateApi
+
 /**
- * Template utility functions
+ * 模板工具函数
  */
 export const templateUtils = {
   /**
-   * Get template display name
-   * @param templateType - Template type
-   * @returns Display name in Chinese
+   * 获取模板显示名称
+   * @param templateType - 模板类型
+   * @returns 中文显示名称
    */
   getTemplateDisplayName(templateType: TemplateType): string {
-    const names: Record<TemplateType, string> = {
-      backup: '备案产品自主注册信息登记表',
-      agricultural: '农险产品信息登记表'
-    }
-    return names[templateType] || templateType
+    return TEMPLATE_CONSTANTS.DISPLAY_NAMES[templateType] || templateType
   },
 
   /**
-   * Get template file extension
-   * @param templateType - Template type
-   * @returns File extension
+   * 获取模板文件扩展名
+   * @param templateType - 模板类型
+   * @returns 文件扩展名
    */
   getTemplateFileExtension(templateType: TemplateType): 'xlsx' | 'xls' {
-    return templateType === 'backup' ? 'xlsx' : 'xls'
+    return TEMPLATE_CONSTANTS.FILE_EXTENSIONS[templateType]
   },
 
   /**
-   * Get template file name
-   * @param templateType - Template type
-   * @returns Complete file name with extension
+   * 获取模板文件名
+   * @param templateType - 模板类型
+   * @returns 包含扩展名的完整文件名
    */
   getTemplateFileName(templateType: TemplateType): string {
-    const fileNames: Record<TemplateType, string> = {
-      backup: '附件3_备案产品自主注册信息登记表.xlsx',
-      agricultural: '附件5_农险产品信息登记表.xls'
-    }
-    return fileNames[templateType]
+    return TEMPLATE_CONSTANTS.FILE_NAMES[templateType]
   },
 
   /**
-   * Validate file type matches template type
-   * @param file - File to validate
-   * @param templateType - Expected template type
-   * @returns True if file type is valid
+   * 验证文件类型是否与模板类型匹配
+   * @param file - 要验证的文件
+   * @param templateType - 预期的模板类型
+   * @returns 如果文件类型有效则返回 true
    */
   validateFileType(file: File, templateType: TemplateType): boolean {
     const extension = this.getTemplateFileExtension(templateType)
@@ -245,18 +277,18 @@ export const templateUtils = {
   },
 
   /**
-   * Get template field count
-   * @param templateType - Template type
-   * @returns Number of fields in template
+   * 获取模板字段数量
+   * @param templateType - 模板类型
+   * @returns 模板中的字段数量
    */
   getTemplateFieldCount(templateType: TemplateType): number {
-    return templateType === 'backup' ? 30 : 25
+    return TEMPLATE_CONSTANTS.FIELD_COUNTS[templateType]
   },
 
   /**
-   * Download blob as file
-   * @param blob - Blob data
-   * @param fileName - File name for download
+   * 下载 Blob 为文件
+   * @param blob - Blob 数据
+   * @param fileName - 下载的文件名
    */
   downloadBlob(blob: Blob, fileName: string): void {
     const url = window.URL.createObjectURL(blob)
@@ -271,6 +303,6 @@ export const templateUtils = {
 }
 
 /**
- * Export default template API
+ * 导出默认模板 API
  */
 export default templateApi

@@ -4,42 +4,31 @@ import TemplateDownload from '@/components/product/TemplateDownload.vue'
 import { message } from 'ant-design-vue'
 
 // Mock ant-design-vue message
-vi.mock('ant-design-vue', () => ({
-  message: {
-    success: vi.fn(),
-    error: vi.fn(),
-    loading: vi.fn(() => () => {}),
-  },
-  Button: {
-    name: 'AButton',
-    template: '<button><slot /></button>',
-  },
-  Card: {
-    name: 'ACard',
-    template: '<div><slot /></div>',
-  },
-  Radio: {
-    name: 'ARadio',
-    template: '<input type="radio"><slot /></input>',
-    Group: {
-      name: 'ARadioGroup',
-      template: '<div><slot /></div>',
-    },
-  },
-  Space: {
-    name: 'ASpace',
-    template: '<div><slot /></div>',
-  },
-  Divider: {
-    name: 'ADivider',
-    template: '<hr />',
-  },
-}))
+vi.mock('ant-design-vue', async () => {
+  const actual = await vi.importActual('ant-design-vue')
+  return {
+    ...actual,
+    message: {
+      success: vi.fn(),
+      error: vi.fn(),
+      loading: vi.fn(() => () => {})
+    }
+  }
+})
 
-// Mock template API
+// Mock template API with object export
 vi.mock('@/api/product/template', () => ({
-  downloadTemplate: vi.fn(),
-  getTemplateMetadata: vi.fn(),
+  templateApi: {
+    downloadTemplate: vi.fn()
+  },
+  templateUtils: {
+    getTemplateFileName: vi.fn((type) =>
+      type === 'backup'
+        ? '附件3_备案产品自主注册信息登记表.xlsx'
+        : '附件5_农险产品信息登记表.xls'
+    ),
+    downloadBlob: vi.fn()
+  }
 }))
 
 describe('TemplateDownload Component', () => {
@@ -54,125 +43,210 @@ describe('TemplateDownload Component', () => {
       props,
       global: {
         stubs: {
-          AButton: true,
-          ACard: true,
-          ARadio: true,
-          ARadioGroup: true,
-          ASpace: true,
+          FileExcelOutlined: true,
+          DownloadOutlined: true,
+          InfoCircleOutlined: true,
+          ACard: {
+            template: '<div class="a-card"><slot name="default" /></div>'
+          },
+          AAlert: true,
+          ARow: {
+            template: '<div class="a-row"><slot /></div>'
+          },
+          ACol: {
+            template: '<div class="a-col"><slot /></div>'
+          },
+          AButton: {
+            template: '<button :disabled="disabled"><slot /></button>',
+            props: ['disabled', 'loading']
+          },
+          AModal: {
+            template:
+              '<div v-if="open" class="a-modal"><slot /><slot name="footer" /></div>',
+            props: ['open', 'footer']
+          },
+          AProgress: true,
+          ASpace: {
+            template: '<div class="a-space"><slot /></div>'
+          },
+          ABadge: true,
           ADivider: true,
-        },
-      },
+          ATypographyTitle: true,
+          ATypographyParagraph: true
+        }
+      }
     })
   }
 
-  it('should render component correctly', () => {
+  it('应该正确渲染组件', () => {
     wrapper = createWrapper()
     expect(wrapper.exists()).toBe(true)
+    expect(wrapper.find('.template-download').exists()).toBe(true)
   })
 
-  it('should have two template type options', () => {
+  it('应该显示两个模板卡片', () => {
     wrapper = createWrapper()
-    const radioButtons = wrapper.findAll('input[type="radio"]')
-    expect(radioButtons.length).toBeGreaterThanOrEqual(2)
+    const cards = wrapper.findAll('.template-card')
+    expect(cards.length).toBe(2)
   })
 
-  it('should have default selected template type', () => {
-    wrapper = createWrapper()
-    expect(wrapper.vm.selectedTemplate).toBeDefined()
+  it('应该支持 v-model:template-type 双向绑定', async () => {
+    wrapper = createWrapper({ templateType: 'backup' })
+    expect(wrapper.vm.activeTemplate).toBe('backup')
   })
 
-  it('should emit download event when download button clicked', async () => {
+  it('点击卡片时应该选择模板并触发 update:template-type 事件', async () => {
     wrapper = createWrapper()
-    const downloadButton = wrapper.find('[data-testid="download-button"]')
+    const backupCard = wrapper.findAll('.template-card')[0]
+    await backupCard.trigger('click')
 
-    if (downloadButton.exists()) {
-      await downloadButton.trigger('click')
-      expect(wrapper.emitted()).toHaveProperty('download')
-    }
+    expect(wrapper.vm.activeTemplate).toBe('backup')
+    expect(wrapper.emitted('update:template-type')).toBeTruthy()
+    expect(wrapper.emitted('update:template-type')![0]).toEqual(['backup'])
   })
 
-  it('should show success message on successful download', async () => {
-    const { downloadTemplate } = await import('@/api/product/template')
-    ;(downloadTemplate as any).mockResolvedValue({ success: true })
-
+  it('选中的卡片应该有 active 样式类', async () => {
     wrapper = createWrapper()
+    const backupCard = wrapper.findAll('.template-card')[0]
+    await backupCard.trigger('click')
+    await wrapper.vm.$nextTick()
 
-    if (wrapper.vm.handleDownload) {
-      await wrapper.vm.handleDownload()
-      expect(message.success).toHaveBeenCalled()
-    }
+    expect(backupCard.classes()).toContain('template-card-active')
   })
 
-  it('should show error message on failed download', async () => {
-    const { downloadTemplate } = await import('@/api/product/template')
-    ;(downloadTemplate as any).mockRejectedValue(new Error('Download failed'))
+  it('点击下载按钮时应该调用下载逻辑', async () => {
+    const { templateApi, templateUtils } = await import('@/api/product/template')
+    ;(templateApi.downloadTemplate as any).mockResolvedValue(new Blob(['test']))
 
     wrapper = createWrapper()
+    const downloadButton = wrapper.findAll('.template-card button')[0]
+    await downloadButton.trigger('click')
 
-    if (wrapper.vm.handleDownload) {
-      await wrapper.vm.handleDownload()
-      expect(message.error).toHaveBeenCalled()
-    }
+    // Wait for download to complete
+    await new Promise((resolve) => setTimeout(resolve, 100))
+
+    expect(templateApi.downloadTemplate).toHaveBeenCalledWith('backup')
   })
 
-  it('should disable download button during download', async () => {
+  it('下载成功时应该使用工具函数下载文件', async () => {
+    const { templateApi, templateUtils } = await import('@/api/product/template')
+    const mockBlob = new Blob(['test'])
+    ;(templateApi.downloadTemplate as any).mockResolvedValue(mockBlob)
+
     wrapper = createWrapper()
+    await wrapper.vm.handleDownload('backup')
 
-    if (wrapper.vm.downloading !== undefined) {
-      wrapper.vm.downloading = true
-      await wrapper.vm.$nextTick()
+    // Wait for success timeout
+    await new Promise((resolve) => setTimeout(resolve, 1100))
 
-      const downloadButton = wrapper.find('[data-testid="download-button"]')
-      if (downloadButton.exists()) {
-        expect(downloadButton.attributes('disabled')).toBeDefined()
-      }
-    }
+    expect(templateUtils.getTemplateFileName).toHaveBeenCalledWith('backup')
+    expect(templateUtils.downloadBlob).toHaveBeenCalledWith(
+      mockBlob,
+      '附件3_备案产品自主注册信息登记表.xlsx'
+    )
+    expect(message.success).toHaveBeenCalled()
   })
 
-  it('should change selected template when radio selection changes', async () => {
-    wrapper = createWrapper()
-    const initialSelection = wrapper.vm.selectedTemplate
+  it('下载失败时应该显示错误信息和重试按钮', async () => {
+    const { templateApi } = await import('@/api/product/template')
+    ;(templateApi.downloadTemplate as any).mockRejectedValue(new Error('Network error'))
 
-    const radioGroup = wrapper.find('[data-testid="template-radio-group"]')
-    if (radioGroup.exists()) {
-      await radioGroup.trigger('change')
-      await wrapper.vm.$nextTick()
-      // Template selection should be changeable
-      expect(wrapper.vm.selectedTemplate).toBeDefined()
-    }
+    wrapper = createWrapper()
+    await wrapper.vm.handleDownload('backup')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.downloadStatus).toBe('exception')
+    expect(message.error).toHaveBeenCalled()
+    expect(wrapper.vm.showProgressModal).toBe(true)
   })
 
-  it('should display template descriptions', () => {
+  it('点击重试按钮应该重新下载', async () => {
+    const { templateApi } = await import('@/api/product/template')
+    ;(templateApi.downloadTemplate as any).mockRejectedValue(new Error('Network error'))
+
     wrapper = createWrapper()
-    const descriptions = wrapper.findAll('[data-testid="template-description"]')
-    // Should have descriptions for templates
-    expect(descriptions.length).toBeGreaterThanOrEqual(0)
+    wrapper.vm.activeTemplate = 'backup'
+    await wrapper.vm.handleDownload('backup')
+    await wrapper.vm.$nextTick()
+
+    // Clear previous calls
+    vi.clearAllMocks()
+    ;(templateApi.downloadTemplate as any).mockResolvedValue(new Blob(['test']))
+
+    // Trigger retry
+    await wrapper.vm.handleRetry()
+
+    expect(wrapper.vm.downloadProgress).toBe(0)
+    expect(wrapper.vm.downloadStatus).toBe('normal')
+    expect(templateApi.downloadTemplate).toHaveBeenCalledWith('backup')
   })
 
-  it('should handle template metadata loading', async () => {
-    const { getTemplateMetadata } = await import('@/api/product/template')
-    const mockMetadata = {
-      templateName: '备案产品自主注册信息登记表',
-      templateVersion: '1.0.0',
-      fileSize: 102400,
-    }
-    ;(getTemplateMetadata as any).mockResolvedValue(mockMetadata)
+  it('下载中时应该显示进度弹窗', async () => {
+    const { templateApi } = await import('@/api/product/template')
+    ;(templateApi.downloadTemplate as any).mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve(new Blob(['test'])), 500))
+    )
 
     wrapper = createWrapper()
+    const downloadPromise = wrapper.vm.handleDownload('backup')
+    await wrapper.vm.$nextTick()
 
-    if (wrapper.vm.loadTemplateMetadata) {
-      await wrapper.vm.loadTemplateMetadata('FILING')
-      expect(getTemplateMetadata).toHaveBeenCalledWith('FILING')
-    }
+    expect(wrapper.vm.showProgressModal).toBe(true)
+    expect(wrapper.vm.downloading).toBe(true)
+
+    await downloadPromise
   })
 
-  it('should format file size correctly', () => {
+  it('下载时按钮应该显示 loading 状态', async () => {
+    const { templateApi } = await import('@/api/product/template')
+    ;(templateApi.downloadTemplate as any).mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve(new Blob(['test'])), 500))
+    )
+
+    wrapper = createWrapper()
+    wrapper.vm.activeTemplate = 'backup'
+    const downloadPromise = wrapper.vm.handleDownload('backup')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.downloading).toBe(true)
+
+    await downloadPromise
+  })
+
+  it('进度文本应该根据状态正确显示', () => {
     wrapper = createWrapper()
 
-    if (wrapper.vm.formatFileSize) {
-      expect(wrapper.vm.formatFileSize(1024)).toBe('1.00 KB')
-      expect(wrapper.vm.formatFileSize(1048576)).toBe('1.00 MB')
-      expect(wrapper.vm.formatFileSize(500)).toBe('500 B')
-    }
+    wrapper.vm.downloadProgress = 0
+    wrapper.vm.downloadStatus = 'normal'
+    expect(wrapper.vm.progressText).toBe('准备下载...')
+
+    wrapper.vm.downloadProgress = 50
+    wrapper.vm.downloadStatus = 'normal'
+    expect(wrapper.vm.progressText).toBe('下载中... 50%')
+
+    wrapper.vm.downloadProgress = 100
+    wrapper.vm.downloadStatus = 'success'
+    expect(wrapper.vm.progressText).toBe('下载完成!')
+
+    wrapper.vm.downloadStatus = 'exception'
+    expect(wrapper.vm.progressText).toBe('下载失败,请重试')
+  })
+
+  it('应该正确显示使用说明', () => {
+    wrapper = createWrapper()
+    const usageGuide = wrapper.find('.usage-guide')
+    expect(usageGuide.exists()).toBe(true)
+  })
+
+  it('备案产品模板应该显示30个字段', () => {
+    wrapper = createWrapper()
+    const backupCard = wrapper.findAll('.template-card')[0]
+    expect(backupCard.html()).toContain('30')
+  })
+
+  it('农险产品模板应该显示25个字段', () => {
+    wrapper = createWrapper()
+    const agriculturalCard = wrapper.findAll('.template-card')[1]
+    expect(agriculturalCard.html()).toContain('25')
   })
 })

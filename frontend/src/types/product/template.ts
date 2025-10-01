@@ -1,51 +1,51 @@
 /**
- * Template Type Definitions for Product Template Enhancement
- * Aligned with backend DTOs and requirements
+ * 产品模板增强功能的类型定义
+ * 与后端 DTO 和需求保持一致
  */
 
 // ========================================
-// Template Types and Enums
+// 模板类型和枚举
 // ========================================
 
 /**
- * Template type discriminator
+ * 模板类型标识符
  */
 export type TemplateType = 'backup' | 'agricultural'
 
 /**
- * Template information
+ * 模板信息
  */
 export interface TemplateInfo {
-  /** Template identifier */
+  /** 模板标识符 */
   id: string
-  /** Template type */
+  /** 模板类型 */
   type: TemplateType
-  /** Template display name */
+  /** 模板显示名称 */
   name: string
-  /** Template description */
+  /** 模板描述 */
   description: string
-  /** Template file format */
+  /** 模板文件格式 */
   fileFormat: 'xlsx' | 'xls'
-  /** Number of fields */
+  /** 字段数量 */
   fieldCount: number
-  /** Template version */
+  /** 模板版本 */
   version: string
-  /** Template file path on server */
+  /** 模板在服务器上的文件路径 */
   filePath?: string
-  /** Whether template is enabled */
+  /** 模板是否启用 */
   enabled: boolean
-  /** Creation timestamp */
+  /** 创建时间戳 */
   createdAt?: string
-  /** Last update timestamp */
+  /** 最后更新时间戳 */
   updatedAt?: string
 }
 
 // ========================================
-// Field Configuration Types
+// 字段配置类型
 // ========================================
 
 /**
- * Field type enum
+ * 字段类型枚举
  */
 export enum FieldType {
   TEXT = 'text',

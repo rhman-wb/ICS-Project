@@ -28,13 +28,13 @@ test.describe('产品模板增强功能 E2E 测试', () => {
     await page.goto('/products/import')
     await expect(page).toHaveURL('/products/import')
 
-    // 2. 选择备案产品模板类型
-    await page.check('input[value="FILING"]')
-    await page.waitForTimeout(500)
+    // 2. 选择备案产品模板类型 - 使用卡片点击
+    await page.click('.template-card:has-text("备案产品")')
+    await page.waitForSelector('.template-card-active')
 
-    // 3. 下载模板文件
+    // 3. 下载模板文件 - 点击选中卡片中的下载按钮
     const downloadPromise = page.waitForEvent('download')
-    await page.click('button:has-text("下载模板")')
+    await page.click('.template-card-active button:has-text("下载模板")')
     const download = await downloadPromise
     expect(download.suggestedFilename()).toContain('备案产品')
 
@@ -71,12 +71,13 @@ test.describe('产品模板增强功能 E2E 测试', () => {
     // 导航到产品导入页面
     await page.goto('/products/import')
 
-    // 选择农险产品模板
-    await page.check('input[value="AGRICULTURAL"]')
+    // 选择农险产品模板 - 使用卡片点击
+    await page.click('.template-card:has-text("农险产品")')
+    await page.waitForSelector('.template-card-active')
 
     // 下载农险产品模板
     const downloadPromise = page.waitForEvent('download')
-    await page.click('button:has-text("下载模板")')
+    await page.click('.template-card-active button:has-text("下载模板")')
     const download = await downloadPromise
     expect(download.suggestedFilename()).toContain('农险产品')
 
@@ -104,8 +105,8 @@ test.describe('产品模板增强功能 E2E 测试', () => {
   test('字段验证功能测试', async () => {
     await page.goto('/products/import')
 
-    // 选择模板类型
-    await page.check('input[value="FILING"]')
+    // 选择模板类型 - 使用卡片点击
+    await page.click('.template-card:has-text("备案产品")')
 
     // 尝试提交空表单
     await page.click('button:has-text("提交")')
@@ -137,7 +138,9 @@ test.describe('产品模板增强功能 E2E 测试', () => {
 
   test('字段依赖关系验证', async () => {
     await page.goto('/products/import')
-    await page.check('input[value="FILING"]')
+
+    // 选择模板类型 - 使用卡片点击
+    await page.click('.template-card:has-text("备案产品")')
 
     // 选择使用示范条款
     await page.check('input[name="usesDemonstrationClause"]')
@@ -164,8 +167,8 @@ test.describe('产品模板增强功能 E2E 测试', () => {
   test('模板文件上传和自动填充', async () => {
     await page.goto('/products/import')
 
-    // 选择模板类型
-    await page.check('input[value="FILING"]')
+    // 选择模板类型 - 使用卡片点击
+    await page.click('.template-card:has-text("备案产品")')
 
     // 上传填好的模板文件
     const fileInput = page.locator('input[type="file"]')
@@ -216,8 +219,8 @@ test.describe('产品模板增强功能 E2E 测试', () => {
       expect(await templateDownload.isVisible()).toBe(true)
     }
 
-    // 验证表单在移动端的可用性
-    await page.check('input[value="FILING"]')
+    // 验证表单在移动端的可用性 - 使用卡片点击
+    await page.click('.template-card:has-text("备案产品")')
     await page.fill('input[name="productName"]', '移动端测试')
 
     // 验证按钮在移动端可点击
@@ -233,11 +236,15 @@ test.describe('产品模板增强功能 E2E 测试', () => {
       route.abort('failed')
     })
 
-    await page.check('input[value="FILING"]')
-    await page.click('button:has-text("下载模板")')
+    // 选择模板并尝试下载
+    await page.click('.template-card:has-text("备案产品")')
+    await page.click('.template-card-active button:has-text("下载模板")')
 
     // 应该显示错误消息
     await expect(page.locator('.ant-message-error')).toBeVisible()
+
+    // 应该显示重试按钮
+    await expect(page.locator('button:has-text("重试")')).toBeVisible()
 
     // 恢复正常路由
     await page.unroute('**/api/v1/products/templates/download')

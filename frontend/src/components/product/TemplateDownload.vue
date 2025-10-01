@@ -113,8 +113,8 @@
     <a-modal
       v-model:open="showProgressModal"
       title="下载进度"
-      :footer="null"
-      :closable="false"
+      :footer="downloadStatus === 'exception' ? undefined : null"
+      :closable="downloadStatus !== 'normal'"
       :maskClosable="false"
       width="400px"
     >
@@ -125,6 +125,12 @@
         />
         <p class="progress-text">{{ progressText }}</p>
       </div>
+      <template v-if="downloadStatus === 'exception'" #footer>
+        <a-space>
+          <a-button @click="showProgressModal = false">取消</a-button>
+          <a-button type="primary" @click="handleRetry">重试</a-button>
+        </a-space>
+      </template>
     </a-modal>
   </div>
 </template>
@@ -137,11 +143,21 @@ import {
   DownloadOutlined,
   InfoCircleOutlined
 } from '@ant-design/icons-vue'
-import { templateApi } from '@/api/product/template'
+import { templateApi, templateUtils, TEMPLATE_CONSTANTS } from '@/api/product/template'
 import type { TemplateType } from '@/types/product/template'
 
+// Props and emits
+const props = defineProps<{
+  templateType?: TemplateType
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:template-type', value: TemplateType): void
+  (e: 'download-success'): void
+}>()
+
 // Component state
-const activeTemplate = ref<TemplateType | null>(null)
+const activeTemplate = ref<TemplateType | null>(props.templateType || null)
 const downloading = ref(false)
 const showProgressModal = ref(false)
 const downloadProgress = ref(0)
@@ -163,6 +179,7 @@ const progressText = computed(() => {
 // Template selection handler
 const handleTemplateSelect = (type: TemplateType) => {
   activeTemplate.value = type
+  emit('update:template-type', type)
 }
 
 // Download handler
@@ -188,25 +205,9 @@ const handleDownload = async (type: TemplateType) => {
     downloadProgress.value = 100
     downloadStatus.value = 'success'
 
-    // Create download link
-    const url = window.URL.createObjectURL(new Blob([response]))
-    const link = document.createElement('a')
-    link.href = url
-
-    // Set filename based on template type
-    const filename =
-      type === 'backup'
-        ? '附件3_备案产品自主注册信息登记表.xlsx'
-        : '附件5_农险产品信息登记表.xls'
-    link.setAttribute('download', filename)
-
-    // Trigger download
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-
-    // Clean up
-    window.URL.revokeObjectURL(url)
+    // Download file using utility function
+    const filename = templateUtils.getTemplateFileName(type)
+    templateUtils.downloadBlob(response, filename)
 
     // Show success message
     setTimeout(() => {
@@ -222,12 +223,7 @@ const handleDownload = async (type: TemplateType) => {
     const errorMessage = error.response?.data?.message || error.message || '模板下载失败'
     message.error(errorMessage)
 
-    // Reset after delay
-    setTimeout(() => {
-      showProgressModal.value = false
-      downloadProgress.value = 0
-      downloadStatus.value = 'normal'
-    }, 2000)
+    // Keep modal open for retry
   } finally {
     downloading.value = false
   }
@@ -236,6 +232,9 @@ const handleDownload = async (type: TemplateType) => {
 // Retry download handler
 const handleRetry = () => {
   if (activeTemplate.value) {
+    // Reset state before retry
+    downloadProgress.value = 0
+    downloadStatus.value = 'normal'
     handleDownload(activeTemplate.value)
   }
 }
