@@ -314,7 +314,7 @@ const loadTemplateConfig = async () => {
 }
 
 const handleBack = () => {
-  router.push('/product/management')
+  router.push('/product-management')
 }
 
 const handleStepChange = (step: number) => {
@@ -404,7 +404,7 @@ const handleSubmit = async () => {
 
     // Navigate to product list
     setTimeout(() => {
-      router.push('/product/management')
+      router.push('/product-management')
     }, 1500)
   } catch (error: any) {
     message.destroy()

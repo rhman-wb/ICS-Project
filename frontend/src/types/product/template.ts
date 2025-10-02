@@ -9,8 +9,9 @@
 
 /**
  * 模板类型标识符
+ * 与后端枚举值保持一致
  */
-export type TemplateType = 'backup' | 'agricultural'
+export type TemplateType = 'FILING' | 'AGRICULTURAL'
 
 /**
  * 模板信息
@@ -250,7 +251,7 @@ export interface BaseProductFormData {
  * Backup product (备案产品) form data - 30 fields
  */
 export interface BackupProductFormData extends BaseProductFormData {
-  templateType: 'backup'
+  templateType: 'FILING'
   // 基本信息
   developmentType: string // 开发类型
   revisionType?: string // 修订类型
@@ -287,7 +288,7 @@ export interface BackupProductFormData extends BaseProductFormData {
  * Agricultural product (农险产品) form data - 25 fields
  */
 export interface AgriculturalProductFormData extends BaseProductFormData {
-  templateType: 'agricultural'
+  templateType: 'AGRICULTURAL'
   // 基本信息
   developmentMethod: string // 开发方式
   revisionType?: string // 修订类型

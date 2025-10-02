@@ -93,7 +93,7 @@ const AGRICULTURAL_TEMPLATE_MAPPINGS: FieldMapping[] = [
  * Get field mappings for template type
  */
 function getFieldMappings(templateType: TemplateType): FieldMapping[] {
-  return templateType === 'backup'
+  return templateType === 'FILING'
     ? BACKUP_TEMPLATE_MAPPINGS
     : AGRICULTURAL_TEMPLATE_MAPPINGS
 }
@@ -103,14 +103,14 @@ function getFieldMappings(templateType: TemplateType): FieldMapping[] {
  */
 export function validateFileFormat(file: File, templateType: TemplateType): ParseError[] {
   const errors: ParseError[] = []
-  const expectedFormat = templateType === 'backup' ? '.xlsx' : '.xls'
+  const expectedFormat = templateType === 'FILING' ? '.xlsx' : '.xls'
   const fileName = file.name.toLowerCase()
 
   if (!fileName.endsWith(expectedFormat)) {
     errors.push({
       field: 'file',
       message: `文件格式不正确，${
-        templateType === 'backup' ? '备案产品' : '农险产品'
+        templateType === 'FILING' ? '备案产品' : '农险产品'
       }模板应为 ${expectedFormat} 格式`,
       severity: 'critical'
     })

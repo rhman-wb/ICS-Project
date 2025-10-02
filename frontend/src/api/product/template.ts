@@ -23,15 +23,19 @@ import type {
 
 /**
  * 模板 API 端点
+ * 与后端实现保持一致
  */
 const TEMPLATE_API = {
   BASE: '/v1/products/templates',
   LIST: '/v1/products/templates',
-  DOWNLOAD: '/v1/products/templates/download',
-  CONFIG: '/v1/products/templates/config',
-  VALIDATE_FIELD: '/v1/products/templates/validate/field',
-  VALIDATE_FORM: '/v1/products/templates/validate/form',
-  PARSE: '/v1/products/templates/parse'
+  // 使用路径参数的端点需要在调用时替换{templateType}
+  CONFIG: '/v1/products/templates/{templateType}',
+  DOWNLOAD_INFO: '/v1/products/templates/{templateType}/download',
+  DOWNLOAD_FILE: '/v1/products/templates/{templateType}/file',
+  FIELDS: '/v1/products/templates/{templateType}/fields',
+  VALIDATION_RULES: '/v1/products/templates/{templateType}/validation-rules',
+  VALIDATE_FIELDS: '/v1/products/validate-fields',
+  PARSE: '/v1/products/parse-template'
 }
 
 /**
@@ -41,23 +45,23 @@ const TEMPLATE_API = {
 export const TEMPLATE_CONSTANTS = {
   /** 字段数量 */
   FIELD_COUNTS: {
-    backup: 30,
-    agricultural: 25
+    FILING: 30,
+    AGRICULTURAL: 25
   },
   /** 文件名 */
   FILE_NAMES: {
-    backup: '附件3_备案产品自主注册信息登记表.xlsx',
-    agricultural: '附件5_农险产品信息登记表.xls'
+    FILING: '附件3_备案产品自主注册信息登记表.xlsx',
+    AGRICULTURAL: '附件5_农险产品信息登记表.xls'
   },
   /** 显示名称 */
   DISPLAY_NAMES: {
-    backup: '备案产品自主注册信息登记表',
-    agricultural: '农险产品信息登记表'
+    FILING: '备案产品自主注册信息登记表',
+    AGRICULTURAL: '农险产品信息登记表'
   },
   /** 文件扩展名 */
   FILE_EXTENSIONS: {
-    backup: 'xlsx' as const,
-    agricultural: 'xls' as const
+    FILING: 'xlsx' as const,
+    AGRICULTURAL: 'xls' as const
   }
 }
 
@@ -78,14 +82,20 @@ export const templateApi = {
 
   /**
    * 下载模板文件
-   * @param templateType - 模板类型（'backup' 或 'agricultural'）
+   * @param templateType - 模板类型（'FILING' 或 'AGRICULTURAL'）
    * @returns 返回文件 Blob 的 Promise
    */
   async downloadTemplate(templateType: TemplateType): Promise<Blob> {
+    // 先获取下载信息
+    const downloadInfo = await request({
+      url: TEMPLATE_API.DOWNLOAD_INFO.replace('{templateType}', templateType),
+      method: 'GET'
+    })
+
+    // 然后下载文件
     const response = await request({
-      url: TEMPLATE_API.DOWNLOAD,
+      url: TEMPLATE_API.DOWNLOAD_FILE.replace('{templateType}', templateType),
       method: 'GET',
-      params: { templateType },
       responseType: 'blob'
     })
 
@@ -105,9 +115,8 @@ export const templateApi = {
    */
   getTemplateConfig(templateType: TemplateType): Promise<ApiResponse<TemplateConfig>> {
     return request({
-      url: TEMPLATE_API.CONFIG,
-      method: 'GET',
-      params: { templateType }
+      url: TEMPLATE_API.CONFIG.replace('{templateType}', templateType),
+      method: 'GET'
     })
   },
 
@@ -122,9 +131,8 @@ export const templateApi = {
     config: TemplateConfig
   ): Promise<ApiResponse<TemplateConfig>> {
     return request({
-      url: TEMPLATE_API.CONFIG,
+      url: TEMPLATE_API.CONFIG.replace('{templateType}', templateType),
       method: 'PUT',
-      params: { templateType },
       data: config
     })
   },
@@ -132,13 +140,13 @@ export const templateApi = {
   /**
    * 验证单个字段
    * @param requestData - 字段验证请求
-   * @returns 返回验证结果的 Promise
+   * @returns 返证结果的 Promise
    */
   validateField(
     requestData: FieldValidationRequest
   ): Promise<ApiResponse<FieldValidationResponse>> {
     return request({
-      url: TEMPLATE_API.VALIDATE_FIELD,
+      url: TEMPLATE_API.VALIDATE_FIELDS,
       method: 'POST',
       data: requestData
     })
@@ -153,7 +161,7 @@ export const templateApi = {
     requestData: FormValidationRequest
   ): Promise<ApiResponse<FormValidationResponse>> {
     return request({
-      url: TEMPLATE_API.VALIDATE_FORM,
+      url: TEMPLATE_API.VALIDATE_FIELDS,
       method: 'POST',
       data: requestData
     })

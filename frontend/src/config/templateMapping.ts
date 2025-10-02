@@ -6,10 +6,11 @@
 /**
  * Template type to product type mapping
  * 模板类型到产品类型的映射关系
+ * 现在前后端使用统一的枚举值
  */
 export const TEMPLATE_TO_PRODUCT_TYPE_MAP = {
-  'backup': 'FILING',
-  'agricultural': 'AGRICULTURAL'
+  'FILING': 'FILING',
+  'AGRICULTURAL': 'AGRICULTURAL'
 } as const
 
 /**
@@ -39,7 +40,7 @@ export const getProductTypeFromTemplate = (templateType: TemplateType): ProductT
 export const getTemplateTypeFromProduct = (productType: ProductType): TemplateType => {
   const entries = Object.entries(TEMPLATE_TO_PRODUCT_TYPE_MAP)
   const found = entries.find(([_, value]) => value === productType)
-  return found?.[0] as TemplateType || 'backup'
+  return found?.[0] as TemplateType || 'FILING'
 }
 
 /**
@@ -49,8 +50,8 @@ export const getTemplateTypeFromProduct = (productType: ProductType): TemplateTy
  */
 export const getTemplateTypeDisplayName = (templateType: TemplateType): string => {
   const displayNames: Record<TemplateType, string> = {
-    'backup': '备案产品',
-    'agricultural': '农险产品'
+    'FILING': '备案产品',
+    'AGRICULTURAL': '农险产品'
   }
   return displayNames[templateType] || templateType
 }

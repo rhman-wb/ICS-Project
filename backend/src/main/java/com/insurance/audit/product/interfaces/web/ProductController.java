@@ -306,16 +306,16 @@ public class ProductController {
 
             // 获取模板元数据
             ProductTemplate template = templateService.getTemplateMetadata(templateType);
-            if (template == null || template.getFilePath() == null) {
+            if (template == null || template.getTemplateFilePath() == null) {
                 return ApiResponse.error("模板文件不存在");
             }
 
             // 构建下载信息
             Map<String, String> downloadInfo = new HashMap<>();
             downloadInfo.put("templateName", template.getTemplateName());
-            downloadInfo.put("fileName", getFileNameFromPath(template.getFilePath()));
-            downloadInfo.put("filePath", template.getFilePath());
-            downloadInfo.put("version", template.getVersion());
+            downloadInfo.put("fileName", getFileNameFromPath(template.getTemplateFilePath()));
+            downloadInfo.put("filePath", template.getTemplateFilePath());
+            downloadInfo.put("version", template.getTemplateVersion());
             downloadInfo.put("downloadUrl", "/v1/products/templates/" + templateType + "/file");
 
             return ApiResponse.success(downloadInfo, "获取模板下载信息成功");
@@ -441,18 +441,18 @@ public class ProductController {
 
             // 如果需要验证，则执行字段验证
             FieldValidationResultResponse validationResult = null;
-            if (validateData && parseResult.isSuccess()) {
+            if (validateData && parseResult.getSuccess()) {
                 FieldValidationService.FieldValidationResult fieldValidation =
-                        fieldValidationService.validateFields(parseResult.getParsedData(), templateType);
+                        fieldValidationService.validateFields(parseResult.getRawData(), templateType);
                 validationResult = convertToFieldValidationResultResponse(fieldValidation);
             }
 
             // 构建响应
             TemplateParseResultResponse response = TemplateParseResultResponse.builder()
-                    .success(parseResult.isSuccess())
-                    .message(parseResult.getMessage())
-                    .parsedData(parseResult.getParsedData())
-                    .parsedFieldCount(parseResult.getParsedData() != null ? parseResult.getParsedData().size() : 0)
+                    .success(parseResult.getSuccess())
+                    .message(parseResult.getErrorMessage())
+                    .parsedData(parseResult.getRawData())
+                    .parsedFieldCount(parseResult.getRawData() != null ? parseResult.getRawData().size() : 0)
                     .validationResult(validationResult)
                     .build();
 
@@ -472,9 +472,9 @@ public class ProductController {
                 .templateType(template.getTemplateType())
                 .templateName(template.getTemplateName())
                 .description(template.getDescription())
-                .filePath(template.getFilePath())
-                .fileName(getFileNameFromPath(template.getFilePath()))
-                .version(template.getVersion())
+                .filePath(template.getTemplateFilePath())
+                .fileName(getFileNameFromPath(template.getTemplateFilePath()))
+                .version(template.getTemplateVersion())
                 .enabled(template.getEnabled())
                 .createdAt(template.getCreatedAt())
                 .updatedAt(template.getUpdatedAt())
@@ -484,11 +484,9 @@ public class ProductController {
     private List<FieldValidationRuleResponse> convertToFieldValidationRuleResponses(List<ValidationRule> rules) {
         return rules.stream()
                 .map(rule -> FieldValidationRuleResponse.builder()
-                        .fieldName(rule.getFieldName())
-                        .ruleType(rule.getRuleType())
-                        .parameters(rule.getParameters())
-                        .errorMessage(rule.getErrorMessage())
-                        .required(rule.isRequired())
+                        .ruleType(rule.getType())
+                        .parameters(rule.getValue())
+                        .errorMessage(rule.getMessage())
                         .build())
                 .toList();
     }
