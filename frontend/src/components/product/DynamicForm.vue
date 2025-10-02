@@ -118,6 +118,17 @@ import type {
   TemplateConfig,
   ProductFormData
 } from '@/types/product/template'
+/**
+ * Normalize field type to enum
+ * 将字段类型标准化为枚举值
+ */
+const normalizeFieldType = (type: string | FieldType): FieldType => {
+  if (Object.values(FieldType).includes(type as FieldType)) {
+    return type as FieldType
+  }
+  // 默认返回text类型
+  return FieldType.TEXT
+}
 
 // Component props
 interface Props {
@@ -362,7 +373,8 @@ const getGroupFields = (groupId: string) => {
 
 // Get field component based on field type
 const getFieldComponent = (field: FieldConfig) => {
-  switch (field.type) {
+  const normalizedType = normalizeFieldType(field.type)
+  switch (normalizedType) {
     case 'text':
       return 'a-input'
     case 'number':
@@ -386,12 +398,13 @@ const getFieldComponent = (field: FieldConfig) => {
 
 // Get field component props
 const getFieldProps = (field: FieldConfig) => {
+  const normalizedType = normalizeFieldType(field.type)
   const baseProps: any = {
     placeholder: field.placeholder || `请输入${field.label}`,
     disabled: field.disabled || false
   }
 
-  switch (field.type) {
+  switch (normalizedType) {
     case 'text':
       return {
         ...baseProps,

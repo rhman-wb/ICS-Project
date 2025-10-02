@@ -134,13 +134,13 @@
         <div v-show="currentStep === 3" class="step-panel">
           <DynamicForm
             ref="dynamicFormRef"
-            v-model:formData="productFormData"
+            v-model="productFormData"
             :fields="formFields"
             :template-type="selectedTemplateType"
             :enable-validation="true"
             :show-actions="false"
             @field-change="handleFieldChange"
-            @validation-change="handleValidationChange"
+            @validate="handleValidationChange"
           />
           <div class="step-actions">
             <a-space>
@@ -270,9 +270,10 @@ import {
 import TemplateDownload from '@/components/product/TemplateDownload.vue'
 import TemplateParser from '@/components/product/TemplateParser.vue'
 import DynamicForm from '@/components/product/DynamicForm.vue'
-import type { ProductFormData, TemplateFieldConfig, ParseResult } from '@/types/product/template'
+import type {  ProductFormData, TemplateFieldConfig, ParseResult , ValidationResult } from '@/types/product/template'
 import { getTemplateFieldConfig } from '@/api/product/template'
 import { createProduct } from '@/api/product/product'
+import logger from '@/utils/logger'
 
 const router = useRouter()
 
@@ -307,7 +308,7 @@ const loadTemplateConfig = async () => {
     const config = await getTemplateFieldConfig(selectedTemplateType.value)
     formFields.value = config.fields
   } catch (error) {
-    console.error('Failed to load template config:', error)
+    logger.error('Failed to load template config:', error)
     message.error('加载模板配置失败')
   }
 }
@@ -356,11 +357,12 @@ const handleParseError = (error: any) => {
 }
 
 const handleFieldChange = (fieldName: string, value: any) => {
-  console.log('Field changed:', fieldName, value)
+  logger.debug('Field changed:', fieldName, value)
 }
 
-const handleValidationChange = (valid: boolean) => {
-  isFormValid.value = valid
+const handleValidationChange = (results: Record<string, ValidationResult>) => {
+  // 计算表单整体校验结果：所有字段全部通过才为 true
+  isFormValid.value = Object.values(results).every(r => r.valid)
 }
 
 const handleSaveDraft = async () => {

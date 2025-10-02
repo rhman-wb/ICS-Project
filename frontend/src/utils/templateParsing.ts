@@ -3,6 +3,8 @@
  * Handles Excel file parsing and form data transformation
  */
 
+import * as XLSX from 'xlsx'
+import logger from './logger'
 import type {
   TemplateType,
   TemplateParseResult,
@@ -128,8 +130,61 @@ export function validateFileFormat(file: File, templateType: TemplateType): Pars
 }
 
 /**
- * Parse template file
- * Note: This is a simplified version. In production, you would use a library like xlsx or exceljs
+ * Convert Excel column letter to index (A=0, B=1, ..., Z=25, AA=26, etc.)
+ * 将Excel列字母转换为索引
+ */
+function columnToIndex(column: string): number {
+  let index = 0
+  for (let i = 0; i < column.length; i++) {
+    index = index * 26 + (column.charCodeAt(i) - 'A'.charCodeAt(0) + 1)
+  }
+  return index - 1
+}
+
+/**
+ * Extract form data from Excel sheet data
+ * 从Excel表格数据中提取表单数据
+ */
+function extractFormDataFromSheet(
+  jsonData: any[][],
+  templateType: TemplateType
+): Partial<ProductFormData> {
+  const formData: Partial<ProductFormData> = {
+    templateType: templateType,
+    year: new Date().getFullYear()
+  }
+
+  // 跳过标题行,从第二行开始读取数据
+  if (jsonData.length < 2) {
+    return formData
+  }
+
+  const dataRow = jsonData[1]  // 第二行是实际数据
+  const mappings = getFieldMappings(templateType)
+
+  // 根据字段映射提取数据
+  mappings.forEach((mapping) => {
+    // Convert Excel column letter to index (A=0, B=1, etc.)
+    const columnIndex = columnToIndex(mapping.excelColumn)
+    const cellValue = dataRow[columnIndex]
+
+    if (cellValue !== undefined && cellValue !== null && cellValue !== '') {
+      const fieldKey = mapping.formField as keyof ProductFormData
+
+      // 应用转换函数(如果有)
+      if (mapping.transform) {
+        formData[fieldKey] = mapping.transform(cellValue) as any
+      } else {
+        formData[fieldKey] = cellValue as any
+      }
+    }
+  })
+
+  return formData
+}
+
+/**
+ * Parse template file with actual Excel reading
  */
 export async function parseTemplateFile(
   file: File,
@@ -155,40 +210,38 @@ export async function parseTemplateFile(
       }
     }
 
-    // In a real implementation, you would use a library like xlsx to parse the Excel file
-    // For now, we'll create a mock implementation that demonstrates the structure
+    // Read file as ArrayBuffer
+    const arrayBuffer = await file.arrayBuffer()
 
-    // Create form data based on template type
-    const formData: Partial<ProductFormData> = {
-      productName: '',
-      reportType: '',
-      templateType: templateType,
-      year: new Date().getFullYear()
-    }
+    // Parse Excel file with UTF-8 encoding for Chinese characters
+    const workbook = XLSX.read(arrayBuffer, {
+      type: 'array',
+      codepage: 65001  // UTF-8 encoding to properly handle Chinese characters
+    })
 
-    // Get field mappings
-    const mappings = getFieldMappings(templateType)
+    // Get first worksheet
+    const firstSheetName = workbook.SheetNames[0]
+    const worksheet = workbook.Sheets[firstSheetName]
 
-    // Simulate parsing - in production, you would read actual Excel data
-    // and map it to form fields using the mappings defined above
+    // Convert to JSON with row array format
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+      header: 1,  // Return array of arrays
+      raw: false,  // Keep formatting
+      defval: ''   // Default value for empty cells
+    })
 
-    // Check for missing required fields
-    const missingFields = mappings
-      .filter((m) => m.required)
-      .filter((m) => !formData[m.formField as keyof ProductFormData])
+    // Extract form data based on template type
+    const formData = extractFormDataFromSheet(jsonData, templateType)
 
-    if (missingFields.length > 0) {
-      missingFields.forEach((field) => {
-        errors.push({
-          field: field.formField,
-          message: `必填字段 "${field.formField}" 未填写`,
-          severity: 'error'
-        })
-      })
-    }
+    // Validate extracted data
+    const validation = validateParsedData(formData, templateType)
+    errors.push(...validation.errors)
+    warnings.push(...validation.warnings)
+
+    const success = errors.filter(e => e.severity === 'error' || e.severity === 'critical').length === 0
 
     return {
-      success: errors.length === 0,
+      success,
       data: formData,
       errors,
       warnings,
@@ -196,11 +249,11 @@ export async function parseTemplateFile(
         fileName: file.name,
         fileSize: file.size,
         parseTime: Date.now() - startTime,
-        rowsProcessed: 1
+        rowsProcessed: jsonData.length
       }
     }
   } catch (error: any) {
-    console.error('Template parsing error:', error)
+    logger.error('Template parsing error:', error)
 
     errors.push({
       field: 'file',

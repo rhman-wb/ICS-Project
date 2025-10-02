@@ -197,8 +197,9 @@ const props = defineProps<Props>()
 
 // Component emits
 const emit = defineEmits<{
-  (e: 'parsed', result: TemplateParseResult): void
-  (e: 'autoFill', data: Partial<ProductFormData>): void
+  (e: 'parse-success', result: TemplateParseResult): void
+  (e: 'parse-error', error: { message: string; errors?: any[] }): void
+  (e: 'auto-fill', data: Partial<ProductFormData>): void
 }>()
 
 // Component state
@@ -234,17 +235,28 @@ const handleCustomRequest = async ({ file }: any) => {
     const result = await parseTemplateFile(file, props.templateType)
     parseResult.value = result
 
-    // Emit parsed event
-    emit('parsed', result)
-
     if (result.success) {
+      // Emit parse-success event
+      emit('parse-success', result)
       message.success('模板解析成功')
     } else {
+      // Emit parse-error event
+      emit('parse-error', {
+        message: '模板解析失败，请检查错误信息',
+        errors: result.errors
+      })
       message.error('模板解析失败，请检查错误信息')
     }
   } catch (error: any) {
     console.error('Parse error:', error)
-    message.error(`解析失败: ${error.message || '未知错误'}`)
+    const errorMessage = `解析失败: ${error.message || '未知错误'}`
+
+    // Emit parse-error event for exceptions
+    emit('parse-error', {
+      message: errorMessage,
+      errors: [{ field: 'file', message: error.message || '未知错误' }]
+    })
+    message.error(errorMessage)
   } finally {
     parsing.value = false
   }
@@ -267,7 +279,7 @@ const handleAutoFill = () => {
   }
 
   const filledData = autoFillForm(props.formData || {}, parseResult.value.data)
-  emit('autoFill', filledData)
+  emit('auto-fill', filledData)
   message.success('表单已自动填充')
 }
 

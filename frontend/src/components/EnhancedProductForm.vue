@@ -304,8 +304,16 @@ import type {
   TemplateType,
   TemplateConfig,
   ProductFormData,
-  ValidationResult
+  ValidationResult,
+  DocumentValidationResult
 } from '@/types/product/template'
+import {
+  getTemplateTypeDisplayName,
+  getProductTypeDisplayName,
+  getProductTypeFromTemplate,
+  type ProductType
+} from '@/config/templateMapping'
+import logger from '@/utils/logger'
 
 interface Props {
   productId?: string
@@ -354,7 +362,7 @@ const formData = ref<Partial<ProductFormData>>({
 
 // 表单状态
 const isFormValid = ref(false)
-const validationResult = ref<any>(null)
+const validationResult = ref<DocumentValidationResult | null>(null)
 const tempProductId = ref(`temp_${Date.now()}`)
 const actualProductId = ref<string | null>(null) // 真实产品ID
 const fieldValidations = ref<Record<string, ValidationResult>>({})
@@ -374,11 +382,12 @@ const loadTemplateConfig = async (type: TemplateType) => {
 
   try {
     const response = await templateApi.getTemplateConfig(type)
-    if (response && response.config) {
-      templateConfig.value = response.config
+    // 根据实际API返回结构处理
+    if (response && response.data) {
+      templateConfig.value = response.data.config || response.data
     }
   } catch (error: any) {
-    console.error('Failed to load template config:', error)
+    logger.error('Failed to load template config:', error)
     message.error('加载模板配置失败')
   } finally {
     loadingTemplateConfig.value = false
@@ -395,7 +404,7 @@ const handleFormValidation = (validations: Record<string, ValidationResult>) => 
 }
 
 const handleFieldChange = (fieldName: string, value: any) => {
-  console.log('Field changed:', fieldName, value)
+  logger.debug('Field changed:', fieldName, value)
 }
 
 // 计算属性
@@ -440,23 +449,15 @@ const prevStep = () => {
 }
 
 const getTemplateTypeText = (type: TemplateType | undefined | null): string => {
-  const typeMap: Record<string, string> = {
-    'backup': '备案产品',
-    'agricultural': '农险产品'
-  }
-  return type ? typeMap[type] || type : '未选择'
+  return type ? getTemplateTypeDisplayName(type) : '未选择'
 }
 
 const getProductTypeText = (productType: string): string => {
-  const typeMap: Record<string, string> = {
-    'AGRICULTURAL': '农险产品',
-    'FILING': '备案产品'
-  }
-  return typeMap[productType] || productType
+  return getProductTypeDisplayName(productType as ProductType)
 }
 
 const handleUploadComplete = (file: any, documentType: string) => {
-  console.log('文档上传完成:', file, documentType)
+  logger.debug('文档上传完成:', file, documentType)
 }
 
 const handleFormValidChange = (valid: boolean) => {
@@ -473,30 +474,35 @@ const saveDraft = async () => {
   try {
     // 如果还没有实际产品ID，先创建产品
     if (!actualProductId.value) {
+      // 转换模板类型为产品类型
+      const productType = selectedTemplateType.value
+        ? getProductTypeFromTemplate(selectedTemplateType.value)
+        : undefined
+
       const productData: ProductCreateRequest = {
-        productName: formData.productName,
-        productType: formData.productType,
-        reportType: formData.reportType,
-        productNature: formData.productNature,
-        year: formData.year,
-        revisionType: formData.revisionType || undefined,
-        originalProductName: formData.originalProductName || undefined,
-        developmentMethod: formData.developmentMethod || undefined,
-        primaryAdditional: formData.primaryAdditional || undefined,
-        primarySituation: formData.primarySituation || undefined,
-        productCategory: formData.productCategory || undefined,
-        operatingRegion: formData.operatingRegion || undefined,
-        operatingScope: formData.operatingScope || undefined,
-        demonstrationClauseName: formData.demonstrationClauseName || undefined,
-        operatingRegion1: formData.operatingRegion1 || undefined,
-        operatingRegion2: formData.operatingRegion2 || undefined,
-        salesPromotionName: formData.salesPromotionName || undefined
+        productName: formData.value.productName,
+        productType: productType as string,
+        reportType: formData.value.reportType,
+        productNature: formData.value.productNature,
+        year: formData.value.year,
+        revisionType: formData.value.revisionType || undefined,
+        originalProductName: formData.value.originalProductName || undefined,
+        developmentMethod: formData.value.developmentMethod || undefined,
+        primaryAdditional: formData.value.primaryAdditional || undefined,
+        primarySituation: formData.value.primarySituation || undefined,
+        productCategory: formData.value.productCategory || undefined,
+        operatingRegion: formData.value.operatingRegion || undefined,
+        operatingScope: formData.value.operatingScope || undefined,
+        demonstrationClauseName: formData.value.demonstrationClauseName || undefined,
+        operatingRegion1: formData.value.operatingRegion1 || undefined,
+        operatingRegion2: formData.value.operatingRegion2 || undefined,
+        salesPromotionName: formData.value.salesPromotionName || undefined
       }
 
       const response = await createProduct(productData)
       if (response.success && response.data) {
         actualProductId.value = response.data.id
-        formData.productId = response.data.id
+        formData.value.productId = response.data.id
         message.success('产品创建成功，已保存为草稿')
       } else {
         throw new Error(response.message || '产品创建失败')
@@ -506,10 +512,10 @@ const saveDraft = async () => {
       message.success('草稿保存成功')
     }
 
-    emit('formSave', { ...formData })
+    emit('formSave', { ...formData.value })
 
   } catch (error: any) {
-    console.error('保存草稿失败:', error)
+    logger.error('保存草稿失败:', error)
     message.error('保存失败: ' + (error.message || '未知错误'))
   } finally {
     saving.value = false
@@ -548,7 +554,7 @@ const submitForm = async () => {
 
     if (response.success) {
       message.success('产品提交成功')
-      emit('formSubmit', { ...formData })
+      emit('formSubmit', { ...formData.value })
 
       // 跳转到成功页面，使用实际产品ID
       router.push(`/product-management/success?productId=${productId}`)
@@ -557,7 +563,7 @@ const submitForm = async () => {
     }
 
   } catch (error: any) {
-    console.error('产品提交失败:', error)
+    logger.error('产品提交失败:', error)
     message.error('提交失败: ' + (error.message || '未知错误'))
   } finally {
     submitting.value = false
@@ -583,11 +589,11 @@ const resetFormData = () => {
 
 // 重置事件处理
 const handleBeforeReset = (resetData: any) => {
-  console.log('准备重置表单:', resetData)
+  logger.debug('准备重置表单:', resetData)
 }
 
 const handleAfterReset = (resetData: any) => {
-  console.log('表单重置完成:', resetData)
+  logger.debug('表单重置完成:', resetData)
 
   // 重置表单数据
   resetFormData()
@@ -610,20 +616,13 @@ const handleAfterReset = (resetData: any) => {
 }
 
 const handleResetCancelled = () => {
-  console.log('用户取消重置')
+  logger.debug('用户取消重置')
 }
 
 const handleResetError = (error: any) => {
-  console.error('重置失败:', error)
+  logger.error('重置失败:', error)
 }
 
-const getProductTypeText = (productType: string): string => {
-  const typeMap: Record<string, string> = {
-    'AGRICULTURAL': '农险产品',
-    'FILING': '备案产品'
-  }
-  return typeMap[productType] || productType
-}
 
 // 暴露方法
 const reset = () => {

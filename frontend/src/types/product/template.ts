@@ -67,7 +67,7 @@ export interface FieldConfig {
   /** Field label for display */
   label: string
   /** Field type */
-  type: FieldType
+  type: FieldType | string
   /** Whether field is required */
   required: boolean
   /** Conditional required based on other field values */
@@ -157,7 +157,7 @@ export enum ValidationRuleType {
  */
 export interface ValidationRule {
   /** Rule type */
-  type: ValidationRuleType
+  type: ValidationRuleType | string
   /** Rule value/parameter */
   value?: any
   /** Error message to display */
@@ -455,6 +455,69 @@ export interface FormValidationRequest {
 export interface FormValidationResponse {
   /** Validation result */
   result: FormValidationResult
+}
+
+
+// ========================================
+// Document Validation Types
+// ========================================
+
+/**
+ * Document validation result structure
+ * 文档校验结果类型定义
+ */
+export interface DocumentValidationResult {
+  /** 校验是否通过 */
+  isValid: boolean
+  /** 校验摘要信息 */
+  summary: {
+    /** 已上传文档数量 */
+    uploadedDocuments: number
+    /** 必需文档总数 */
+    requiredDocuments: number
+    /** 完整性百分比 (0-100) */
+    completenessPercentage: number
+    /** 错误总数 */
+    totalErrors: number
+    /** 警告总数 */
+    totalWarnings: number
+  }
+  /** 各文档的校验详情 */
+  documents?: DocumentValidationDetail[]
+  /** 校验时间戳 */
+  validatedAt?: string
+}
+
+/**
+ * Individual document validation detail
+ * 单个文档的校验详情
+ */
+export interface DocumentValidationDetail {
+  /** 文档类型/名称 */
+  documentType: string
+  /** 文档显示名称 */
+  displayName: string
+  /** 是否必需 */
+  required: boolean
+  /** 是否已上传 */
+  uploaded: boolean
+  /** 校验状态 */
+  status: 'valid' | 'invalid' | 'missing' | 'pending'
+  /** 错误信息列表 */
+  errors?: string[]
+  /** 警告信息列表 */
+  warnings?: string[]
+  /** 文件信息 */
+  fileInfo?: {
+    /** 文件名 */
+    fileName: string
+    /** 文件大小(字节) */
+    fileSize: number
+    /** 文件类型 */
+    fileType: string
+    /** 上传时间 */
+    uploadedAt: string
+  }
 }
 
 // ========================================

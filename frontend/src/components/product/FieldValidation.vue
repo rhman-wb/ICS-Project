@@ -94,6 +94,17 @@ import type {
   ValidationRule,
   ValidationRuleType
 } from '@/types/product/template'
+/**
+ * Normalize validation rule type to enum
+ * 将验证规则类型标准化为枚举值
+ */
+const normalizeRuleType = (type: string | ValidationRuleType): ValidationRuleType => {
+  if (Object.values(ValidationRuleType).includes(type as ValidationRuleType)) {
+    return type as ValidationRuleType
+  }
+  // 默认返回custom类型
+  return ValidationRuleType.CUSTOM
+}
 
 // Component props
 interface Props {
@@ -207,9 +218,10 @@ const validateRule = async (
   rule: ValidationRule,
   value: any
 ): Promise<{ valid: boolean; message: string }> => {
-  const { type, value: ruleValue, message } = rule
+  const normalizedType = normalizeRuleType(rule.type)
+  const { value: ruleValue, message } = rule
 
-  switch (type) {
+  switch (normalizedType) {
     case 'required':
       return {
         valid: validateRequired(value),
