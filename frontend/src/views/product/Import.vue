@@ -279,7 +279,7 @@ const router = useRouter()
 
 // Step management
 const currentStep = ref(0)
-const selectedTemplateType = ref<'backup' | 'agricultural'>('backup')
+const selectedTemplateType = ref<'FILING' | 'AGRICULTURAL'>('FILING')
 
 // Form data
 const productFormData = ref<ProductFormData>({} as ProductFormData)
@@ -415,7 +415,7 @@ const handleSubmit = async () => {
 }
 
 const getTemplateTypeName = (type: string) => {
-  return type === 'backup' ? '备案产品' : '农险产品'
+  return type === 'FILING' ? '备案产品' : '农险产品'
 }
 
 const formatDateTime = (date: Date) => {

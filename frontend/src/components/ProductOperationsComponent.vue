@@ -157,7 +157,7 @@
     <a-modal
       v-model:open="showImportDialog"
       title="导入产品"
-      width="600px"
+      width="900px"
       :confirm-loading="importing"
       @ok="handleConfirmImport"
       @cancel="handleCancelImport"
@@ -187,28 +187,17 @@
             </p>
           </a-upload-dragger>
 
-          <div class="import-tips">
-            <a-alert
-              message="导入提示"
-              type="info"
-              show-icon
-              closable
-            >
-              <template #description>
-                <ul>
-                  <li>请确保文件格式正确，包含必要的产品信息字段</li>
-                  <li>建议先下载模板文件，按照模板格式填写数据</li>
-                  <li>单次最多支持导入1000条产品记录</li>
-                </ul>
-              </template>
-            </a-alert>
+          <a-divider />
 
-            <div class="template-download">
-              <a-button type="link" @click="downloadTemplate">
-                <DownloadOutlined />
-                下载导入模板
-              </a-button>
-            </div>
+          <!-- 模板下载区域 -->
+          <div class="template-section">
+            <h4 style="margin-bottom: 16px;">
+              <DownloadOutlined /> 下载导入模板
+            </h4>
+            <TemplateDownload
+              v-model:template-type="selectedTemplateType"
+              @download-success="handleTemplateDownloadSuccess"
+            />
           </div>
         </div>
 
@@ -367,6 +356,7 @@
 import { ref, reactive, computed, h } from 'vue'
 import { message } from 'ant-design-vue'
 import type { UploadFile, TableColumnsType } from 'ant-design-vue'
+import type { TemplateType } from '@/types/product/template'
 import {
   UploadOutlined,
   AppstoreOutlined,
@@ -381,6 +371,7 @@ import {
   FolderOutlined,
   InboxOutlined
 } from '@ant-design/icons-vue'
+import TemplateDownload from '@/components/product/TemplateDownload.vue'
 
 // 组件名称
 defineOptions({
@@ -414,6 +405,7 @@ const showAdvancedSearch = ref(false)
 const importStep = ref(0)
 const importFileList = ref<UploadFile[]>([])
 const skipDuplicates = ref(true)
+const selectedTemplateType = ref<TemplateType>('FILING')
 
 // 统计数据
 const auditStats = reactive({
@@ -643,19 +635,8 @@ const handleCancelImport = () => {
   validationResult.value = null
 }
 
-const downloadTemplate = () => {
-  message.info('正在下载导入模板...')
-  // Mock 下载模板
-  const link = document.createElement('a')
-  link.href = '/templates/product-import-template.xlsx'
-  link.download = '产品导入模板.xlsx'
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-
-  setTimeout(() => {
-    message.success('模板下载完成')
-  }, 1000)
+const handleTemplateDownloadSuccess = () => {
+  message.success('模板下载成功，请填写后上传')
 }
 
 // 高级搜索方法
@@ -772,14 +753,17 @@ defineExpose({
     }
 
     .import-step-content {
-      min-height: 300px;
+      min-height: 400px;
 
-      .import-tips {
-        margin-top: 16px;
+      .template-section {
+        margin-top: 24px;
 
-        .template-download {
-          margin-top: 12px;
-          text-align: center;
+        h4 {
+          color: #262626;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 8px;
         }
       }
 

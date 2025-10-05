@@ -63,7 +63,11 @@ app:
     secret: ${JWT_SECRET:dev-insurance-audit-system-jwt-secret-key-2024-very-long-secret-must-be-at-least-64-characters}
     expiration: ${JWT_EXPIRATION:86400}  # 24小时
     refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800}  # 7天
-  
+
+  # 文件存储配置
+  file:
+    upload-dir: ${FILE_UPLOAD_DIR:uploads}  # 文件上传根目录
+
   # 开发环境特殊配置
   security:
     disabled: false  # 启用完整安全配置，提供 AuthenticationManager 等 Bean

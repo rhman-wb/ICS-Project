@@ -54,7 +54,8 @@ public class CacheConfig {
                 "ruleset-versions",   // 规则集版本缓存
                 "documents",          // 文档缓存
                 "audit-results",      // 检核结果缓存
-                "performance-metrics" // 性能指标缓存
+                "performance-metrics", // 性能指标缓存
+                "product_templates"   // 产品模板缓存
         ));
 
         // 允许运行时创建新缓存

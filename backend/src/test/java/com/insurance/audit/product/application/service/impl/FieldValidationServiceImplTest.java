@@ -46,7 +46,7 @@ class FieldValidationServiceImplTest {
         testProduct = Product.builder()
                 .id("test-product-id")
                 .productName("测试产品")
-                .productCode("TEST001")
+                //.productCode("TEST001")
                 .productType(Product.ProductType.FILING)
                 .templateType("FILING")
                 .status(Product.ProductStatus.DRAFT)
@@ -399,7 +399,7 @@ class FieldValidationServiceImplTest {
         // Given
         testProduct.setProductType(Product.ProductType.AGRICULTURAL);
         testProduct.setIsOperated(true);
-        testProduct.setOperationDate(new Date());
+        testProduct.setOperationDate("2024-01-01");
 
         // When
         FieldValidationResult result = fieldValidationService.validateFieldDependencies(testProduct, "operationDate");

@@ -14,8 +14,8 @@
           <a-card
             hoverable
             class="template-card"
-            :class="{ 'template-card-active': activeTemplate === 'backup' }"
-            @click="handleTemplateSelect('backup')"
+            :class="{ 'template-card-active': activeTemplate === 'FILING' }"
+            @click="handleTemplateSelect('FILING')"
           >
             <template #cover>
               <div class="template-icon">
@@ -37,9 +37,9 @@
             <div class="template-actions">
               <a-button
                 type="primary"
-                :loading="downloading && activeTemplate === 'backup'"
-                :disabled="downloading && activeTemplate !== 'backup'"
-                @click.stop="handleDownload('backup')"
+                :loading="downloading && activeTemplate === 'FILING'"
+                :disabled="downloading && activeTemplate !== 'FILING'"
+                @click.stop="handleDownload('FILING')"
               >
                 <template #icon>
                   <DownloadOutlined />
@@ -54,8 +54,8 @@
           <a-card
             hoverable
             class="template-card"
-            :class="{ 'template-card-active': activeTemplate === 'agricultural' }"
-            @click="handleTemplateSelect('agricultural')"
+            :class="{ 'template-card-active': activeTemplate === 'AGRICULTURAL' }"
+            @click="handleTemplateSelect('AGRICULTURAL')"
           >
             <template #cover>
               <div class="template-icon">
@@ -77,9 +77,9 @@
             <div class="template-actions">
               <a-button
                 type="primary"
-                :loading="downloading && activeTemplate === 'agricultural'"
-                :disabled="downloading && activeTemplate !== 'agricultural'"
-                @click.stop="handleDownload('agricultural')"
+                :loading="downloading && activeTemplate === 'AGRICULTURAL'"
+                :disabled="downloading && activeTemplate !== 'AGRICULTURAL'"
+                @click.stop="handleDownload('AGRICULTURAL')"
               >
                 <template #icon>
                   <DownloadOutlined />
