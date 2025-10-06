@@ -1,3 +1,6 @@
+# 从本地 .env 中加载开发环境敏感配置（仅本地生效，可选）
+spring.config.import: optional:file:.env[.properties]
+
 server:
   port: 8080
   servlet:

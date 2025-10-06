@@ -1,5 +1,8 @@
 # 开发环境配置
 # 注意: 开发环境与生产环境保持一致使用 /api 前缀，确保环境一致性
+# 从本地 .env 中加载开发环境敏感配置（仅本地生效，可选）
+spring.config.import: optional:file:.env[.properties]
+
 server:
   servlet:
     context-path: /api
