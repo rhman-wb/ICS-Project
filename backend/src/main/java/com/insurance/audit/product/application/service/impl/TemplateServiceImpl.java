@@ -380,6 +380,7 @@ public class TemplateServiceImpl implements TemplateService {
                 .fileSize(template.getFileSize())
                 .mimeType(template.getMimeType())
                 .sortOrder(template.getSortOrder())
+                .templateFilePath(template.getTemplateFilePath())
                 .build();
 
         log.info("获取模板元数据成功: {}", metadata.getTemplateName());

@@ -27,6 +27,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -326,7 +330,54 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/templates/{templateType}/fields")
+    
+    @GetMapping("/templates/{templateType}/file")
+    @Operation(summary = "下载模板文件", description = "按照模板类型下载对应的Excel模板文件")
+    @PreAuthorize("hasAnyAuthority('PRODUCT_VIEW','product:view') or hasRole('ADMIN')")
+    public ResponseEntity<Resource> downloadTemplateFile(
+            @Parameter(description = "模板类型 (FILING/AGRICULTURAL)", required = true)
+            @PathVariable("templateType") String templateType) {
+
+        log.info("下载模板文件, templateType: {}", templateType);
+        try {
+            // 校验模板类型
+            if (!templateService.isValidTemplateType(templateType)) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            // 获取模板配置用于确定文件名/MIME
+            ProductTemplate template = templateService.getTemplateConfig(templateType);
+            if (template == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Resource resource = templateService.downloadTemplate(templateType);
+
+            String fileName = getFileNameFromPath(template.getTemplateFilePath());
+            String mime = template.getMimeType();
+            MediaType mediaType;
+            try {
+                mediaType = mime != null ? MediaType.parseMediaType(mime) : null;
+            } catch (Exception e) {
+                mediaType = null;
+            }
+            if (mediaType == null) {
+                if (fileName != null && fileName.toLowerCase().endsWith(".xlsx")) {
+                    mediaType = MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                } else {
+                    mediaType = MediaType.parseMediaType("application/vnd.ms-excel");
+                }
+            }
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + (fileName != null ? fileName : "template.xlsx") + "\"")
+                    .contentType(mediaType)
+                    .body(resource);
+        } catch (Exception e) {
+            log.error("下载模板文件失败, templateType: {}", templateType, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }@GetMapping("/templates/{templateType}/fields")
     @Operation(summary = "获取模板字段配置", description = "获取指定模板的所有字段配置信息")
     @PreAuthorize("hasAnyAuthority('PRODUCT_VIEW','product:view') or hasRole('ADMIN')")
     public ApiResponse<List<TemplateFieldConfig>> getTemplateFields(
