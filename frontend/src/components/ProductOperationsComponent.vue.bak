@@ -357,7 +357,6 @@ import { ref, reactive, computed, h } from 'vue'
 import { message } from 'ant-design-vue'
 import type { UploadFile, TableColumnsType } from 'ant-design-vue'
 import type { TemplateType } from '@/types/product/template'
-import { productApi } from '@/api/modules/product'
 import {
   UploadOutlined,
   AppstoreOutlined,
@@ -435,8 +434,6 @@ const validationResult = ref<{
   errorDetails?: any[]
 } | null>(null)
 
-const parsedData = ref<Record<string, any> | null>(null)
-const parsedProducts = ref<any[]>([])
 // 高级搜索表单
 const advancedSearchForm = reactive({
   status: [],
@@ -588,90 +585,55 @@ const validateImportFile = async () => {
 
   validating.value = true
 
-  try {
-    const file = importFileList.value[0].originFileObj as File
-    const response = await productApi.parseTemplate(file, selectedTemplateType.value, true)
+  // Mock 验证过程
+  await new Promise(resolve => setTimeout(resolve, 2000))
 
-    if (response.success && response.data) {
-      parsedData.value = response.data.parsedData
-      const validationInfo = response.data.validationResult
-
-      if (validationInfo) {
-        const errorDetails = validationInfo.fieldValidations
-          .filter((v: any) => !v.valid)
-          .map((v: any, index: number) => ({
-            row: index + 1,
-            field: v.fieldName,
-            message: v.errorMessage
-          }))
-
-        validationResult.value = {
-          success: validationInfo.valid,
-          message: validationInfo.message,
-          total: validationInfo.validatedFieldCount,
-          valid: validationInfo.passedFieldCount,
-          errors: validationInfo.failedFieldCount,
-          warnings: 0,
-          errorDetails
-        }
-      }
-    } else {
-      message.error(response.message || '文件解析失败')
-    }
-  } catch (error: any) {
-    message.error(`文件验证失败: ${error.message || '未知错误'}`)
-  } finally {
-    validating.value = false
+  // Mock 验证结果
+  validationResult.value = {
+    success: true,
+    message: '文件格式正确，数据验证通过',
+    total: 50,
+    valid: 48,
+    errors: 2,
+    warnings: 3,
+    errorDetails: [
+      { row: 15, field: '产品名称', message: '产品名称不能为空' },
+      { row: 23, field: '经营区域', message: '经营区域格式不正确' }
+    ]
   }
-}
 
+  validating.value = false
+}
 
 const handleConfirmImport = async () => {
   importing.value = true
 
   try {
-    if (!parsedData.value) {
-      message.error('没有可导入的数据')
-      return
-    }
+    // Mock 导入过程
+    await new Promise(resolve => setTimeout(resolve, 3000))
 
-    const products = [parsedData.value]
-    const response = await productApi.batchImportProducts(products, skipDuplicates.value)
+    message.success(`成功导入 ${validationResult.value?.valid || 0} 条产品记录`)
+    emit('importComplete', validationResult.value)
 
-    if (response.success && response.data) {
-      const result = response.data
-      message.success(
-        `导入完成！成功: ${result.success}，失败: ${result.failed}，跳过: ${result.skipped}`
-      )
-      emit('importComplete', result)
-    } else {
-      message.error(response.message || '导入失败')
-    }
-
+    // 重置状态
     showImportDialog.value = false
     importStep.value = 0
     importFileList.value = []
     validationResult.value = null
-    parsedData.value = null
-    parsedProducts.value = []
 
-  } catch (error: any) {
-    message.error(`导入失败: ${error.message || '请稍后重试'}`)
+  } catch (error) {
+    message.error('导入失败，请稍后重试')
   } finally {
     importing.value = false
   }
 }
-
 
 const handleCancelImport = () => {
   showImportDialog.value = false
   importStep.value = 0
   importFileList.value = []
   validationResult.value = null
-  parsedData.value = null
-  parsedProducts.value = []
 }
-
 
 const handleTemplateDownloadSuccess = () => {
   message.success('模板下载成功，请填写后上传')

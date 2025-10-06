@@ -102,5 +102,66 @@ export const productApi = {
       url: `/v1/products/${id}`,
       method: 'DELETE'
     })
+  },
+
+  /**
+   * 解析模板文件（批量导入第一步：文件解析和数据验证）
+   */
+  parseTemplate(file: File, templateType: string, validateData: boolean = true): Promise<ApiResponse<{
+    success: boolean
+    message: string
+    parsedData: Record<string, any>
+    parsedFieldCount: number
+    validationResult?: {
+      valid: boolean
+      message: string
+      validatedFieldCount: number
+      passedFieldCount: number
+      failedFieldCount: number
+      fieldValidations: Array<{
+        fieldName: string
+        valid: boolean
+        value: any
+        errorMessage: string
+      }>
+    }
+  }>> {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('templateType', templateType)
+    formData.append('validateData', validateData.toString())
+
+    return request({
+      url: '/v1/products/parse-template',
+      method: 'POST',
+      data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  },
+
+  /**
+   * 批量导入产品（批量导入第二步：导入已解析的数据）
+   */
+  batchImportProducts(products: Array<Partial<ProductInfo>>, skipDuplicates: boolean = true): Promise<ApiResponse<{
+    total: number
+    success: number
+    failed: number
+    skipped: number
+    errors: Array<{
+      index: number
+      productName: string
+      error: string
+    }>
+  }>> {
+    return request({
+      url: '/v1/products/batch-import',
+      method: 'POST',
+      data: {
+        products,
+        skipDuplicates
+      }
+    })
   }
 }
