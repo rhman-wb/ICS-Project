@@ -76,7 +76,7 @@ const handleBack = () => {
 }
 
 const handleImportProduct = () => {
-  router.push('/product/import')
+  router.push('/product-management/new')
 }
 
 const handleViewDetail = (product: ProductInfo) => {

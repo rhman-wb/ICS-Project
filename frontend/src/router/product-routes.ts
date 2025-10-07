@@ -34,7 +34,7 @@ const productRoutes: RouteRecordRaw[] = [
   {
     path: '/product-management/new',
     name: 'ProductNew',
-    component: () => import('@/views/ProductManagementView.vue'),
+    component: () => import('@/views/product/Add.vue'),
     meta: {
       title: '新增产品',
       requiresAuth: true,
