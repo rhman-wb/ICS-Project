@@ -304,7 +304,7 @@ public class DocumentController {
 
             return org.springframework.http.ResponseEntity.ok()
                     .contentType(org.springframework.http.MediaType.parseMediaType(contentType))
-                    .header("Content-Disposition", "attachment; filename=\"" + encodeFileName(fileName) + "\"")
+                    .header("Content-Disposition", com.insurance.audit.common.util.HttpHeaderUtils.contentDispositionAttachment(fileName))
                     .body(resource);
         } catch (Exception e) {
             log.error("下载文档异常, documentId: {}", documentId, e);

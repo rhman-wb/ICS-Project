@@ -54,7 +54,7 @@ public class RuleImportController {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, com.insurance.audit.common.util.HttpHeaderUtils.contentDispositionAttachment(filename))
                 .body(templateResource);
     }
 
@@ -158,7 +158,7 @@ public class RuleImportController {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, com.insurance.audit.common.util.HttpHeaderUtils.contentDispositionAttachment(filename))
                 .body(reportResource);
     }
 

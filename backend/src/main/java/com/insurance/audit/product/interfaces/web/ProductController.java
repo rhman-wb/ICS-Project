@@ -370,7 +370,7 @@ public class ProductController {
             }
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + (fileName != null ? fileName : "template.xlsx") + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, com.insurance.audit.common.util.HttpHeaderUtils.contentDispositionAttachment(fileName != null ? fileName : "template.xlsx"))
                     .contentType(mediaType)
                     .body(resource);
         } catch (Exception e) {
