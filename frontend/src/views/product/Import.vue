@@ -270,7 +270,7 @@ import {
 import TemplateDownload from '@/components/product/TemplateDownload.vue'
 import TemplateParser from '@/components/product/TemplateParser.vue'
 import DynamicForm from '@/components/product/DynamicForm.vue'
-import type {  ProductFormData, TemplateFieldConfig, ParseResult , ValidationResult } from '@/types/product/template'
+import type {  ProductFormData, FieldConfig, TemplateParseResult , ValidationResult } from '@/types/product/template'
 import { getTemplateConfig } from '@/api/product/template'
 import { createProduct } from '@/api/product'
 import logger from '@/utils/logger'
@@ -283,8 +283,8 @@ const selectedTemplateType = ref<'FILING' | 'AGRICULTURAL'>('FILING')
 
 // Form data
 const productFormData = ref<ProductFormData>({} as ProductFormData)
-const parsedData = ref<ParseResult | null>(null)
-const formFields = ref<TemplateFieldConfig[]>([])
+const parsedData = ref<TemplateParseResult | null>(null)
+const formFields = ref<FieldConfig[]>([])
 const isFormValid = ref(false)
 
 // UI state
@@ -305,13 +305,21 @@ onMounted(() => {
 // Methods
 const loadTemplateConfig = async () => {
   try {
+    logger.debug('Loading template config for:', selectedTemplateType.value)
     const response = await getTemplateConfig(selectedTemplateType.value)
     // Handle ApiResponse wrapper
     const config = response.data || response
     formFields.value = config.fields
+    logger.debug('Template config loaded successfully, fields count:', formFields.value.length)
+
+    if (!formFields.value || formFields.value.length === 0) {
+      logger.warn('Template config returned empty fields array')
+      message.warning('模板配置加载成功，但字段列表为空，请联系管理员')
+    }
   } catch (error) {
     logger.error('Failed to load template config:', error)
-    message.error('加载模板配置失败')
+    message.error('加载模板配置失败，请刷新页面重试或联系管理员')
+    formFields.value = [] // Ensure formFields is initialized even on error
   }
 }
 
@@ -340,6 +348,12 @@ const prevStep = () => {
 }
 
 const skipTemplateUpload = () => {
+  // Validate that template config is loaded before skipping
+  if (!formFields.value || formFields.value.length === 0) {
+    message.error('模板配置尚未加载完成，请稍后再试')
+    return
+  }
+
   currentStep.value = 3
   message.info('已跳过模板上传，请直接在表单中填写产品信息')
 }
@@ -348,9 +362,10 @@ const handleDownloadSuccess = () => {
   message.success('模板下载成功，请填写后上传或直接进入表单录入')
 }
 
-const handleParseSuccess = (result: ParseResult) => {
+const handleParseSuccess = (result: TemplateParseResult) => {
   parsedData.value = result
   productFormData.value = { ...productFormData.value, ...result.data }
+  logger.debug('Template parsed successfully:', result)
   message.success('模板解析成功，数据已自动填充到表单')
 }
 

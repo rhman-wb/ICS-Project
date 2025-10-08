@@ -302,7 +302,7 @@ export function validateParsedData(
   }
 
   // Template-specific validation
-  if (templateType === 'backup') {
+  if (templateType === 'FILING') {
     const backupData = data as Partial<BackupProductFormData>
 
     if (backupData.baseRate !== undefined) {
@@ -314,7 +314,7 @@ export function validateParsedData(
         })
       }
     }
-  } else if (templateType === 'agricultural') {
+  } else if (templateType === 'AGRICULTURAL') {
     const agriculturalData = data as Partial<AgriculturalProductFormData>
 
     if (agriculturalData.revisionCount !== undefined) {
