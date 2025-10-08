@@ -85,7 +85,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons-vue'
 import ProductFormContent from '@/components/product/ProductFormContent.vue'
 import ProductFormDocuments from '@/components/product/ProductFormDocuments.vue'
 import type { ProductFormData, TemplateType } from '@/types/product/template'
-import { createProduct } from '@/api/product/product'
+import { createProduct } from '@/api/product'
 import logger from '@/utils/logger'
 
 const router = useRouter()

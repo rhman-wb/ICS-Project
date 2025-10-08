@@ -3,8 +3,8 @@
     <!-- 主要操作按钮组 -->
     <div class="main-operations">
       <a-space>
-        <!-- 导入产品 - 完整实现 -->
-        <a-button
+        <!-- 导入产品按钮已移至 ProductManagementView 头部，此处不再显示 -->
+        <!-- <a-button
           type="primary"
           size="large"
           :loading="importing"
@@ -14,7 +14,7 @@
             <UploadOutlined />
           </template>
           导入产品
-        </a-button>
+        </a-button> -->
 
         <!-- 批量操作下拉菜单 -->
         <a-dropdown v-if="hasSelectedProducts">
@@ -354,6 +354,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, h } from 'vue'
+import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import type { UploadFile, TableColumnsType } from 'ant-design-vue'
 import type { TemplateType } from '@/types/product/template'
@@ -378,6 +379,9 @@ import TemplateDownload from '@/components/product/TemplateDownload.vue'
 defineOptions({
   name: 'ProductOperationsComponent'
 })
+
+// Router
+const router = useRouter()
 
 // Props
 interface Props {
@@ -480,10 +484,8 @@ const errorColumns: TableColumnsType = [
 
 // 方法
 const handleImportProduct = () => {
-  showImportDialog.value = true
-  importStep.value = 0
-  importFileList.value = []
-  validationResult.value = null
+  // Navigate to the import page instead of opening dialog
+  router.push('/product/import')
 }
 
 const handleBatchOperation = ({ key }: { key: string }) => {

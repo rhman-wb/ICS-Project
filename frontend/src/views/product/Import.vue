@@ -271,8 +271,8 @@ import TemplateDownload from '@/components/product/TemplateDownload.vue'
 import TemplateParser from '@/components/product/TemplateParser.vue'
 import DynamicForm from '@/components/product/DynamicForm.vue'
 import type {  ProductFormData, TemplateFieldConfig, ParseResult , ValidationResult } from '@/types/product/template'
-import { getTemplateFieldConfig } from '@/api/product/template'
-import { createProduct } from '@/api/product/product'
+import { getTemplateConfig } from '@/api/product/template'
+import { createProduct } from '@/api/product'
 import logger from '@/utils/logger'
 
 const router = useRouter()
@@ -305,7 +305,9 @@ onMounted(() => {
 // Methods
 const loadTemplateConfig = async () => {
   try {
-    const config = await getTemplateFieldConfig(selectedTemplateType.value)
+    const response = await getTemplateConfig(selectedTemplateType.value)
+    // Handle ApiResponse wrapper
+    const config = response.data || response
     formFields.value = config.fields
   } catch (error) {
     logger.error('Failed to load template config:', error)

@@ -169,11 +169,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
-import { 
-  UploadOutlined, 
-  PlusOutlined, 
-  InboxOutlined, 
+import {
+  UploadOutlined,
+  PlusOutlined,
+  InboxOutlined,
   DownloadOutlined,
   SettingOutlined,
   AppstoreOutlined
@@ -183,6 +184,9 @@ import {
 defineOptions({
   name: 'QuickStartSection'
 })
+
+// Router
+const router = useRouter()
 
 // 徽章数字 - 模拟待处理数量
 const pendingImports = ref(24)
@@ -207,8 +211,8 @@ const handleImportProduct = async () => {
     // 模拟异步操作
     await new Promise(resolve => setTimeout(resolve, 1000))
     message.info('跳转到产品导入页面')
-    // TODO: 实际项目中跳转到产品导入页面
-    // router.push('/product/import')
+    // 跳转到产品导入页面
+    router.push('/product/import')
   } finally {
     loadingStates.value.import = false
   }
